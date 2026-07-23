@@ -163,7 +163,9 @@ mesmerize-platform/
 
 Mesmerize-owned AWS: ECS/Fargate, RDS PostgreSQL, ElastiCache/Redis, S3, CloudFront; Terraform; GitHub Actions. Environments: Dev / Staging / Prod (Staging PHI-free vs athena sandbox; Prod gated to pilot).
 
-**Reference deployment diagram:** `output_diagrams/17-aws-deployment-reference.puml` ([ADR-015](../adr/015-aws-deployment-reference.md)).
+**AWS deployment (technical):** [`docs/architecture/deployment/aws-production-deployment.md`](../architecture/deployment/aws-production-deployment.md) + diagram [`output_diagrams/18-aws-production-deployment.png`](../../output_diagrams/18-aws-production-deployment.png) ([ADR-015](../adr/015-aws-deployment-reference.md)). Evidence tags: Confirmed / Inferred / Proposed / TBD.
+
+**Stakeholder icon overview:** [`output_diagrams/17-aws-deployment-reference.png`](../../output_diagrams/17-aws-deployment-reference.png). Regenerate: `output_diagrams/17-aws-deployment-reference.py`.
 
 ## Auth model
 

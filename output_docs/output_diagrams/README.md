@@ -21,9 +21,16 @@ Mermaid sources for AI agents and reviewers. Render in any Mermaid-compatible vi
 | [14-sqs-request-reply-correlation.puml](14-sqs-request-reply-correlation.puml) | Request/Reply + Correlation Identifier |
 | [15-sqs-fire-and-forget.puml](15-sqs-fire-and-forget.puml) | Fire-and-forget async events |
 | [16-sqs-enricher-dlq.puml](16-sqs-enricher-dlq.puml) | Content Enricher + Dead Letter Queue |
-| [17-aws-deployment-reference.puml](17-aws-deployment-reference.puml) | **AWS reference deployment** (VPC, ECS, RDS, Redis, SQS, S3, CI/CD) |
+| [17-aws-deployment-reference.png](17-aws-deployment-reference.png) | AWS icon overview (stakeholders) |
+| [17-aws-deployment-reference.svg](17-aws-deployment-reference.svg) | Same diagram (vector) |
+| [17-aws-deployment-reference.py](17-aws-deployment-reference.py) | Generator (`diagrams` + Graphviz) |
+| [17-aws-deployment-reference-legacy-boxes.puml](17-aws-deployment-reference-legacy-boxes.puml) | Legacy PlantUML boxes (not preferred) |
+| [18-aws-production-deployment.png](18-aws-production-deployment.png) | **Production AWS deployment (technical)** — C4 Deployment, evidence-tagged |
+| [18-aws-production-deployment.svg](18-aws-production-deployment.svg) | Same diagram (vector) |
+| [18-aws-production-deployment.puml](18-aws-production-deployment.puml) | Source (canonical narrative: `docs/architecture/deployment/aws-production-deployment.md`) |
 
-**Render notes:** PlantUML needs C4-PlantUML (includes remote stdlib). Mermaid C4: use [Mermaid Live](https://mermaid.live) or a viewer with C4 support.
+**Render notes:** PlantUML needs C4-PlantUML (includes remote stdlib). Mermaid C4: use [Mermaid Live](https://mermaid.live) or a viewer with C4 support.  
+Regenerate `18-*`: `java -jar .tools/plantuml.jar -tpng -tsvg docs/architecture/deployment/aws-production-deployment.puml` (OpenJDK + Graphviz).
 
 Canonical narrative: `docs/ai/ARCHITECTURE.md` and `docs/ai/SECURITY.md`.  
 Scratch folder: `diagrams/` (not source of truth).
