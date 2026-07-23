@@ -5,7 +5,7 @@
 | Chapter ID | `13-deployment-and-infrastructure` |
 | SAD mapping | Mesmerize extension |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 65% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 
@@ -77,14 +77,34 @@ Externals remain outside the VPC: athenahealth, Auth0, Esper, Sanity / BioDigita
   <strong>Inferred:</strong> Kinesis → S3 diagnostic pipeline (Jul 14 / NFR direction). Datadog appears as the reference monitoring product in ADR-010 S15 — final vendor/config must be confirmed with Mesmerize.
 </p>
 
-### CI/CD
+### Dual delivery ladders (Git / CI / CD)
+
+Content Evidence platform (AWS) and device/PWA delivery are **separate ladders**. Do not claim Netlify or TelemetryTV (TTV) filesync deploys NestJS/ECS services ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md)).
+
+#### Ladder A — Platform (AWS)
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> <strong>GitHub Actions</strong> → build/test → container registry → <strong>ECS</strong> deploy; infrastructure via <strong>Terraform</strong> (ADR-010 S14; ADR-015).
+  <strong>Confirmed:</strong> <strong>Ladder A</strong> direction: <strong>GitHub Actions</strong> → <strong>ECR</strong> (inferred registry) → <strong>ECS</strong> + <strong>Terraform</strong> (ADR-010 S14; ADR-015; ADR-016).
 </p>
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Deployment strategy (rolling / blue-green / canary) is TBD — not evidenced in kb or ADRs.
+  <strong>Unknown:</strong> Platform deployment strategy (rolling / blue-green / canary) remains TBD — not evidenced in kb or ADRs.
+</p>
+
+#### Ladder B — Device / PWA
+
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> <strong>Ladder B</strong> for touchscreen-ux / extend-PWA: branch ladder <code>feature → staging → main</code>; <strong>Netlify</strong> = web-only branch preview (not the device path); device path = human-triggered <strong>TTV filesync</strong>; merge to <code>staging</code> = QA/canary devices; promote <code>staging → main</code> = production fleet; Esper MDM + TTV player tags (ADR-007; ADR-016; touchscreen-ux DevOps extract).
+</p>
+
+#### Branching conventions (platform vs PWA)
+
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> Content Evidence <strong>platform</strong> repos adopt the same org branch/PR conventions (<code>feature → staging → main</code>; PRs target <code>staging</code>; Conventional Commit PR titles; merge commits) — Confirmed today only for touchscreen-ux (ADR-016).
+</p>
+
+<p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
+  <strong>Unknown:</strong> Whether platform Staging/Prod promotion uses identical <code>staging</code>/<code>main</code> semantics as Ladder B — open until ops runbook or superseding ADR.
 </p>
 
 ### High availability and DR
@@ -119,9 +139,11 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 | Media / exports | S3 `{tenantId}/{clinicId}/…` | Confirmed |
 | Messaging | SQS RR / events / DLQ | Confirmed |
 | Admin auth | Auth0 (external) | Confirmed |
-| IaC / CI | Terraform + GitHub Actions | Confirmed |
+| IaC / CI (Ladder A) | Terraform + GitHub Actions → ECR → ECS | Confirmed direction |
+| Device/PWA release (Ladder B) | Netlify web preview; manual TTV filesync; Esper tags | Confirmed (PWA) |
 | Container registry | ECR | Inferred |
 | Route 53 / WAF / Secrets Manager / KMS | — | Proposed |
+| Platform branch ladder = PWA conventions | — | Proposed (ADR-016) |
 
 ## Diagrams
 
@@ -135,7 +157,9 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 
 ## Evidence
 
-- [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment topology
+- [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — dual delivery ladders; branching Confirmed (PWA) / Proposed (platform)
+- [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../../kb/customer-reference/touchscreen-ux-devops-extract.md) — Ladder B / org branching extract
+- [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment topology (Ladder A)
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — S12–S15 infra / IaC / observability
 - [ADR-013](../../../docs/adr/013-multitenancy-silo-and-bridge.md) — Bridge default; Silo extra RDS
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — SQS RR / events / DLQ
@@ -145,15 +169,15 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> AWS Region / DR Region; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; deployment strategy (rolling/blue-green/canary); AWS account ID.
+  <strong>Unknown:</strong> AWS Region / DR Region; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; platform deployment strategy (rolling/blue-green/canary); AWS account ID; identical platform <code>staging</code>/<code>main</code> promotion semantics.
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
-  <strong>Proposed:</strong> Route 53, WAF, Secrets Manager, KMS CMKs as mandatory prod controls — awaiting security architecture sign-off.
+  <strong>Proposed:</strong> Route 53, WAF, Secrets Manager, KMS CMKs as mandatory prod controls — awaiting security architecture sign-off. Platform repos adopt touchscreen-ux branch/PR conventions (ADR-016).
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> Final observability vendor (Datadog vs Mesmerize-approved alternative); Kinesis exact topology; ECR as registry.
+  <strong>Inferred:</strong> Final observability vendor (Datadog vs Mesmerize-approved alternative); Kinesis exact topology; ECR as registry. (Org branching / dual ladders are now covered by ADR-016 — no longer an open “CI/CD pack from AM” gap for branching.)
 </p>
 
 ## Open questions
@@ -164,7 +188,8 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 4. Required RTO and RPO?
 5. ECS autoscaling floors/ceilings per service (pilot vs scale)?
 6. Confirm Secrets Manager + KMS + WAF + Route 53 as mandatory?
-7. Final observability stack?
-8. Deployment strategy: rolling, blue-green, or canary?
-9. Is an AWS BAA required given zero-PHI server design?
-10. Outbound egress allow-list for Sanity/BioDigital/Auth0/SMS/Esper?
+7. Final observability stack / vendor?
+8. Platform deployment strategy: rolling, blue-green, or canary?
+9. Do platform repos adopt identical `feature → staging → main` promotion as Ladder B?
+10. Is an AWS BAA required given zero-PHI server design?
+11. Outbound egress allow-list for Sanity/BioDigital/Auth0/SMS/Esper?

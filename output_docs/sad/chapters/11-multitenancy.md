@@ -5,7 +5,7 @@
 | Chapter ID | `11-multitenancy` |
 | SAD mapping | Mesmerize extension |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 75% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 

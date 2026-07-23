@@ -6,6 +6,8 @@ This directory holds the **working Solution Architecture Definition (SAD) pack**
 
 This pack lives under `output_docs/sad/` only. It is the authoritative working artifact for architecture review and iteration in this repo.
 
+**Overall pack maturity:** ~**80%** (band **75 — Review-ready**). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain.
+
 ## Chapter index
 
 | # | Chapter | File |
@@ -27,7 +29,7 @@ This pack lives under `output_docs/sad/` only. It is the authoritative working a
 | 15 | Key Terms and Abbreviations | [chapters/15-key-terms-and-abbreviations.md](chapters/15-key-terms-and-abbreviations.md) |
 | 16 | Revision History | [chapters/16-revision-history.md](chapters/16-revision-history.md) |
 
-> Chapter links may 404 until later implementation tasks create the files.
+All 16 chapter files are present. Word Heading-1/2 ↔ MD map: [`WORD_TEMPLATE_CROSSWALK.md`](WORD_TEMPLATE_CROSSWALK.md).
 
 ## Color legend
 

@@ -5,7 +5,7 @@
 | Chapter ID | `06-solution-scope` |
 | SAD mapping | Template §6 Solution Scope (Solution Description, Solution Architecture Diagram) |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 80% |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 

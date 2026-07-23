@@ -89,6 +89,14 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | MSG-4 | SQS async = **Fire-and-forget** | [ADR-014](014-sqs-messaging-patterns.md) |
 | MSG-5 | Failures: **Content Enricher** then **DLQ** | [ADR-014](014-sqs-messaging-patterns.md) |
 
+### Delivery / branching
+
+| # | Decision | Status | ADR |
+|---|----------|--------|-----|
+| DEL-1 | Dual delivery: **Ladder A** platform (GHA → ECR → ECS + Terraform) vs **Ladder B** device/PWA (Netlify ≠ device; TTV filesync; Esper) | Confirmed (A direction / B touchscreen-ux) | [ADR-016](016-git-branching-and-delivery-ladders.md), [ADR-015](015-aws-deployment-reference.md) |
+| DEL-2 | Org Git ladder `feature → staging → main`; PRs to `staging`; content-vs-code split | Confirmed touchscreen-ux; **Proposed** for platform repos | [ADR-016](016-git-branching-and-delivery-ladders.md) |
+| DEL-3 | Do **not** claim Netlify or TTV filesync for NestJS/ECS | Confirmed | [ADR-016](016-git-branching-and-delivery-ladders.md) |
+
 Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
 ## ADR index
@@ -110,3 +118,4 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [013](013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo DB vs Bridge + S3) |
 | [014](014-sqs-messaging-patterns.md) | SQS Request/Reply, correlation, enricher, DLQ, fire-and-forget |
 | [015](015-aws-deployment-reference.md) | AWS reference deployment topology |
+| [016](016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders |

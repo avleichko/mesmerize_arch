@@ -5,7 +5,7 @@
 | Chapter ID | `07-functional-architecture` |
 | SAD mapping | Template §7 Functional Architecture |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 75% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 

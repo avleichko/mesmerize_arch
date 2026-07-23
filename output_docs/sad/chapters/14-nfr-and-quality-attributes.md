@@ -5,7 +5,7 @@
 | Chapter ID | `14-nfr-and-quality-attributes` |
 | SAD mapping | Mesmerize extension |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 80% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 
@@ -84,13 +84,18 @@ Summarize Architecturally Significant Requirements (ASRs) that bind the Content 
 |-----|-----------|
 | NFR-OPS-01 | Separate engagement telemetry from diagnostic logs |
 | NFR-OPS-02 | Diagnostic log retention ≤ 90 days |
+| NFR-OPS-05 / 06 | Dev / Staging / Prod; GitHub Actions + Terraform on Mesmerize AWS (platform) |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Engagement vs diagnostic log paths are separate. Diagnostic retention is <strong>≤ 90 days</strong> then tiering/expiry (NFR-OPS-02; SECURITY.md).
+  <strong>Confirmed:</strong> Engagement vs diagnostic log paths are separate. Diagnostic retention is <strong>≤ 90 days</strong> then tiering/expiry (NFR-OPS-02; SECURITY.md). Device/PWA delivery follows <strong>Ladder B</strong> (Netlify web-only; manual TTV filesync; Esper); platform AWS follows <strong>Ladder A</strong> (GHA → ECR → ECS + Terraform) — do not conflate ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md)).
+</p>
+
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> Platform repos adopt the same org branch/PR conventions as touchscreen-ux; NFR-OPS-05/06 environment narrative remains AWS topology (ADR-015) plus dual-ladder ops posture (ADR-016).
 </p>
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Engagement / business log retention (multi-year figures discussed but not confirmed) — open with Brandon / MM per NFR catalog.
+  <strong>Unknown:</strong> Engagement / business log retention (multi-year figures discussed but not confirmed) — open with Brandon / MM per NFR catalog. Observability vendor (Datadog vs approved alternative) still open.
 </p>
 
 ### Interoperability (ASR)
@@ -127,7 +132,7 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 | NFR-PERF-02 | Performance | Imaging/mirroring latency — **out of SOW** (ADR-009) |
 | NFR-SCAL-02 | Scalability | Dual Bridge/Silo tenancy without rewriting domain APIs |
 | NFR-BUS-01 / 02 | Business | Suggest-only billing; physician HITL before writeback |
-| NFR-OPS-05 / 06 | Operability | Dev / Staging / Prod; GitHub Actions + Terraform on Mesmerize AWS |
+| NFR-OPS-05 / 06 | Operability | Dev / Staging / Prod; Ladder A (GHA + Terraform / ECS) vs Ladder B (PWA/TTV) per ADR-016 |
 
 ## Traceability
 
@@ -136,7 +141,7 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 | [`docs/ai/NFR.md`](../../../docs/ai/NFR.md) | Canonical agent NFR + ASR list |
 | [`output_docs/nfr/NFR_CATALOG.md`](../../nfr/NFR_CATALOG.md) | Export catalog (full table) |
 | [`output_docs/nfr/ASR_CHECKLIST.md`](../../nfr/ASR_CHECKLIST.md) | Design-review checklist |
-| ADR-002, 005, 007, 008, 011, 013, 014 | Decisions backing ASR statements |
+| ADR-002, 005, 007, 008, 011, 013, 014, 016 | Decisions backing ASR statements (016 = dual delivery ladders / OPS) |
 | SOW #3 Phase 2 / 3 | WCAG 2.1 AA; OWASP + pen-test |
 
 ## Open items / decisions needed

@@ -1,6 +1,6 @@
 # Non-Functional Requirements (NFR) Catalog
 
-> **Sources:** Jul 14 2026 functional/non-functional meeting notes; SOW #3; Architecture / Strategy / Implementation Context; Mesmerize Q&A; ADRs 001–013.  
+> **Sources:** Jul 14 2026 functional/non-functional meeting notes; SOW #3; Architecture / Strategy / Implementation Context; Mesmerize Q&A; ADRs 001–016.  
 > **Rule:** Do not invent numeric SLOs not present in kb. Items without kb metrics are marked **Open** or **Target (qualitative)**.  
 > **ASR** = Architecturally Significant Requirement (drives structure, boundaries, or technology choices).
 
@@ -47,7 +47,8 @@ Export copy: [`output_docs/nfr/NFR_CATALOG.md`](../../output_docs/nfr/NFR_CATALO
 | NFR-OPS-03 | Should | Should | Observability | Diagnostic path: **Kinesis + S3** table buckets (as aligned). Monitoring: Mesmerize-approved / Datadog reference. | Jul 14 + ADR-010 | Confirmed direction | ADR-010 |
 | NFR-OPS-04 | Should | Should | Observability | Video ad telemetry baseline: **VAST**. | Jul 14 | Confirmed | GLOSSARY |
 | NFR-OPS-05 | Should | Should | Operability | Environments: **Dev / Staging / Prod**; Staging PHI-free vs Athena sandbox; Prod gated to pilot. | Q&A | Confirmed | ENGINEERING_RULES |
-| NFR-OPS-06 | Should | Should | Maintainability | CI/CD via **GitHub Actions**; IaC **Terraform**; Mesmerize-owned AWS. | ADR-010 | Confirmed | ADR-010 |
+| NFR-OPS-06 | Should | Should | Maintainability | **Ladder A (platform):** CI/CD via **GitHub Actions**; IaC **Terraform**; Mesmerize-owned AWS (ECR → ECS). Deploy strategy (blue/green, canary, etc.) **Unknown**. | ADR-010, ADR-016 | Confirmed (CI/IaC); Unknown (deploy strategy) | ADR-010, ADR-016 |
+| NFR-OPS-07 | Should | Should | Operability | **Ladder B (device/PWA):** Netlify branch preview ≠ device path; TelemetryTV (TTV) filesync **human-triggered**; merge to `staging` = QA/canary devices; promote `staging → main` = production fleet. Do not apply Netlify/TTV to NestJS/ECS. | touchscreen-ux DEPLOYMENT; ADR-016 | Confirmed (PWA) | ADR-007, ADR-016 |
 | NFR-INT-01 | **Yes** | Must | Interoperability | SMART on FHIR **3-legged Authorization Code Grant**; EHR launch only; Athena pilot first. | ADR-005 | Confirmed | ADR-005 |
 | NFR-INT-02 | **Yes** | Must | Interoperability | Device commands **server-mediated** (REST + Socket.io); no direct SMART↔device app channel. | ADR-007 | Confirmed | ADR-007 |
 | NFR-INT-04 | **Yes** | Must | Interoperability | Internal messaging: SQS **Request/Reply + Correlation ID** (per-target reply queues), **Fire-and-forget** for async, **Content Enricher + DLQ** for failures; edge remains REST. | ADR-014 | Confirmed | ADR-014 |
@@ -97,6 +98,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Engagement / business log retention (e.g. 3 years discussed) | Confirm with Brandon / MM |
 | AWS BAA necessity | Compliance owner |
 | Formal observability toolchain | AM / Mesmerize-approved pack |
+| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016 |
 
 ---
 

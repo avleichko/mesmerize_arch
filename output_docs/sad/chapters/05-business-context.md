@@ -5,7 +5,7 @@
 | Chapter ID | `05-business-context` |
 | SAD mapping | Template §5 Business Context (Business Objective, Expected Business Value, Key Stakeholders) |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 85% |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 

@@ -32,4 +32,5 @@ Agents and SAD authors need a single deployment picture for Mesmerize-owned AWS 
 - Do not introduce undocumented AWS products into the reference without an ADR.  
 - Silo tenancy = additional RDS instances per org (annotated), not a different VPC pattern by default.  
 - Staging remains PHI-free / Athena sandbox; Prod pilot-gated.  
-- Prefer the production package (`18-*` + MD) for technical reviews; keep `17-*` for stakeholder icon overview.
+- Prefer the production package (`18-*` + MD) for technical reviews; keep `17-*` for stakeholder icon overview.  
+- **Platform vs device:** This ADR’s topology is **Ladder A (platform AWS)** only. Device/PWA delivery (Netlify preview ≠ device; human-triggered TTV filesync; Esper fleet) and org Git branching conventions are in [ADR-016](016-git-branching-and-delivery-ladders.md). Do **not** show Netlify or TTV as an ECS path.

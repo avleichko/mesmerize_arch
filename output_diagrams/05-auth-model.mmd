@@ -1,7 +1,9 @@
+%%{init: {'themeVariables': { 'fontSize': '16px' }, 'flowchart': { 'padding': 24, 'nodeSpacing': 40, 'rankSpacing': 50 }}}%%
 %% Auth model
 %% Source: Architecture Security Architecture + Mesmerize Q&A roles
 flowchart TB
   subgraph SMARTAUTH["SMART App"]
+    direction TB
     EHRAuth["EHR authenticates provider"]
     Launch["SMART OAuth2 launch"]
     Sess["Mesmerize session token for Platform API"]
@@ -9,19 +11,27 @@ flowchart TB
   end
 
   subgraph CC["Command Center"]
+    direction TB
     Auth0["Auth0 login"]
-    RBAC["RBAC roles\nPhase timing per Q&A"]
+    RBAC["RBAC roles<br/>Phase timing per Q&amp;A"]
     Auth0 --> RBAC
   end
 
   subgraph DEVICES["Waiting / Exam Room Devices"]
+    direction TB
     Esper["Esper provisioning"]
     DTok["Device token"]
     Esper --> DTok
   end
 
   subgraph BRIDGE["Bridge App patient"]
+    direction TB
     Link["Secure link + one-time code"]
     TO["30-minute inactivity timeout"]
     Link --> TO
   end
+
+  %% Stack surfaces vertically (layout only; auth paths stay independent)
+  SMARTAUTH ~~~ CC
+  CC ~~~ DEVICES
+  DEVICES ~~~ BRIDGE

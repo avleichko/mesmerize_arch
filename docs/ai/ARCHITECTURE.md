@@ -2,7 +2,8 @@
 
 > **Sources:** `kb/Documentation/Content Evidence Platform — Architecture.docx`, Implementation Context, Strategy Overview, Mesmerize Responses Q&A.  
 > **Diagrams:** `output_diagrams/`.  
-> **Formal SAD documents:** use [`templates/Solution_Architecture_Definition_template.docx`](../../templates/Solution_Architecture_Definition_template.docx) when producing stakeholder Solution Architecture Definitions (see [`templates/README.md`](../../templates/README.md)).
+> **Formal SAD documents:** use [`templates/Solution_Architecture_Definition_template.docx`](../../templates/Solution_Architecture_Definition_template.docx) when producing stakeholder Solution Architecture Definitions (see [`templates/README.md`](../../templates/README.md)).  
+> **Working SAD Markdown pack:** [`output_docs/sad/`](../../output_docs/sad/) (chapters, progress, Word crosswalk).
 
 ## High-level view
 
@@ -167,6 +168,15 @@ Mesmerize-owned AWS: ECS/Fargate, RDS PostgreSQL, ElastiCache/Redis, S3, CloudFr
 
 **Stakeholder icon overview:** [`output_diagrams/17-aws-deployment-reference.png`](../../output_diagrams/17-aws-deployment-reference.png). Regenerate: `output_diagrams/17-aws-deployment-reference.py`.
 
+### Delivery & branching
+
+Two delivery ladders — do not conflate ([ADR-016](../adr/016-git-branching-and-delivery-ladders.md); extract [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md)):
+
+- **Ladder A — Platform (AWS):** GitHub Actions → ECR → ECS + Terraform. Topology remains as above / ADR-015; deploy strategy Unknown.
+- **Ladder B — Device/PWA:** Netlify web preview ≠ device; human-triggered TTV filesync; `staging` = QA/canary, `main` = production fleet (Esper + TTV). Confirmed for touchscreen-ux / extend-PWA.
+
+Org branching (`feature → staging → main`, PRs to `staging`) is **Confirmed** for touchscreen-ux and **Proposed** for platform repos.
+
 ## Auth model
 
 See `output_diagrams/05-auth-model.mmd` and [`SECURITY.md`](SECURITY.md).
@@ -198,3 +208,4 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-013](../adr/013-multitenancy-silo-and-bridge.md)
 - [ADR-014](../adr/014-sqs-messaging-patterns.md)
 - [ADR-015](../adr/015-aws-deployment-reference.md)
+- [ADR-016](../adr/016-git-branching-and-delivery-ladders.md)

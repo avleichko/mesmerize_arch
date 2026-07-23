@@ -108,6 +108,12 @@ See [ADR-014](../adr/014-sqs-messaging-patterns.md).
 - Prod: gated to single pilot practice (Phase 4 per Q&A).
 - Work on Mesmerize-approved infra (GitHub org, Jira MESV2, Confluence MES* spaces) for production-bound work.
 
+## Git & delivery
+
+- **Branch prefixes / PRs:** Prefer `content/`, `feat/`, `fix/`, `chore/`, `refactor/`, `docs/`; all PRs target `staging` (`feature → staging → main`). **Confirmed** for touchscreen-ux (device PWA); **Proposed** for Content Evidence platform repos until adopted ([ADR-016](../adr/016-git-branching-and-delivery-ladders.md)).
+- **Content vs code:** Where a repo holds content JSON, use separate branches/PRs (`content/*` vs `feat/` / `fix/` / etc.) — **Confirmed** for touchscreen-ux; platform services use `feat/` / `fix/` / etc. (content prefix only when the repo holds JSON content).
+- **Dual ladders:** **Ladder A** (platform AWS): GitHub Actions → ECR → ECS + Terraform ([ADR-010](../adr/010-technology-stack.md), [ADR-015](../adr/015-aws-deployment-reference.md)); deploy strategy Unknown. **Ladder B** (device/PWA): Netlify web preview ≠ device path; human-triggered TelemetryTV (TTV) filesync; `staging` = QA/canary, `main` = production fleet. Do not claim Netlify/TTV for NestJS/ECS. Details: [ADR-016](../adr/016-git-branching-and-delivery-ladders.md); extract: [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md).
+
 ## Process rules for agents
 
 1. **Always check `kb/` and `docs/adr/` first** (see mandatory section above).

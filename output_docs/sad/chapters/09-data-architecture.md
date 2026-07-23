@@ -5,7 +5,7 @@
 | Chapter ID | `09-data-architecture` |
 | SAD mapping | Template §9 Data Architecture |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 70% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 

@@ -14,6 +14,7 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 |------:|-----|---------|
 | 0a | [`kb/`](kb/) | Source evidence (Word/PDF/notes). **Analyze before inventing behavior.** |
 | 0b | [`docs/adr/README.md`](docs/adr/README.md) | Confirmed decision register (#1–#20) + ADR links |
+| 0b′ | [`docs/adr/016-git-branching-and-delivery-ladders.md`](docs/adr/016-git-branching-and-delivery-ladders.md) + [`kb/customer-reference/touchscreen-ux-devops-extract.md`](kb/customer-reference/touchscreen-ux-devops-extract.md) | Git/PR conventions + dual delivery ladders (platform AWS vs device/PWA). Do not paste full CONTRIBUTING. |
 | 0c | [`templates/`](templates/) | Formal doc templates (SAD, etc.). **If a matching template exists, use it.** |
 | 0d | [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/`](output_docs/nfr/) | Non-functional requirements; **ASR** rows are binding for architecture |
 | 1 | [`docs/ai/PROJECT_CONTEXT.md`](docs/ai/PROJECT_CONTEXT.md) | Business purpose, stakeholders, success metrics |
@@ -57,6 +58,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 ## Working rules
 
 - **Always check `kb/` and `docs/adr/` first** before architecture or product-behavior changes. Treat the [confirmed decision register](docs/adr/README.md) as binding.
+- **Git / delivery:** For branching, PRs, and deploy paths, follow [ADR-016](docs/adr/016-git-branching-and-delivery-ladders.md) and the [touchscreen-ux DevOps extract](kb/customer-reference/touchscreen-ux-devops-extract.md) — do not conflate Netlify/TTV (device) with ECS (platform).
 - **Always check NFRs / ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) (export: [`output_docs/nfr/`](output_docs/nfr/)). Do not introduce designs that conflict with **ASR** marked requirements.
 - **Always check `templates/`** before creating formal architecture / SAD / stakeholder docs; use the matching template if one exists.
 - **Analyze `kb/` again** when a task touches EHR, PHI, devices, recommendations, billing, or writeback — even if you already read `docs/ai/*`.

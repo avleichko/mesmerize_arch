@@ -76,6 +76,10 @@ Total BAAs cited: **2–3** under Content Evidence plan.
 - Retry with exponential backoff for failed transactions.
 - White-label CSS must not weaken iframe/CSP assumptions without review.
 
+## Device PWA client config vs platform secrets
+
+touchscreen-ux committed `.env` / `VITE_*` is **device PWA client-bundle** policy (build-time public config for the exam-room app) — not Content Evidence platform secrets. Platform secret handling remains **Proposed** via AWS Secrets Manager (or equivalent); do not invent PHI in secrets or promote PWA `.env` posture to NestJS/ECS. See touchscreen-ux [`DEPLOYMENT.md`](../../kb/customer-reference/touchscreen-ux/DEPLOYMENT.md) extract context in [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md) and [ADR-016](../adr/016-git-branching-and-delivery-ladders.md).
+
 ## Writeback and human control
 
 - Physician approval required before EHR writeback.

@@ -5,7 +5,7 @@
 | Chapter ID | `08-system-architecture` |
 | SAD mapping | Template §8 Component Responsibilities / Component Interactions |
 | Last updated | 2026-07-23 |
-| Maturity | Draft · 75% (see `../PROGRESS.md`) |
+| Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 
@@ -44,7 +44,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 | **API Gateway / Edge** | CloudFront + ALB TLS termination and routing to REST; sticky TG for Socket.io | Confirmed |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Prefer <strong>extending</strong> the live PWA lineage over a greenfield rewrite; production fleet app is extend/copy, not in-place overwrite by delivery partners (ADR-007).
+  <strong>Confirmed:</strong> Prefer <strong>extending</strong> the live PWA lineage over a greenfield rewrite; production fleet app is extend/copy, not in-place overwrite by delivery partners (ADR-007). Extend-PWA / device runtime delivery uses <strong>Ladder B</strong> (Netlify web preview ≠ device; manual TTV filesync; Esper tags) — not Ladder A ECS (ADR-007; ADR-016). Detail in [Chapter 13](13-deployment-and-infrastructure.md).
 </p>
 
 ### NestJS platform services
@@ -140,6 +140,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — S1–S15 stack
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — REST edge + SQS internal patterns
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — ECS co-locate / sticky ALB for device-realtime
+- [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — Ladder B for device/PWA vs Ladder A for platform
 - [`output_diagrams/06-c4-containers.puml`](../../../output_diagrams/06-c4-containers.puml) / PNG — container responsibilities & relations
 - [`output_diagrams/04-monorepo-boundaries.mmd`](../../../output_diagrams/04-monorepo-boundaries.mmd) / PNG — app/package boundaries
 
