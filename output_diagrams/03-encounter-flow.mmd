@@ -1,0 +1,26 @@
+%% Encounter happy path
+%% Source: Strategy Overview flow + Architecture APIs + Q&A UCs
+sequenceDiagram
+  actor Provider
+  participant EHR as EHR Chart
+  participant SMART as SMART App browser
+  participant FHIR as EHR FHIR API
+  participant API as Mesmerize Platform API
+  participant Dev as Exam Room Device
+
+  Provider->>EHR: Launch Mesmerize
+  EHR->>SMART: SMART launch iss+launch
+  SMART->>FHIR: OAuth + read Patient/Condition/Encounter
+  SMART->>API: Create session ICD-10 + deviceGroup only
+  API-->>SMART: sessionId
+  SMART->>API: Recommend content
+  API-->>SMART: Ranked content
+  Provider->>SMART: Select device + push
+  SMART->>API: POST /devices/:id/command
+  API->>Dev: Socket.io show_content / biodigital
+  Dev-->>API: Engagement events
+  API-->>SMART: Engagement + billing suggestions
+  Provider->>SMART: Review / approve evidence
+  SMART->>FHIR: DocumentReference write optional
+  Note over API: No patient identifiers stored
+  Note over SMART: FHIR token never leaves browser

@@ -1,0 +1,29 @@
+%% Monorepo / service boundaries
+%% Source: Architecture §7 Monorepo Structure
+flowchart TB
+  subgraph apps
+    api["apps/api\nNestJS Platform API"]
+    web["apps/web\nWaiting Room · Exam Room\nCommand Center · Bridge"]
+    smart["apps/smart-app\nSMART on FHIR UI + browser FHIR"]
+  end
+
+  subgraph packages
+    shared["shared\ntypes Zod constants socket events"]
+    ui["ui\nReact components"]
+    billing["billing-engine\nengagement → CPT evidence"]
+    fhireng["fhir-engagement\nDocumentReference formatting"]
+    config["config\nESLint TS Tailwind"]
+  end
+
+  smart --> shared
+  smart --> ui
+  smart --> fhireng
+  web --> shared
+  web --> ui
+  api --> shared
+  api --> billing
+  smart -->|"HTTPS session APIs"| api
+  web -->|"Socket.io + device APIs"| api
+
+  removed["Removed vs older plans\nai-services · server EHR adapters\npatient/transcript/note models"]
+  style removed fill:#f8d7da,stroke:#842029

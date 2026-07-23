@@ -1,0 +1,57 @@
+@startuml mesmerize-c4-context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title Mesmerize Content Evidence Platform — C4 System Context\n(Runtime Persons only — ADR-012; stakeholders live in SAD)
+
+Person(clinician, "Clinician / Physician", "Launches SMART app from EHR; pushes education; reviews/approves billing evidence")
+Person(nurse_ma, "Nurse / MA", "Participates in launch, content select, and push (physician approves writeback)")
+Person(admin, "Admin / Command Center staff", "Operates Command Center (devices/ops)")
+Person_Ext(patient_clinic, "Patient (in clinic)", "Views education on exam/waiting-room devices — no login")
+Person_Ext(patient_bridge, "Patient (post-visit)", "Uses Bridge App via secure link + one-time code")
+
+System(mesmerize, "Mesmerize Content Evidence Platform", "SMART education delivery, clinic devices, ICD-10-linked engagement, billing evidence suggestions. Zero patient identifiers on Mesmerize servers.")
+
+System_Ext(ehr, "athenahealth EHR (pilot)", "SMART launch + FHIR R4. Future: Epic, Oracle/Cerner (roadmap).")
+System_Ext(auth0, "Auth0", "Admin / Command Center authentication (BAA)")
+System_Ext(sms, "SMS / email provider", "Bridge App one-time access codes (BAA)")
+System_Ext(esper, "Esper MDM", "Device provisioning and device tokens")
+System_Ext(ttv, "TelemetryTV", "Existing fleet ops / telemetry mirror")
+System_Ext(sanity, "Sanity CMS", "Editorial content + metadata")
+System_Ext(biodigital, "BioDigital", "3D anatomy models")
+System_Ext(mjh, "MJH / Pharmacy Times", "Articles / medication education")
+System_Ext(aws, "Mesmerize AWS", "ECS/Fargate, RDS, ElastiCache, S3, CloudFront, SQS, monitoring")
+System_Ext(pm, "Practice Management (PM)", "Claim submission — outside Mesmerize scope")
+System_Ext(ambient, "Ambient AI tools (optional)", "Abridge / DAX / Epic Art etc. — complementary; not integrated as scribe")
+
+Rel(clinician, ehr, "Opens patient chart / encounter")
+Rel(nurse_ma, ehr, "Opens patient chart / encounter")
+Rel(ehr, mesmerize, "EHR launch of SMART app (iframe)")
+Rel(mesmerize, ehr, "Browser-side FHIR read/write\n(Conditions → DocumentReference); EHR token never leaves browser")
+
+Rel(clinician, mesmerize, "Uses SMART app")
+Rel(nurse_ma, mesmerize, "Uses SMART app")
+Rel(admin, mesmerize, "Uses Command Center")
+Rel(patient_clinic, mesmerize, "Views device content")
+Rel(patient_bridge, mesmerize, "Uses Bridge App")
+
+Rel(mesmerize, auth0, "Admin auth (OIDC/JWT)")
+Rel(mesmerize, sms, "Send Bridge access codes")
+Rel(mesmerize, esper, "Device identity / provisioning")
+Rel(mesmerize, ttv, "Fleet telemetry mirror (existing)")
+Rel(mesmerize, sanity, "Sync content catalog")
+Rel(mesmerize, biodigital, "3D model IDs / embeds")
+Rel(mesmerize, mjh, "Article content sync")
+Rel(mesmerize, aws, "Runs on")
+
+Rel_D(mesmerize, pm, "Billing suggestions/evidence only\n(no EDI claims)", "Out of scope")
+Rel_D(ambient, ehr, "May write clinical notes independently", "Not Mesmerize")
+
+note right of mesmerize
+  **In scope (SOW #3):** SMART + devices +
+  engagement + billing evidence + writeback
+  **Out of scope:** Redox, ambient audio/notes,
+  DICOM push, clearinghouse, patient CRUD
+end note
+
+SHOW_LEGEND()
+@enduml

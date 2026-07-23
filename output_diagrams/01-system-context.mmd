@@ -1,0 +1,35 @@
+%% System context — Content Evidence Platform
+%% Source: kb Architecture v2.0
+flowchart TB
+  subgraph EHR["EHR SMART Launch"]
+    Epic["Epic"]
+    Cerner["Oracle Health / Cerner"]
+    Athena["athenahealth — pilot"]
+  end
+
+  subgraph CLOUD["Cloud AWS — Mesmerize"]
+    SMART["SMART App Server\n(serves smart-app frontend)"]
+    API["Platform API\nNestJS"]
+    SVC["Application Services\nSession · Content · Billing Evidence\nDevice Command · Ads · Engagement"]
+    PG["PostgreSQL\nengagement data only"]
+    Redis["Redis"]
+    S3["S3\nmedia + ad assets"]
+    SMART --> API
+    API --> SVC
+    SVC --> PG
+    SVC --> Redis
+    SVC --> S3
+  end
+
+  subgraph EDGE["Clinic Edge Devices"]
+    CC["Command Center"]
+    ER["Exam Room Microtouch"]
+    WR["Waiting Room TV"]
+  end
+
+  Athena -->|"iframe SMART launch"| SMART
+  Epic -.->|"future modular"| SMART
+  Cerner -.->|"future modular"| SMART
+  SMART -->|"FHIR in browser only"| Athena
+  SMART -->|"Mesmerize session token\nICD-10 + deviceGroup + sessionId"| API
+  API <-->|"Socket.io commands / events"| EDGE

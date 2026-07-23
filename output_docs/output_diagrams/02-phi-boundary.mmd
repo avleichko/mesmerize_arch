@@ -1,0 +1,27 @@
+%% PHI boundary and token split
+%% Source: kb Architecture + Strategy Overview + Mesmerize Q&A
+flowchart LR
+  subgraph BROWSER["SMART App Browser"]
+    EHRTOK["EHR FHIR token"]
+    CTX["Patient / Encounter / Conditions\n(+ imaging if ever enabled)"]
+    MTOK["Mesmerize session token"]
+  end
+
+  subgraph EHRSYS["EHR FHIR Server"]
+    FHIR["Patient · Condition · Encounter\nDocumentReference write"]
+  end
+
+  subgraph MES["Mesmerize Platform"]
+    API["Platform API / DB"]
+    DATA["Allowed: sessionId, clinicId,\ndeviceGroupId, ICD-10[],\nengagement, billing suggestions"]
+  end
+
+  subgraph DEV["Exam Room Device"]
+    DISP["Ephemeral display\nno patient identity"]
+  end
+
+  EHRTOK -->|"FHIR read/write"| FHIR
+  CTX -.->|"never transmitted"| API
+  MTOK -->|"ICD-10 + deviceGroup + sessionId only"| API
+  API --> DATA
+  API -->|"commands / engagement"| DISP

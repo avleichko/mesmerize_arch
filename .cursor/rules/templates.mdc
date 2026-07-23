@@ -1,0 +1,12 @@
+---
+description: Use templates/ for formal docs when a matching template exists
+alwaysApply: true
+---
+
+# Document templates
+
+- Canonical templates live in `templates/`. See `templates/README.md`.
+- Before creating architecture definitions, SAD, or other formal docs: check `templates/` first.
+- If a matching template exists, **copy and fill that template** — do not invent a different outline.
+- Do not overwrite files in `templates/`; write deliverables to `output_docs/` (or the task path).
+- Content must still follow `kb/`, `docs/adr/`, and `AGENTS.md`.

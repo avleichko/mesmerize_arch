@@ -1,0 +1,27 @@
+%% Auth model
+%% Source: Architecture Security Architecture + Mesmerize Q&A roles
+flowchart TB
+  subgraph SMARTAUTH["SMART App"]
+    EHRAuth["EHR authenticates provider"]
+    Launch["SMART OAuth2 launch"]
+    Sess["Mesmerize session token for Platform API"]
+    EHRAuth --> Launch --> Sess
+  end
+
+  subgraph CC["Command Center"]
+    Auth0["Auth0 login"]
+    RBAC["RBAC roles\nPhase timing per Q&A"]
+    Auth0 --> RBAC
+  end
+
+  subgraph DEVICES["Waiting / Exam Room Devices"]
+    Esper["Esper provisioning"]
+    DTok["Device token"]
+    Esper --> DTok
+  end
+
+  subgraph BRIDGE["Bridge App patient"]
+    Link["Secure link + one-time code"]
+    TO["30-minute inactivity timeout"]
+    Link --> TO
+  end

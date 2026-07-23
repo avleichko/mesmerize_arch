@@ -1,0 +1,89 @@
+@startuml mesmerize-c4-containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize Content Evidence Platform — C4 Container Diagram\n(Approach 1: coarse domain microservices, REST + SQS)
+
+Person(clinician, "Clinician", "Launches SMART app from athenahealth chart")
+Person(admin, "Admin / Staff", "Command Center operations")
+Person_Ext(patient, "Patient", "Views content on clinic devices (no login)")
+
+System_Boundary(mesmerize, "Mesmerize Content Evidence Platform") {
+
+  Container(smart_app, "SMART Web App", "React 19, Vite, fhirclient.js", "EHR iframe UI: recommend, pair, push, billing review. FHIR token stays in browser.")
+  Container(device_apps, "Device PWA / Web Apps", "React 19, Vite", "Exam Room, Waiting Room, Command Center, Bridge App")
+  Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS termination, routing to REST APIs")
+
+  Container(session_svc, "session-service", "NestJS, ECS", "Opaque sessions: ICD-10 set, device group, lifecycle")
+  Container(content_svc, "content-service", "NestJS, ECS", "Catalog, ICD-10→content recommend, CMS projections")
+  Container(device_svc, "device-realtime-service", "NestJS, Socket.io, ECS", "Device registry mirror, pairing, commands, WebSockets")
+  Container(engagement_svc, "engagement-service", "NestJS, ECS", "De-identified engagement telemetry & session timelines")
+  Container(billing_svc, "billing-evidence-service", "NestJS, ECS", "Rules engine suggestions, approve, export")
+  Container(org_svc, "org-identity-service", "NestJS, ECS", "Orgs, users, Auth0 JWT/RBAC for admin surfaces")
+  Container(audit_svc, "audit-telemetry-service", "NestJS worker, ECS", "Diagnostic/audit ingest (no PHI)")
+  Container(ads_svc, "ads-service", "NestJS, ECS", "Ad delivery / proof-of-play (optional for core clinical path)")
+
+  ContainerDb(postgres, "PostgreSQL 16", "RDS", "De-identified domain data (schema/DB per service)")
+  ContainerDb(redis, "Redis 7", "ElastiCache", "Presence, Socket.io adapter, short-lived cache")
+  ContainerDb(s3, "Object Storage", "S3", "Media & ad assets")
+  ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "Engagement, commands, session lifecycle, billing jobs, audit")
+}
+
+System_Ext(ehr, "athenahealth EHR", "SMART launch + FHIR R4 (pilot)")
+System_Ext(auth0, "Auth0", "Admin / Command Center authentication")
+System_Ext(esper, "Esper MDM", "Device provisioning & device tokens")
+System_Ext(sanity, "Sanity CMS", "Editorial content metadata")
+System_Ext(biodigital, "BioDigital", "3D anatomy models")
+System_Ext(mjh, "MJH / Pharmacy Times", "Articles / medication education")
+
+Rel(clinician, ehr, "Opens patient chart")
+Rel(ehr, smart_app, "EHR launch (iframe)")
+Rel(smart_app, ehr, "FHIR read/write with EHR token\n(Patient, Condition, Encounter, DocumentReference)")
+Rel(clinician, smart_app, "Uses")
+Rel(admin, device_apps, "Uses Command Center")
+Rel(patient, device_apps, "Views education content")
+
+Rel(smart_app, gateway, "HTTPS REST\n(Mesmerize session token)")
+Rel(device_apps, gateway, "HTTPS REST + Socket.io")
+Rel(device_apps, device_svc, "WebSocket / Socket.io", "Realtime")
+
+Rel(gateway, session_svc, "REST")
+Rel(gateway, content_svc, "REST")
+Rel(gateway, device_svc, "REST")
+Rel(gateway, engagement_svc, "REST")
+Rel(gateway, billing_svc, "REST")
+Rel(gateway, org_svc, "REST")
+Rel(gateway, ads_svc, "REST")
+
+Rel(session_svc, sqs, "Publish session.started / session.ended")
+Rel(device_svc, sqs, "Publish/consume device.command.*")
+Rel(engagement_svc, sqs, "Consume engagement.recorded")
+Rel(billing_svc, sqs, "Consume session.ended / engagement.completed")
+Rel(audit_svc, sqs, "Consume *.audit / diagnostic events")
+Rel(content_svc, sqs, "CMS sync jobs / content.updated")
+
+Rel(session_svc, postgres, "R/W")
+Rel(content_svc, postgres, "R/W")
+Rel(device_svc, postgres, "R/W")
+Rel(device_svc, redis, "R/W")
+Rel(engagement_svc, postgres, "R/W")
+Rel(billing_svc, postgres, "R/W")
+Rel(org_svc, postgres, "R/W")
+Rel(ads_svc, postgres, "R/W")
+Rel(content_svc, s3, "Media refs")
+Rel(ads_svc, s3, "Ad assets")
+
+Rel(org_svc, auth0, "OIDC / JWT validation")
+Rel(device_svc, esper, "Device identity / provisioning mirror")
+Rel(content_svc, sanity, "Content sync")
+Rel(content_svc, biodigital, "Model IDs / embeds")
+Rel(content_svc, mjh, "Article sync")
+
+note right of smart_app
+  **Invariants**
+  • No EHR token to Mesmerize APIs
+  • Backend gets ICD-10 + deviceGroup + sessionId only
+  • No Redox / Deepgram / notes / DICOM (SOW)
+end note
+
+SHOW_LEGEND()
+@enduml
