@@ -110,7 +110,7 @@ Define how the Content Evidence Platform moves work across the edge and between 
 
 ## Open questions
 
-1. What are the default and max Request/Reply timeouts per operation class?
-2. Is there a single platform-wide events bus vs per-service `{service}.events` only?
-3. Which SMS provider is pilot-of-record, and which service owns send?
-4. Will poison-message runbooks (DLQ drain / replay) be owned by platform ops or each service team?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-06** — queue naming + RR timeout default 30s
+- **A-07** — SMS US-capable provider (Twilio-class) chosen at build

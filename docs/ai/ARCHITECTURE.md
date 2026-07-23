@@ -175,7 +175,7 @@ Two delivery ladders — do not conflate ([ADR-016](../adr/016-git-branching-and
 - **Ladder A — Platform (AWS):** GitHub Actions → ECR → ECS + Terraform. Topology remains as above / ADR-015; deploy strategy Unknown.
 - **Ladder B — Device/PWA:** Netlify web preview ≠ device; human-triggered TTV filesync; `staging` = QA/canary, `main` = production fleet (Esper + TTV). Confirmed for touchscreen-ux / extend-PWA.
 
-Org branching (`feature → staging → main`, PRs to `staging`) is **Confirmed** for touchscreen-ux and **Proposed** for platform repos. Full SAD narrative: [Chapter 17 — CI/CD](../../output_docs/sad/chapters/17-ci-cd.md).
+Org branching (`feature → staging → main`, PRs to `staging`) is **Confirmed** for touchscreen-ux and **Proposed** for platform repos. Full SAD narrative: [Chapter 17 — CI/CD](../../output_docs/sad/chapters/17-ci-cd.md). Open product/ops/compliance decisions and Proposed engineering assumptions: [Chapter 18 — Assumptions and Open Questions](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md).
 
 ## Auth model
 

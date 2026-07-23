@@ -146,13 +146,16 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 
 ## Open items / decisions needed
 
-| Topic | Owner / action | Source |
-|-------|----------------|--------|
-| Numeric availability / latency targets | Confirm with Mesmerize — none fixed in kb | NFR-REL-04; Open items |
-| Recovery objectives (time / point) | Not in NFR sources — leave undefined until Mesmerize sets policy | NFR Open items |
-| Engagement / business log retention | Brandon / MM | NFR-OPS-02 |
-| AWS BAA necessity | Compliance owner | NFR-SEC-04 |
-| Formal observability toolchain | AM / Mesmerize-approved pack | NFR Open items |
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+| Topic | Ch.18 IDs |
+|-------|-----------|
+| Availability / latency SLO (or none for pilot) | **Q-08** |
+| RTO / RPO | **Q-06** |
+| Engagement / business log retention | **A-09**, **Q-12** |
+| AWS BAA necessity | **Q-03** |
+| Observability vendor + HIPAA pack | **A-10**, **Q-09**, **Q-14** |
+| Region class (pilot) | **A-01**, **Q-07** |
 
 ## Sources
 

@@ -71,6 +71,7 @@ Also: [`AGENTS.md`](../../../AGENTS.md) (invariants) · [`kb/`](../../../kb/) (s
 | [`docs/architecture/deployment/aws-production-deployment.md`](../../../docs/architecture/deployment/aws-production-deployment.md) | Production deployment MD |
 | [Chapter 13](13-deployment-and-infrastructure.md) | SAD deployment topology (AWS) |
 | [Chapter 17](17-ci-cd.md) | SAD CI/CD — dual delivery ladders A/B |
+| [Chapter 18](18-assumptions-and-open-questions.md) | Assumptions (Proposed) + Must-answer open questions register |
 | Diagrams `17-*` / `18-*` | Stakeholder overview + technical production deploy |
 | Diagrams `19-*` / `20-*` | Ladder A (platform) + Ladder B (device/PWA) CI/CD |
 

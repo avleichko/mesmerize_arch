@@ -104,7 +104,7 @@ Define how the Content Evidence Platform isolates customer data across healthcar
 
 ## Open questions
 
-1. Will any pilot Organization require Silo at go-live, or is Bridge universal for SOW #3?
-2. Silo S3: dedicated bucket per org vs single bucket with org root prefix — which is the preferred default?
-3. Can an Organization switch `tenancyMode` after data exists, and what migration path is supported?
-4. Who owns Silo provisioning runbooks (platform vs customer ops)?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-08** — Silo dedicated DB + secrets; shared S3 + prefix until scale
+- **Q-11** — Silo provisioning runbook owner + Bridge↔Silo switch policy

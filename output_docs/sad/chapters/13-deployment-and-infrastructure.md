@@ -156,14 +156,9 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 
 ## Open questions
 
-1. Which AWS Region (and optional DR Region) hosts Production?
-2. Dedicated AWS account for Prod vs shared with Staging?
-3. Are RDS and ElastiCache Multi-AZ?
-4. Required RTO and RPO?
-5. ECS autoscaling floors/ceilings per service (pilot vs scale)?
-6. Confirm Secrets Manager + KMS + WAF + Route 53 as mandatory?
-7. Final observability stack / vendor?
-8. Is an AWS BAA required given zero-PHI server design?
-9. Outbound egress allow-list for Sanity/BioDigital/Auth0/SMS/Esper?
-10. CI/CD open questions (deploy strategy, platform branch ladder) — see [Chapter 17](17-ci-cd.md).
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-01**, **A-02**, **A-03** — Region class, Multi-AZ, rolling deploys
+- **Q-06**, **Q-07** — RTO/RPO; primary/DR Region
+- Related: **Q-03**, **Q-09**; CI/CD promotion **Q-13** / [Chapter 17](17-ci-cd.md)
 

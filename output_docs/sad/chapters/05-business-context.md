@@ -69,6 +69,13 @@ Governance and ownership roles live in this table — **not** as C4 Person nodes
   <strong>Unknown:</strong> Named <strong>Compliance / PHI approver</strong> and <strong>Billing rules owner</strong> remain open in kb — do not invent owners.
 </p>
 
+## Open questions
+
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **Q-01** — Compliance / PHI approver
+- **Q-02** — Billing / engagement rules owner
+
 ### Runtime context (C4 Persons only)
 
 The diagram below shows **runtime actors** who use a product surface (Clinician/Physician, Nurse/MA, Admin/Command Center, Patient in clinic, Patient post-visit). **Key stakeholders above are documented in the table — they are not C4 Person nodes.**

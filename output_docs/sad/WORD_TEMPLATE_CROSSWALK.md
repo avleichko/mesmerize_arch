@@ -37,7 +37,7 @@ Maps [`templates/Solution_Architecture_Definition_template.docx`](../../template
 
 ---
 
-## Future appendices (MD extensions 10–14, 17)
+## Future appendices (MD extensions 10–14, 17–18)
 
 These chapters are **not** Heading-1 sections in the current Word template. Treat them as **appendices** (or new Heading-1 sections) when assembling the stakeholder `.docx`.
 
@@ -49,8 +49,9 @@ These chapters are **not** Heading-1 sections in the current Word template. Trea
 | 13 | Deployment and Infrastructure | [`chapters/13-deployment-and-infrastructure.md`](chapters/13-deployment-and-infrastructure.md) | Appendix D |
 | 14 | NFR and Quality Attributes | [`chapters/14-nfr-and-quality-attributes.md`](chapters/14-nfr-and-quality-attributes.md) | Appendix E |
 | 17 | CI/CD | [`chapters/17-ci-cd.md`](chapters/17-ci-cd.md) | Appendix F |
+| 18 | Assumptions and Open Questions | [`chapters/18-assumptions-and-open-questions.md`](chapters/18-assumptions-and-open-questions.md) | Appendix G |
 
-Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17).
+Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17) → Appendix G Assumptions (18).
 
 ---
 

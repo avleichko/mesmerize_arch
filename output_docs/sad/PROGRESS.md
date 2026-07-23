@@ -39,6 +39,7 @@
 | 15 Key Terms | 5/5 | 100% | **100** | Stakeholder-ready |
 | 16 Revision History | 3/3 | 100% | **100** | Stakeholder-ready |
 | 17 CI/CD | 8/8 | 100% | **75** | Review-ready *(capped; Unknown)* |
+| 18 Assumptions & Open Questions | 8/8 | 100% | **75** | Review-ready *(capped; Q-01…Q-14 open)* |
 
 ---
 
@@ -46,30 +47,32 @@
 
 | Metric | Value |
 |--------|------:|
-| Average of chapter **bands** | **(14×75 + 3×100) / 17 = 79%** |
+| Average of chapter **bands** | **(15×75 + 3×100) / 18 = 79%** |
 | Overall maturity band | **75 — Review-ready** |
 | Average of checklist raw % (informational) | ~94% *(inflated — architecture chapters can be checklist-complete while Unknowns remain)* |
-| Chapters at Stakeholder-ready (100) | 3 / 17 (04, 15, 16) |
-| Chapters with open Unknown callouts | 12 / 17 (02, 05–14, 17) |
+| Chapters at Stakeholder-ready (100) | 3 / 18 (04, 15, 16) |
+| Chapters with open Unknown callouts | 13 / 18 (02, 05–14, 17, 18) |
 
-**Verdict:** Pack is **~79% overall (band 75)** — solid Review-ready working SAD, **not** stakeholder-sign-off complete. Chapter 17 + ADR-016 evidence dual delivery ladders (diagrams 19/20); Unknown-cap still applies while Region, RTO/RPO, observability, deploy strategy, platform `staging`/`main` semantics, BAA, owners, and writeback payload remain open. Do not invent higher maturity.
+**Verdict:** Pack is **~79% overall (band 75)** — solid Review-ready working SAD, **not** stakeholder-sign-off complete. Chapter 18 consolidates Must-answer questions (**Q-01…Q-14**) and Proposed assumptions (**A-01…A-10**). Unknown-cap still applies while Q-rows remain open. Do not invent higher maturity.
 
 ---
 
 ## Hottest white spots (top 10 Unknowns)
 
-1. **AWS Region / DR Region** (+ account/OU) — Chapter 13  
-2. **RTO / RPO** — Chapters 13, 14 *(do not invent)*  
-3. **AWS BAA necessity** for de-identified engagement schema — Chapters 09, 10, 14  
-4. **Named Compliance / PHI approver** and **Billing rules owner** — Chapters 05, 10  
-5. **DocumentReference payload + athenahealth acceptance** — Chapter 07  
-6. **Availability / latency SLOs** (device↔cloud) — Chapter 14 *(do not invent)*  
-7. **Observability vendor** + HIPAA policy pack — Chapters 10, 13, 14  
-8. **Silo provisioning runbook / mode-switch / S3 naming** — Chapter 11  
-9. **SQS queue catalog, RR timeouts, SMS vendor** — Chapter 12  
-10. **ECS process split timing + Multi-AZ / autoscaling / deploy strategy** (+ platform `staging`/`main` semantics) — Chapters 08, 02, 13, **17**  
+Mapped to Chapter 18 IDs (source chapters keep Unknown callouts):
 
-Also notable: pilot clinic/device count + Command Center RBAC depth (06); engagement log retention (14); exact platform GHA workflow inventory (17). **Closed via ADR-016 + Ch.17:** org branching / dual delivery ladders (Ladder A vs B; diagrams 19/20) — no longer a CI/CD branching evidence gap.
+1. **AWS Region / DR Region** — **Q-07** (A-01 Proposed single-Region pilot) — Ch.13  
+2. **RTO / RPO** — **Q-06** (A-02 Proposed Multi-AZ) — Ch.13, 14  
+3. **AWS BAA necessity** — **Q-03** — Ch.09, 10, 14  
+4. **Compliance / PHI approver** and **Billing rules owner** — **Q-01**, **Q-02** — Ch.05, 10  
+5. **DocumentReference payload + athena acceptance** — **Q-05** — Ch.07  
+6. **Availability / latency SLOs** — **Q-08** — Ch.14  
+7. **Observability vendor** + HIPAA policy pack — **Q-09**, **Q-14** (A-10 Proposed) — Ch.10, 14  
+8. **Silo provisioning / mode-switch** — **Q-11** (A-08 Proposed) — Ch.11  
+9. **Messaging defaults / SMS** — **A-06**, **A-07** (Proposed) — Ch.12  
+10. **Deploy strategy / promotion / process split** — **A-03**, **A-04**, **A-05**, **Q-13** — Ch.02, 08, 13, 17  
+
+Also: pilot clinic/device count + RBAC (**Q-10**); engagement log retention (**A-09**, **Q-12**). Full register: [Chapter 18](chapters/18-assumptions-and-open-questions.md).
 
 ---
 
@@ -78,4 +81,4 @@ Also notable: pilot clinic/device count + Command Center RBAC depth (06); engage
 1. Edit chapter content / callouts.  
 2. Re-check boxes in [`COVERAGE.md`](COVERAGE.md).  
 3. Recompute raw %, apply band + Unknown cap, refresh this file.  
-4. Keep white-spot lists in sync with `rg -n 'Unknown:' chapters/*.md`.
+4. Keep white-spot lists in sync with `rg -n 'Unknown:' chapters/*.md` and Chapter 18 Q/A IDs.

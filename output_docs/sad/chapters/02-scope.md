@@ -79,6 +79,12 @@ This pack covers the **architecture** of the Mesmerize Content Evidence Platform
 
 Deployment detail: [13-deployment-and-infrastructure.md](13-deployment-and-infrastructure.md) · [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) · [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) · [`docs/architecture/deployment/aws-production-deployment.md`](../../../docs/architecture/deployment/aws-production-deployment.md).
 
+## Open questions
+
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-04** — platform `feature → staging → main` (identical Staging/Prod semantics still open until accepted)
+
 ## Evidence
 
 - [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) — imaging out of SOW

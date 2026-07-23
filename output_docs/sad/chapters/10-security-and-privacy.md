@@ -173,9 +173,8 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 
 ## Open questions
 
-1. Is an AWS BAA required given zero-PHI server design and de-identified engagement logs?
-2. Final observability stack (Datadog vs Mesmerize-approved alternative)?
-3. Who is the named compliance / PHI decision owner?
-4. When is the data-classification matrix formally ratified?
-5. Formal observability vendor and HIPAA policy pack timeline from Mesmerize (AM)? (Dual delivery / branching: ADR-016; Ladder A deploy strategy still Unknown.)
-6. Command Center RBAC: what ships before Phase 3 vs deferred?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **Q-01**, **Q-03**, **Q-04**, **Q-09**, **Q-14**
+- **A-10** — one observability vendor; PHI-safe log split
+- Related RBAC depth: **Q-10**

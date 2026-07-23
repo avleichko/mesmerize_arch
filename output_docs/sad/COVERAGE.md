@@ -455,9 +455,32 @@
 
 ---
 
+## 18 — Assumptions and Open Questions
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Purpose stated | [x] |
+| 2 | Actors / audience covered (Mesmerize product/ops/compliance) | [x] |
+| 7 | Evidence links (source chapters + ADR-016 + design spec) | [x] |
+| 8 | Open questions listed (Q-01…Q-14) | [x] |
+| 9 | White spots only as colored callouts | [x] |
+| * | **Chapter-specific:** Assumptions A-01…A-10 (Proposed only); Must-answer Q register; no invented Confirmed Region/RTO/BAA/owners | [x] |
+| * | **Chapter-specific:** Traceability + how-to-close | [x] |
+| * | **Chapter-specific:** Other chapters point Open questions at Ch.18 IDs | [x] |
+
+**N/A:** diagrams; data ownership; Security/PHI narrative body (owned by Ch.10 — this chapter is the decision register).
+
+**Score:** 8 / 8 = **100%** → band **75** (capped while Q-01…Q-14 Unknown remains — not Stakeholder-ready)
+
+**White spots (Unknown):** All open **Q-01…Q-14** (see chapter register).
+
+**White spots (Proposed):** Assumptions **A-01…A-10** (engineering defaults; do not clear source Unknowns until Mesmerize accepts).
+
+---
+
 ## Sanity cross-check
 
-Every `Unknown:` callout in `chapters/*.md` is listed above under the matching chapter. Proposed callouts are listed as non-blocking white spots where present.
+Every `Unknown:` callout in `chapters/*.md` is listed above under the matching chapter. Proposed callouts are listed as non-blocking white spots where present. Decision IDs live in Chapter 18.
 
 ```bash
 rg -n "Unknown:" output_docs/sad/chapters/*.md

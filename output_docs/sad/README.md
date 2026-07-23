@@ -6,7 +6,7 @@ This directory holds the **working Solution Architecture Definition (SAD) pack**
 
 This pack lives under `output_docs/sad/` only. It is the authoritative working artifact for architecture review and iteration in this repo.
 
-**Overall pack maturity:** ~**79%** (band **75 — Review-ready**). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md).
+**Overall pack maturity:** ~**79%** (band **75 — Review-ready**). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md). Decision register: [Chapter 18](chapters/18-assumptions-and-open-questions.md).
 
 ## Chapter index
 
@@ -29,8 +29,9 @@ This pack lives under `output_docs/sad/` only. It is the authoritative working a
 | 15 | Key Terms and Abbreviations | [chapters/15-key-terms-and-abbreviations.md](chapters/15-key-terms-and-abbreviations.md) |
 | 16 | Revision History | [chapters/16-revision-history.md](chapters/16-revision-history.md) |
 | 17 | CI/CD *(extension)* | [chapters/17-ci-cd.md](chapters/17-ci-cd.md) |
+| 18 | Assumptions and Open Questions *(extension)* | [chapters/18-assumptions-and-open-questions.md](chapters/18-assumptions-and-open-questions.md) |
 
-All 17 chapter files are present. Word Heading-1/2 ↔ MD map: [`WORD_TEMPLATE_CROSSWALK.md`](WORD_TEMPLATE_CROSSWALK.md).
+All 18 chapter files are present. Word Heading-1/2 ↔ MD map: [`WORD_TEMPLATE_CROSSWALK.md`](WORD_TEMPLATE_CROSSWALK.md).
 
 ## Color legend
 

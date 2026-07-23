@@ -160,7 +160,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 
 ## Open questions
 
-1. When does pilot move from co-located NestJS tasks to one ECS service per C4 container?
-2. Is API Gateway a dedicated product (e.g. API Gateway/App Mesh) or only CloudFront + ALB as documented?
-3. Shared NestJS library boundaries for Prisma clients / SQS consumers across services?
-4. Command Center RBAC phase vs Auth0-only MVP for admin surfaces?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-05** — NestJS services as separate ECS services by cutover
+- Related pilot scope / RBAC depth: **Q-10**

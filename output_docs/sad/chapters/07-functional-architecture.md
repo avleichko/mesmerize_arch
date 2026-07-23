@@ -121,7 +121,6 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
 
 ## Open questions
 
-1. What customer-configurable flags gate writeback vs. evidence-only export for the athenahealth pilot?
-2. Is Bridge patient auth in MVP pilot scope or post-pilot adjacency?
-3. Command Center RBAC phase cutover vs Auth0-only admin MVP?
-4. Exact LOINC / category coding required by athenahealth for DocumentReference acceptance?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **Q-05** — DocumentReference writeback field catalog + athena pilot acceptance (includes LOINC/category coding)

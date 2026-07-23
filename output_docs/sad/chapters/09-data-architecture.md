@@ -127,7 +127,8 @@ Logical domain entities only — **no invented table schemas**.
 
 ## Open questions
 
-1. When is the physical Prisma / ERD published for pilot Bridge mode?
-2. Retention policy for engagement vs billing-evidence rows (beyond diagnostic ≤90 days)?
-3. Confirm compliance owner sign-off on ICD-10-without-linkage Safe Harbor framing for server storage?
-4. Export / purge obligations per Organization under Bridge vs Silo?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **Q-03** — AWS BAA necessity given de-identified engagement schema
+- **Q-04** — Ratify data-classification matrix
+- Retention beyond defaults: **A-09**, **Q-12**

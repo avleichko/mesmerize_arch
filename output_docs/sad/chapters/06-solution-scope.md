@@ -107,3 +107,9 @@ Agents and delivery must reject: Redox; Deepgram; Claude SOAP; transcript storag
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
   <strong>Unknown:</strong> Exact pilot clinic/device count and Command Center RBAC depth for Phase 1 vs later — confirm against current SOW schedule / Mesmerize Q&amp;A before locking acceptance criteria.
 </p>
+
+## Open questions
+
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **Q-10** — pilot clinic + device count and Command Center RBAC depth for Phase 1

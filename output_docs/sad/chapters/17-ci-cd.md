@@ -96,7 +96,8 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 
 ## Open questions
 
-1. Platform deployment strategy: rolling, blue-green, or canary?
-2. Do platform repos adopt identical `feature → staging → main` promotion as Ladder B?
-3. When the platform monorepo exists, which package-manager commands and Node pin replace the TODOs in docs/ci-templates/workflows/ci.yml?
-4. Who triggers platform Staging → Prod promotion, and with what gates?
+Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
+
+- **A-03**, **A-04** — rolling deploy; `feature → staging → main` for platform
+- **Q-13** — who promotes Staging → Prod and with what gates
+- Engineering follow-up (not a Mesmerize Q-row): package-manager / Node pin TODOs in [`docs/ci-templates/workflows/ci.yml`](../../../docs/ci-templates/workflows/ci.yml)
