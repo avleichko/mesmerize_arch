@@ -13,6 +13,9 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **Session ID** | Opaque Mesmerize UUID for an encounter-scoped work session — **not** patient ID |
 | **Device group** | Clinic/site grouping of devices used for targeting |
 | **M-number** | Operator device alias prefix used with serial/location in fleet ops |
+| **tenantId** | Equals **organizationId** — multitenancy boundary ([ADR-013](../adr/013-multitenancy-silo-and-bridge.md)) |
+| **Silo mode** | Isolated database per Organization |
+| **Bridge mode** | Shared database with `tenantId` column + isolated S3 folders |
 | **Esper** | MDM used to provision/manage clinic devices and device tokens |
 | **TelemetryTV** | Existing ops/telemetry tooling mirrored with device registry |
 | **PWA / touchscreen-ux** | Live patient-facing exam-room kiosk app repo |

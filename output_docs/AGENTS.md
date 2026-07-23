@@ -8,7 +8,7 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 
 ## Read first (required context)
 
-**Always check `kb/` and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15**, do-not-build **DNB-1–DNB-9**) — do not contradict them without a superseding ADR and human approval.
+**Always check `kb/` and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, multitenancy, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15**, do-not-build **DNB-1–DNB-9**, multitenancy **MT-1–MT-5**) — do not contradict them without a superseding ADR and human approval.
 
 | Order | Doc | Purpose |
 |------:|-----|---------|
@@ -44,6 +44,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 6. **Writeback is browser-side FHIR DocumentReference** (engagement / service-delivery summary), using the EHR token — backend never calls EHR APIs; **no server-side EHR token handling**.
 7. **Prefer extending existing PWA patterns** over rewriting the live fleet app in place. Production `touchscreen-ux` is treated as read-only for Newfire; new work extends/copies.
 8. **Honor the do-not-build list** (Redox, Deepgram, Claude SOAP notes, patient CRUD, clearinghouse, DICOM push, etc.) in [ADR-011](docs/adr/011-do-not-build.md).
+9. **Multitenancy:** Organization is the tenant; clinic is sub-scope. Support **Silo** (isolated DB) and **Bridge** (`tenantId` column + S3 `{tenantId}/{clinicId}/` folders). Pilot default Bridge. See [ADR-013](docs/adr/013-multitenancy-silo-and-bridge.md).
 
 ## In scope vs out of scope (SOW #3)
 

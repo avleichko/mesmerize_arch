@@ -3,6 +3,17 @@
 > **Sources:** Architecture (Security Architecture, PHI tables), Strategy Overview (PHI Boundary), Implementation Context, Mesmerize Responses Q&A, Jul 14 meeting notes.  
 > **Not legal advice.** Confirm BAAs and policies with Mesmerize compliance owner (**open in kb**).
 
+## Multitenancy and data isolation
+
+See [ADR-013](../adr/013-multitenancy-silo-and-bridge.md).
+
+| Mode | Isolation |
+|------|-----------|
+| Silo | Physical DB per Organization; S3 org bucket or `{tenantId}/` root |
+| Bridge (pilot default) | Shared DB; `tenantId` on rows; S3 `{tenantId}/{clinicId}/…` prefixes |
+
+Cross-tenant access is forbidden. Tenant isolation is **orthogonal** to PHI rules: even correctly tenant-scoped data must not contain patient identifiers.
+
 ## Core PHI boundary
 
 | Location | May hold patient-identifying / clinical context? | Notes |
@@ -21,7 +32,7 @@ See `output_diagrams/02-phi-boundary.mmd`.
 
 | Surface | Mechanism |
 |---------|-----------|
-| SMART app | EHR authenticates provider; OAuth2 SMART launch; Mesmerize session token for Platform API |
+| SMART app | EHR authenticates provider via **3-legged OAuth / Authorization Code Grant** (SMART EHR launch from Athena chart/encounter); Mesmerize session token for Platform API. **No separate Mesmerize login** for SMART app ([ADR-005](../adr/005-smart-oauth-ehr-launch-mvp-scopes.md)). |
 | Command Center | Auth0 login; RBAC (Q&A: RBAC called out as Phase 3 deliverable — do not assume full RBAC exists today) |
 | Devices | Device token from Esper provisioning |
 | Bridge App | Secure link + one-time code; 30-minute inactivity timeout |

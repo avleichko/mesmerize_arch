@@ -65,10 +65,12 @@ Exact calendar: SOW text is authoritative; architecture Sprint Plan also targets
 - Writeback depends on customer/EHR configuration.
 - Imaging scope confusion (architecture vs SOW) — keep out of delivery until ADR/SOW update.
 - Open ownership for billing rule definition and compliance sign-off.
+- Multitenancy dual-mode (Silo vs Bridge) per [ADR-013](../adr/013-multitenancy-silo-and-bridge.md); pilot default Bridge.
 
 ## What agents should assume
 
 - Prefer **Content Evidence** docs over any ambient/Redox materials in `kb/`.
 - Treat production PWA as **extend, don’t overwrite in place**.
 - Treat Patient Imaging Mirror as **non-goals for SOW #3 coding tasks**.
+- Enforce tenant isolation: Organization = tenant; clinic = sub-scope; Silo or Bridge per ADR-013.
 - Re-check live GitHub repos for drift; this file describes kb-reported state, not a live `git status`.

@@ -16,7 +16,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 |---|----------|--------|-----|
 | 1 | **athenahealth is the first target EHR** for the pilot. Epic and Oracle/Cerner are future roadmap integrations. | Confirmed | [ADR-004](004-athena-pilot-ehr-agnostic-core.md) |
 | 2 | The main clinician-facing app is a **SMART on FHIR app launched from inside Athena**. | Confirmed | [ADR-004](004-athena-pilot-ehr-agnostic-core.md), [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
-| 3 | Clinician workflow uses **3-legged OAuth / Authorization Code Grant**, not 2-legged (needs authenticated provider + patient/encounter context). | Confirmed / recommended | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
+| 3 | Clinician workflow uses **3-legged OAuth / Authorization Code Grant**, not 2-legged. **Reason:** provider launches from an active Athena patient chart/encounter → needs authenticated provider + patient/encounter context; Q&A confirms EHR launch only, Athena/EHR SSO, no separate Mesmerize login for SMART app. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | 4 | SMART launch type is **EHR launch only** for MVP. Standalone launch is not required. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | 5 | MVP FHIR scopes are minimal: `launch/encounter`, `Patient.read`, `Condition.read`, `Encounter.read`, `DocumentReference.write`. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | 6 | **Patient/encounter context and FHIR token stay in the browser**. They must not be sent to Mesmerize backend. | Confirmed | [ADR-002](002-zero-phi-on-mesmerize-servers.md) |
@@ -69,6 +69,16 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | DNB-8 | No server-side EHR token handling | FHIR token stays browser-side | [ADR-011](011-do-not-build.md) |
 | DNB-9 | No DICOM push in current scope | Explicitly out of scope in SOW | [ADR-011](011-do-not-build.md), [ADR-009](009-dicom-imaging-out-of-sow-scope.md) |
 
+### Multitenancy (Confirmed)
+
+| # | Decision | ADR |
+|---|----------|-----|
+| MT-1 | **Tenant** = Organization (`tenantId` = `organizationId`) | [ADR-013](013-multitenancy-silo-and-bridge.md) |
+| MT-2 | **Clinic/site** = sub-scope inside tenant (`clinicId` / `deviceGroupId`) | [ADR-013](013-multitenancy-silo-and-bridge.md) |
+| MT-3 | Mode **Silo**: isolated DB per Organization + org-isolated S3 | [ADR-013](013-multitenancy-silo-and-bridge.md) |
+| MT-4 | Mode **Bridge**: shared DB + `tenantId` column + isolated S3 folders `{tenantId}/{clinicId}/…` | [ADR-013](013-multitenancy-silo-and-bridge.md) |
+| MT-5 | Pilot / SOW #3 **default** = Bridge; Silo available per org | [ADR-013](013-multitenancy-silo-and-bridge.md) |
+
 Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
 ## ADR index
@@ -87,3 +97,4 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [010](010-technology-stack.md) | Technology stack (React/NestJS/AWS/…) |
 | [011](011-do-not-build.md) | Explicit “do not build” decisions |
 | [012](012-c4-persons-vs-stakeholders.md) | C4 Persons (runtime) vs SAD stakeholders |
+| [013](013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo DB vs Bridge + S3) |

@@ -17,12 +17,29 @@ Three planes:
 - **C4 Persons** = runtime actors only; project stakeholders go in SAD (see [ADR-012](../adr/012-c4-persons-vs-stakeholders.md)).
 - Third-party systems on context/container diagrams: athenahealth (pilot), Auth0, Esper, TelemetryTV, Sanity, BioDigital, MJH/Pharmacy Times, SMS/email provider, AWS services; PM/clearinghouse and ambient AI are external ecosystem — not Mesmerize-built.
 
-See `output_diagrams/01-system-context.mmd` and **C4 context (PlantUML):** `output_diagrams/07-c4-context.puml`.
+See also **SMART 3-legged OAuth from Athena:** `output_diagrams/11-smart-3legged-oauth-athena.puml` (summary) and `output_diagrams/12-smart-3legged-oauth-athena-detailed.puml` (high-fidelity) — [ADR-005](../adr/005-smart-oauth-ehr-launch-mvp-scopes.md).
+
+
 
 **Proposed microservice containers (REST + SQS):**  
 `output_diagrams/06-c4-containers.mmd` (Mermaid C4) and `output_diagrams/06-c4-containers.puml` (PlantUML C4). Building blocks: gateway, session, content, device-realtime, engagement, billing-evidence, org-identity, audit-telemetry, ads (optional), plus Postgres/Redis/S3/SQS.
 
-## Architectural principles
+## Multitenancy
+
+Binding: [ADR-013](../adr/013-multitenancy-silo-and-bridge.md). Diagrams: `output_diagrams/08-multitenancy-overview.puml`, `09-multitenancy-silo.puml`, `10-multitenancy-bridge.puml`.
+
+| Concept | Rule |
+|---------|------|
+| Tenant | `organizationId` (`tenantId`) |
+| Sub-scope | `clinicId` / `deviceGroupId` inside tenant |
+| Mode **Silo** | Isolated Postgres/Aurora **per Organization** + org-isolated S3 (bucket or `{tenantId}/` root) |
+| Mode **Bridge** | Shared DB with **`tenantId` column** on tenant-owned tables + S3 folders `{tenantId}/{clinicId}/…` |
+| Pilot default | **Bridge** |
+| Messaging | SQS payloads include `tenantId` (+ `clinicId` when relevant) |
+| PHI | Unchanged — still no patient identifiers on servers |
+
+Data-access layer resolves DB connection and S3 prefix from `organization.tenancyMode` (`silo` \| `bridge`).
+
 
 1. **Token never leaves the browser** — EHR FHIR token stays in SMART app browser context.
 2. **No patient identifiers on Mesmerize servers** — only ICD-10 codes + device group ID + opaque session ID to backend.
@@ -156,3 +173,4 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-010](../adr/010-technology-stack.md) (S1–S15)
 - [ADR-011](../adr/011-do-not-build.md) (DNB-1–DNB-9)
 - [ADR-012](../adr/012-c4-persons-vs-stakeholders.md)
+- [ADR-013](../adr/013-multitenancy-silo-and-bridge.md)

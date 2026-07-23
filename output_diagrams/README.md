@@ -12,6 +12,11 @@ Mermaid sources for AI agents and reviewers. Render in any Mermaid-compatible vi
 | [06-c4-containers.mmd](06-c4-containers.mmd) | C4 containers (Mermaid) — REST + SQS microservices |
 | [06-c4-containers.puml](06-c4-containers.puml) | C4 containers (PlantUML / C4-PlantUML) — same building blocks |
 | [07-c4-context.puml](07-c4-context.puml) | C4 system context (PlantUML) — runtime Persons + external systems |
+| [08-multitenancy-overview.puml](08-multitenancy-overview.puml) | Multitenancy overview — Silo vs Bridge |
+| [09-multitenancy-silo.puml](09-multitenancy-silo.puml) | Mode A: isolated DB per Organization + S3 |
+| [10-multitenancy-bridge.puml](10-multitenancy-bridge.puml) | Mode B: shared DB + tenantId + S3 folders (pilot default) |
+| [11-smart-3legged-oauth-athena.puml](11-smart-3legged-oauth-athena.puml) | SMART 3-legged OAuth / Authorization Code Grant from Athena |
+| [12-smart-3legged-oauth-athena-detailed.puml](12-smart-3legged-oauth-athena-detailed.puml) | **High-fidelity** SMART 3-legged OAuth from Athena (discovery → token → FHIR → session → writeback) |
 
 **Render notes:** PlantUML needs C4-PlantUML (includes remote stdlib). Mermaid C4: use [Mermaid Live](https://mermaid.live) or a viewer with C4 support.
 

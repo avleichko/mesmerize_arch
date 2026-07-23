@@ -56,8 +56,8 @@ SMART launch → FHIR Condition read → ICD-10 recommendation → push to exam-
 
 | Actor | Surface | Auth (kb) |
 |-------|---------|-----------|
-| Clinician / Physician | SMART app in EHR iframe | EHR SSO only |
-| Nurse / MA | SMART app in EHR iframe | EHR SSO only |
+| Clinician / Physician | SMART app in EHR iframe | **Athena/EHR SSO** via SMART **3-legged OAuth / Authorization Code Grant** (EHR launch only; no separate Mesmerize login) — [ADR-005](../adr/005-smart-oauth-ehr-launch-mvp-scopes.md) |
+| Nurse / MA | SMART app in EHR iframe | Same EHR SSO / 3-legged SMART launch |
 | Admin / Command Center staff | Command Center | Auth0 + RBAC (RBAC noted as later phase in Q&A) |
 | Patient (in clinic) | Exam-room / waiting-room device | No patient login; device token via Esper |
 | Patient (post-visit) | Bridge App | Secure link + one-time code; 30-min inactivity timeout |
@@ -77,6 +77,12 @@ Physician approval is required before writeback (human-in-the-loop); Nurse/MA ma
 | Compliance / PHI approver | **Open in kb** — confirm |
 | Billing rules owner | **Open in kb** — Mesmerize consultant / partner / Newfire implements |
 | Pharma / advertisers | Business consumers of aggregated engagement proof — not MVP clinician login roles |
+
+### Multitenancy (confirmed)
+
+- **Tenant** = Organization; **clinic/site** = sub-scope ([ADR-013](../adr/013-multitenancy-silo-and-bridge.md)).
+- Two modes: **Silo** (isolated DB per org) or **Bridge** (shared DB + `tenantId` column + S3 `{tenantId}/{clinicId}/` folders).
+- Pilot default: **Bridge**.
 
 ## Two content libraries (do not conflate)
 

@@ -53,7 +53,10 @@ Canonical folder: [`templates/`](../../templates/) — see [`templates/README.md
 ## Schema and API rules
 
 - Prisma/DB: Organization, User, Device, Session, ContentItem, ContentEngagement, BillingSuggestion — **no** Patient, Medication, Allergy, Coverage, Transcript, ClinicalNote tables.
-- Session create payload from SMART app: condition codes + device group context — **never** patient ID.
+- **Multitenancy ([ADR-013](../adr/013-multitenancy-silo-and-bridge.md)):** `tenantId` = `organizationId`; `clinicId`/`deviceGroupId` are sub-scopes. Support **Silo** (DB per org) and **Bridge** (shared DB + `tenantId` column). Pilot default = Bridge. S3 paths always `{tenantId}/{clinicId}/…` (or org-dedicated bucket in Silo).
+- Session create payload from SMART app: condition codes + device group context — **never** patient ID; always associate with `tenantId` (+ clinic/device group).
+- Bridge mode: every tenant-owned query **must** filter by `tenantId` (fail closed).
+- Silo mode: resolve DB connection from org config; never reuse another org’s connection string.
 - Content model fields (Q&A): `id`, `source` (mesmerize|biodigital|mjh), `title`, `type`, `icd10Code`, specialty, format, device, media refs, locale.
 - Content matching: curated metadata ICD-10 mapping first; **no ML recommender** under SOW unless metadata path fails and scope is explicitly reopened.
 - UUID-based content / engagement tracking (meeting alignment) to avoid PHI on device.

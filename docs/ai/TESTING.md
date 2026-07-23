@@ -8,12 +8,13 @@
 Before claiming a task is complete:
 
 1. **Scope check** — Change matches the task / SOW phase; no out-of-scope DICOM, ML recommender, ambient AI, or multi-org prod rollout.
-2. **ADR / kb check** — Relevant [`docs/adr/`](../adr/README.md) decisions and `kb/` sources reviewed; no Confirmed decision violated.
-3. **Invariant check** — Re-read `AGENTS.md` hard invariants; confirm no patient identifiers or FHIR tokens reach Mesmerize API/logs.
-4. **Boundary check** — SMART FHIR I/O remains browser-side; device commands remain server-mediated.
-5. **Tests run** — Lint, typecheck, and relevant unit/integration tests pass in CI-equivalent local commands when a codebase is present.
-6. **Docs** — If behavior or architecture changed, update `docs/ai/*` and/or add/adjust an ADR; sync export to `output_docs/` when required by the task. Formal SAD/architecture packs must follow [`templates/`](../../templates/) when a matching template exists.
-7. **Open questions** — Any `[PROPOSED]` / Unknown assumptions are listed in the PR/summary — not silently treated as confirmed.
+2. **ADR / kb check** — Relevant [`docs/adr/`](../adr/README.md) decisions and `kb/` sources reviewed; no Confirmed decision violated (including multitenancy MT-1–MT-5).
+3. **Tenant check** — If data/API/S3 touched: `tenantId` scoping correct for Bridge, or org DB/S3 routing correct for Silo; no cross-tenant leakage.
+4. **Invariant check** — Re-read `AGENTS.md` hard invariants; confirm no patient identifiers or FHIR tokens reach Mesmerize API/logs.
+5. **Boundary check** — SMART FHIR I/O remains browser-side; device commands remain server-mediated.
+6. **Tests run** — Lint, typecheck, and relevant unit/integration tests pass in CI-equivalent local commands when a codebase is present.
+7. **Docs** — If behavior or architecture changed, update `docs/ai/*` and/or add/adjust an ADR; sync export to `output_docs/` when required by the task. Formal SAD/architecture packs must follow [`templates/`](../../templates/) when a matching template exists.
+8. **Open questions** — Any `[PROPOSED]` / Unknown assumptions are listed in the PR/summary — not silently treated as confirmed.
 
 ## Test layers (expected)
 
