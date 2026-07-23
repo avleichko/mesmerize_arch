@@ -1,0 +1,59 @@
+@startuml 19-ladder-a-platform-cicd
+title Ladder A — Platform (AWS) CI/CD\nContent Evidence platform · ADR-010 · ADR-015 · ADR-016\nDo not conflate with Ladder B (Netlify / TTV)
+
+left to right direction
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+  RoundCorner 8
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #F9A825
+}
+
+rectangle "Developer / PR" as Dev #BBDEFB
+rectangle "GitHub Actions\nlint · test · build" as GHA #90CAF9
+rectangle "ECR\npush image\n[Inferred]" as ECR #FFE0B2
+rectangle "Terraform\napply" as TF #A5D6A7
+rectangle "ECS / Fargate\nservice update" as ECS #CE93D8
+
+Dev --> GHA
+GHA --> ECR
+ECR --> TF
+TF --> ECS
+
+note bottom of GHA
+  **Confirmed:** GHA CI
+  (ADR-010, ADR-016)
+end note
+
+note bottom of TF
+  **Confirmed:** Terraform + ECS
+  (ADR-015, ADR-016)
+end note
+
+note bottom of ECS
+  **Unknown:** deploy strategy
+  (rolling / blue-green / canary)
+  — do not invent
+end note
+
+note top of ECR
+  Registry path inferred
+  from container → ECS
+end note
+
+legend right
+  |= Maturity |= Meaning |
+  | Confirmed | GHA + Terraform + ECS (ADR-010, 015, 016) |
+  | Inferred | ECR as container registry |
+  | Unknown | rolling / blue-green / canary |
+  | Note | Dev / Staging / Prod envs;\nidentical staging→main for platform =\nProposed / Unknown |
+  | Out of scope | **No** Netlify · **No** TTV (Ladder B only) |
+endlegend
+
+@enduml

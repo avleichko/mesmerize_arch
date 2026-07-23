@@ -115,7 +115,7 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 </p>
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Final <strong>observability vendor</strong> / config — Datadog appears as a reference in ADR-010 S15; formal CI/CD, observability, and HIPAA policy pack from Mesmerize (AM) is still open. Do not lock a vendor in this chapter.
+  <strong>Unknown:</strong> Final <strong>observability vendor</strong> / config — Datadog appears as a reference in ADR-010 S15; formal observability vendor and HIPAA policy pack timeline from Mesmerize (AM) is still open. Dual delivery / branching is in ADR-016; Ladder A deploy strategy still Unknown. Do not lock a vendor in this chapter.
 </p>
 
 ### Application security expectations
@@ -177,5 +177,5 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 2. Final observability stack (Datadog vs Mesmerize-approved alternative)?
 3. Who is the named compliance / PHI decision owner?
 4. When is the data-classification matrix formally ratified?
-5. Formal CI/CD, observability, and HIPAA policy pack timeline from Mesmerize (AM)?
+5. Formal observability vendor and HIPAA policy pack timeline from Mesmerize (AM)? (Dual delivery / branching: ADR-016; Ladder A deploy strategy still Unknown.)
 6. Command Center RBAC: what ships before Phase 3 vs deferred?

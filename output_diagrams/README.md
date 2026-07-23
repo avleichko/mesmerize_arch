@@ -1,6 +1,6 @@
 # Architecture diagrams
 
-Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendered PNGs** (01–18) are checked in for Word/PDF export; regenerate with commands below.
+Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendered PNGs** (01–20) are checked in for Word/PDF export; regenerate with commands below.
 
 | PNG (SAD embed) | Source | Description |
 |-----------------|--------|-------------|
@@ -24,6 +24,8 @@ Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendere
 | [17-aws-deployment-reference.svg](17-aws-deployment-reference.svg) | — | Same diagram (vector) |
 | [18-aws-production-deployment.png](18-aws-production-deployment.png) | [18-aws-production-deployment.puml](18-aws-production-deployment.puml) | **Production AWS deployment (technical)** — C4 Deployment |
 | [18-aws-production-deployment.svg](18-aws-production-deployment.svg) | — | Same diagram (vector) |
+| [19-ladder-a-platform-cicd.png](19-ladder-a-platform-cicd.png) | [19-ladder-a-platform-cicd.puml](19-ladder-a-platform-cicd.puml) | **Ladder A** — Platform (AWS) CI/CD: GHA → ECR → Terraform → ECS |
+| [20-ladder-b-device-cicd.png](20-ladder-b-device-cicd.png) | [20-ladder-b-device-cicd.puml](20-ladder-b-device-cicd.puml) | **Ladder B** — Device/PWA CI/CD: Netlify ≠ device; human TTV; Esper (touchscreen-ux) |
 
 **Regenerate Mermaid PNGs (01–05):**
 
@@ -31,7 +33,7 @@ Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendere
 npx --yes @mermaid-js/mermaid-cli -i output_diagrams/NN-name.mmd -o output_diagrams/NN-name.png
 ```
 
-**Regenerate PlantUML PNGs (06–16, 18):** OpenJDK + network for C4 remote includes. PlantUML names output after `@startuml` id — rename to match source basename.
+**Regenerate PlantUML PNGs (06–16, 18–20):** OpenJDK + network for C4 remote includes. PlantUML names output after `@startuml` id — rename to match source basename.
 
 ```bash
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"

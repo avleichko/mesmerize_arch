@@ -1,0 +1,68 @@
+@startuml 20-ladder-b-device-cicd
+title Ladder B — Device / PWA CI/CD\ntouchscreen-ux · ADR-007 · ADR-016\nDo not conflate with Ladder A (GHA → ECR → ECS)
+
+left to right direction
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+  RoundCorner 8
+}
+skinparam note {
+  BackgroundColor #FFFDE7
+  BorderColor #F9A825
+}
+
+rectangle "feature/*\nbranch" as Feat #BBDEFB
+rectangle "PR → staging\n(never from main)" as PR #90CAF9
+rectangle "CI\nlint · tsc · test · build" as CI #81D4FA
+rectangle "Netlify\nbranch preview\nweb-only" as Netlify #FFE0B2
+rectangle "Human TTV filesync\n→ QA / canary" as TTVQA #A5D6A7
+rectangle "Promote\nstaging → main" as Promo #CE93D8
+rectangle "Human TTV filesync\n→ prod fleet" as TTVProd #80CBC4
+rectangle "Esper MDM\ndevice tags" as Esper #B39DDB
+
+Feat --> PR
+PR --> CI
+CI --> Netlify
+CI --> TTVQA
+TTVQA --> Promo
+Promo --> TTVProd
+TTVProd --> Esper
+
+note bottom of CI
+  **Confirmed:** ci.yml
+  (touchscreen-ux)
+end note
+
+note bottom of Netlify
+  **Confirmed:** web preview only
+  ≠ device path
+end note
+
+note bottom of TTVQA
+  **Confirmed:** human-triggered
+  clear TTV cache after deploy
+end note
+
+note top of TTVProd
+  Version stamp in logs:
+  [touchscreen-ux] app version:
+  <hash> (<build time>)
+end note
+
+note bottom of Esper
+  **Confirmed:** Esper + TTV player
+  brand via device tags
+end note
+
+legend right
+  |= Maturity |= Meaning |
+  | Confirmed | Branch ladder + CI + Netlify ≠ device;\nhuman TTV; Esper tags (ADR-007, 016) |
+  | Note | Clear TTV cache after every filesync;\nversion stamp verifies live build |
+  | Out of scope | **No** ECR · **No** ECS · **No** Terraform\n(Ladder A only) |
+endlegend
+
+@enduml

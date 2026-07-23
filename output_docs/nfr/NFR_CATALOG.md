@@ -106,7 +106,7 @@ These NFRs **must** shape architecture and are binding for agents:
 
 | Area | Result |
 |------|--------|
-| ADRs 001–013 | **Aligned** — NFRs formalize existing decisions |
+| ADRs 001–016 | **Aligned** — NFRs formalize existing decisions |
 | AGENTS hard invariants | **Aligned** — map to NFR-SEC-01/02/03, INT-02, BUS-01/02 |
 | ENGINEERING_RULES (iframe, WCAG, ambulatory, white-label, backoff) | **Aligned** |
 | SECURITY (90d diag logs, VAST, BAAs) | **Aligned** |

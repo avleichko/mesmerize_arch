@@ -1,0 +1,98 @@
+# REFERENCE ONLY — not executed in the mesmerize docs repo.
+# Copy to a platform monorepo as: .github/workflows/ci.yml
+# Source patterns: touchscreen-ux .github/workflows/ci.yml (Confirmed there; Proposed here).
+# Spec: docs/superpowers/specs/2026-07-23-ci-templates-adoption-from-touchscreen-ux-design.md
+#
+# Do NOT add: Netlify, TTV, whitelabel, content-links, contrast/axe, eringest, placeholder-scan.
+
+name: CI
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    # Optional: continue-on-error: true  # only while tracked lint debt exists
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # touchscreen-ux uses Node 22; Ladder A pin is Unknown until stack ADR — set explicitly when adopting
+          node-version: '22'
+          # cache: 'npm'  # TODO: enable when package manager is fixed (npm|pnpm|yarn)
+      - name: Install
+        run: |
+          # TODO: lockfile install (e.g. npm ci / pnpm install --frozen-lockfile)
+          echo "TODO: install dependencies"
+          exit 1
+      - name: Lint
+        run: |
+          # TODO: package lint script
+          echo "TODO: lint"
+          exit 1
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: |
+          # TODO: lockfile install
+          echo "TODO: install dependencies"
+          exit 1
+      - name: Typecheck
+        run: |
+          # TODO: e.g. tsc -b / nest build --typecheck
+          echo "TODO: typecheck"
+          exit 1
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: |
+          # TODO: lockfile install
+          echo "TODO: install dependencies"
+          exit 1
+      - name: Test
+        run: |
+          # TODO: unit/integration test command
+          echo "TODO: test"
+          exit 1
+
+  build:
+    needs: [typecheck, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install
+        run: |
+          # TODO: lockfile install
+          echo "TODO: install dependencies"
+          exit 1
+      - name: Inject build config from secrets/vars
+        env:
+          # TODO: map platform secrets/vars (not committed client .env / VITE_*)
+          EXAMPLE_API_URL: ${{ vars.EXAMPLE_API_URL }}
+        run: |
+          # TODO: write env file or export for build; prefer cloud secret store for runtime
+          echo "TODO: configure build env from GHA secrets/vars or skip if not needed for compile"
+      - name: Build
+        run: |
+          # TODO: production build (and later: docker build / push ECR — deploy strategy Unknown)
+          echo "TODO: build"
+          exit 1

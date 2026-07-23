@@ -1,0 +1,11 @@
+# REFERENCE ONLY — copy to platform repo as .github/CODEOWNERS
+# Replace placeholders with real GitHub users/teams that have write access.
+# Last matching pattern wins.
+
+# Default
+* @REPLACE_DEFAULT_OWNER
+
+# Example path routing (uncomment and edit when monorepo layout is known)
+# /apps/ @REPLACE_APP_OWNERS
+# /infra/ @REPLACE_INFRA_OWNERS
+# /docs/ @REPLACE_DOCS_OWNERS

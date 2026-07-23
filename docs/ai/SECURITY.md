@@ -98,4 +98,4 @@ touchscreen-ux committed `.env` / `VITE_*` is **device PWA client-bundle** polic
 - Named compliance / PHI decision owner.
 - Final data-classification matrix ratification.
 - Whether AWS BAA is required for the chosen engagement schema.
-- Formal CI/CD, observability, and HIPAA policy pack from Mesmerize (AM).
+- Formal observability vendor and HIPAA policy pack from Mesmerize (AM). Dual delivery / branching direction is in [ADR-016](../adr/016-git-branching-and-delivery-ladders.md) (Ladder A deploy strategy still Unknown).

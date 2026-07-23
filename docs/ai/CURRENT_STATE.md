@@ -57,6 +57,7 @@ Exact calendar: SOW text is authoritative; architecture Sprint Plan also targets
 - Dev / Staging / Prod (Q&A).
 - Staging ↔ athena sandbox; Prod ↔ single pilot (Phase 4).
 - Jul 14: establish Athena sandbox; align new AWS account for storage (action items in notes).
+- Dual delivery ladders (platform GHA→ECS vs device/PWA): [ADR-016](../adr/016-git-branching-and-delivery-ladders.md).
 
 ## Known risks affecting implementation
 
