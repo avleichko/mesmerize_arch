@@ -15,29 +15,14 @@ database "Org config\ntenancyMode = bridge" as CFG #E8E8E8
 frame "Bridge — Shared Aurora/Postgres" as BR {
   database "Shared DB" as DB #B3D4FC
 
-  entity "organization" as ORG {
-    * id : tenantId
-    --
-    name
-    tenancyMode
-  }
+  rectangle "organization\n• id : tenantId\n• name\n• tenancyMode" as ORG #E8F4FF
 
-  entity "tenant-owned table\n(e.g. session, engagement)" as TBL {
-    * id
-    * tenantId <<FK organization>>
-    clinicId
-    deviceGroupId
-    value / payload
-  }
+  rectangle "tenant-owned table\n(e.g. session, engagement)\n• id\n• tenantId (FK → organization)\n• clinicId\n• deviceGroupId\n• value / payload" as TBL #E8F4FF
 
-  entity "clinic (sub-scope)" as CLINIC {
-    * id : clinicId
-    * tenantId
-    name
-  }
+  rectangle "clinic (sub-scope)\n• id : clinicId\n• tenantId\n• name" as CLINIC #E8F4FF
 
-  ORG ||--o{ TBL : tenantId
-  ORG ||--o{ CLINIC : tenantId
+  ORG --> TBL : tenantId
+  ORG --> CLINIC : tenantId
 }
 
 frame "Shared S3 bucket — folder isolation" as S3F {
