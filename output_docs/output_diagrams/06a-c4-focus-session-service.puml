@@ -1,0 +1,25 @@
+@startuml 06a-c4-focus-session-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — session-service
+
+Container(smart_app, "SMART Web App", "React", "Opaque session client (ICD-10 + deviceGroup only)")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(session_svc, "session-service", "NestJS, ECS", "Opaque sessions: ICD-10 set, device group, lifecycle")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "session.started / session.ended")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Session domain data (de-identified)")
+
+Rel(smart_app, gateway, "HTTPS REST\nMesmerize session token\n[Inferred]", "ARCHITECTURE / ADR-002 / ADR-008")
+Rel(gateway, session_svc, "REST")
+Rel(session_svc, sqs, "Publish session.started / session.ended")
+Rel(session_svc, postgres, "R/W")
+
+note right of session_svc
+  **Focus:** session-service
+  Confirmed edges from diagram 06
+  Inferred: SMART→Gateway→session
+  No EHR token / no patient IDs on Mesmerize APIs
+end note
+
+SHOW_LEGEND()
+@enduml

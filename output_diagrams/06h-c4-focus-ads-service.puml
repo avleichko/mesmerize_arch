@@ -1,0 +1,22 @@
+@startuml 06h-c4-focus-ads-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — ads-service (optional)
+
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(ads_svc, "ads-service", "NestJS, ECS", "Ad delivery / proof-of-play (optional)")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Ad / proof-of-play rows")
+ContainerDb(s3, "Object Storage", "S3", "Ad assets")
+
+Rel(gateway, ads_svc, "REST")
+Rel(ads_svc, postgres, "R/W")
+Rel(ads_svc, s3, "Ad assets")
+
+note right of ads_svc
+  **Focus:** ads-service
+  Optional — not on core clinical path (ADR-011 / ARCHITECTURE)
+  Confirmed neighbors from diagram 06
+end note
+
+SHOW_LEGEND()
+@enduml

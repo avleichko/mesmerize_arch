@@ -1,0 +1,23 @@
+@startuml 06d-c4-focus-engagement-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — engagement-service
+
+Container(smart_app, "SMART Web App", "React", "Engagement review UI")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(engagement_svc, "engagement-service", "NestJS, ECS", "De-identified engagement telemetry & timelines")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "engagement.recorded")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Engagement / timeline rows")
+
+Rel(smart_app, gateway, "HTTPS REST timelines\n[Inferred]", "ADR-008")
+Rel(gateway, engagement_svc, "REST")
+Rel(sqs, engagement_svc, "Consume engagement.recorded")
+Rel(engagement_svc, postgres, "R/W")
+
+note right of engagement_svc
+  **Focus:** engagement-service
+  No PHI / patient identifiers in payloads (ADR-002 / ADR-008)
+end note
+
+SHOW_LEGEND()
+@enduml

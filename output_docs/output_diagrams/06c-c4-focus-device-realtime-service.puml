@@ -1,0 +1,30 @@
+@startuml 06c-c4-focus-device-realtime-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — device-realtime-service
+
+Container(smart_app, "SMART Web App", "React", "Pair / push commands")
+Container(device_apps, "Device PWA / Web Apps", "React", "Exam / waiting / Command Center")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "REST + sticky TG")
+Container(device_svc, "device-realtime-service", "NestJS, Socket.io, ECS", "Registry, pairing, commands, WebSockets")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "device.command.*")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Device registry mirror")
+ContainerDb(redis, "Redis 7", "ElastiCache", "Presence / Socket.io adapter")
+System_Ext(esper, "Esper MDM", "Device provisioning & tokens")
+
+Rel(smart_app, gateway, "HTTPS REST commands\n[Inferred]", "ADR-007")
+Rel(gateway, device_svc, "REST")
+Rel(device_apps, gateway, "HTTPS REST")
+Rel(device_apps, device_svc, "WebSocket / Socket.io", "Realtime")
+Rel(device_svc, sqs, "Publish/consume device.command.*")
+Rel(device_svc, postgres, "R/W")
+Rel(device_svc, redis, "R/W")
+Rel(device_svc, esper, "Device identity / provisioning mirror")
+
+note right of device_svc
+  **Focus:** device-realtime-service
+  Server-mediated: SMART never talks to devices directly (ADR-007)
+end note
+
+SHOW_LEGEND()
+@enduml

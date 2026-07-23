@@ -191,7 +191,7 @@
 |---|------|--------|
 | 1 | Purpose stated | [x] |
 | 2 | Actors / components covered | [x] |
-| 3 | Required diagrams embedded (`06-c4-containers`, `04-monorepo-boundaries`) | [x] |
+| 3 | Required diagrams embedded (`06-c4-containers`, `06a`–`06h` focus, `04-monorepo-boundaries`) | [x] |
 | 4 | Interfaces / interactions described | [x] |
 | 5 | Data ownership noted (component responsibilities) | [x] |
 | 6 | Security / PHI notes | [x] |

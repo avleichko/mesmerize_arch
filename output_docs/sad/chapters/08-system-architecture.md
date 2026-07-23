@@ -123,6 +123,133 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
   <strong>Proposed:</strong> Coarse domain microservices (Approach 1 on the C4 diagram) as the target runtime shape; final process boundaries for pilot may still co-locate on one ECS cluster until scale requires split (ADR-015).
 </p>
 
+### Container focus diagrams (NestJS services)
+
+The following are **C4 container-focus** views derived from diagram `06`: each isolates one NestJS service and shows **all** of its neighbors. Edges present on `06` are **Confirmed** for this pack’s C4 model; additional edges from ARCHITECTURE / ADRs are labeled **Inferred**. These are not module-level C4 Component diagrams.
+
+#### session-service
+
+Owns opaque encounter-session lifecycle (ICD-10 set, clinic/device group, status) and publishes `session.started` / `session.ended`. Does **not** hold EHR tokens or patient identifiers.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| SQS | → | Publish session.* | Confirmed (`06`) |
+| SMART Web App (via Gateway) | ← in | HTTPS REST + Mesmerize session token | Inferred (ARCHITECTURE; ADR-002; ADR-008) |
+
+![C4 focus — session-service](../../output_diagrams/06a-c4-focus-session-service.png)
+
+*Figure 8-3: Container focus — session-service (`06a`).*
+
+#### content-service
+
+Owns catalog, ICD-10→content recommend, and CMS projections/sync. Does **not** call EHR FHIR APIs.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| S3 | → | Media refs | Confirmed (`06`) |
+| SQS | → | CMS sync / content.updated | Confirmed (`06`) |
+| Sanity / BioDigital / MJH | → | HTTPS sync / embeds | Confirmed (`06`) |
+| SMART Web App (via Gateway) | ← in | Recommend REST | Inferred (ARCHITECTURE) |
+
+![C4 focus — content-service](../../output_diagrams/06b-c4-focus-content-service.png)
+
+*Figure 8-4: Container focus — content-service (`06b`).*
+
+#### device-realtime-service
+
+Owns device registry mirror, pairing, Device Command API, and Socket.io rooms/presence. SMART never talks to devices directly (ADR-007).
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| Device PWA / Web Apps | ↔ | Socket.io (+ REST via Gateway) | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| Redis | → | R/W (adapter / presence) | Confirmed (`06`) |
+| SQS | → | device.command.* | Confirmed (`06`) |
+| Esper MDM | → | Identity / provisioning mirror | Confirmed (`06`) |
+| SMART Web App (via Gateway) | ← in | Pair / push commands | Inferred (ADR-007) |
+
+![C4 focus — device-realtime-service](../../output_diagrams/06c-c4-focus-device-realtime-service.png)
+
+*Figure 8-5: Container focus — device-realtime-service (`06c`).*
+
+#### engagement-service
+
+Owns de-identified engagement telemetry and session timelines. No patient identifiers in payloads.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| SQS | ← in | Consume engagement.recorded | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| SMART / admin (via Gateway) | ← in | Timeline reads | Inferred (ADR-008) |
+
+![C4 focus — engagement-service](../../output_diagrams/06d-c4-focus-engagement-service.png)
+
+*Figure 8-6: Container focus — engagement-service (`06d`).*
+
+#### billing-evidence-service
+
+Owns rules-engine CPT suggestions/evidence, approve, and export. DocumentReference writeback is **browser → EHR** with the EHR token — this service never calls EHR APIs (ADR-003).
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| SQS | ← in | session.ended / engagement.completed | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| SMART Web App (via Gateway) | ← in | Approve / export | Inferred (ADR-008) |
+| SMART → athenahealth FHIR | (client path) | DocumentReference writeback | Inferred (ADR-003 — not service→EHR) |
+
+![C4 focus — billing-evidence-service](../../output_diagrams/06e-c4-focus-billing-evidence-service.png)
+
+*Figure 8-7: Container focus — billing-evidence-service (`06e`).*
+
+#### org-identity-service
+
+Owns organizations, users, `tenancyMode`, and Auth0 JWT/RBAC for admin / Command Center surfaces — not the clinician SMART EHR-token path.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| Auth0 | → | OIDC / JWT validation | Confirmed (`06`) |
+| Command Center (via Gateway) | ← in | Admin JWT path | Inferred (ARCHITECTURE) |
+
+![C4 focus — org-identity-service](../../output_diagrams/06f-c4-focus-org-identity-service.png)
+
+*Figure 8-8: Container focus — org-identity-service (`06f`).*
+
+#### audit-telemetry-service
+
+Worker that consumes diagnostic / `*.audit` events. No Gateway Rel on diagram `06`; no PHI in diagnostic payloads.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| SQS | ← in | *.audit / diagnostic | Confirmed (`06`) |
+| S3 (diagnostic path) | → | Diagnostic artifacts | Inferred (ARCHITECTURE; ADR-014) |
+
+![C4 focus — audit-telemetry-service](../../output_diagrams/06g-c4-focus-audit-telemetry-service.png)
+
+*Figure 8-9: Container focus — audit-telemetry-service (`06g`).*
+
+#### ads-service *(optional)*
+
+Optional ad delivery / proof-of-play. **Not** on the core clinical path.
+
+| Neighbor | Direction | Mechanism | Evidence |
+|----------|-----------|-----------|----------|
+| API Gateway / Edge | ← in | REST | Confirmed (`06`) |
+| PostgreSQL | → | R/W | Confirmed (`06`) |
+| S3 | → | Ad assets | Confirmed (`06`) |
+
+![C4 focus — ads-service](../../output_diagrams/06h-c4-focus-ads-service.png)
+
+*Figure 8-10: Container focus — ads-service (`06h`, optional).*
+
 ### Monorepo boundaries
 
 ![Monorepo boundaries](../../output_diagrams/04-monorepo-boundaries.png)
@@ -142,6 +269,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — ECS co-locate / sticky ALB for device-realtime
 - [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — Ladder B for device/PWA vs Ladder A for platform
 - [`output_diagrams/06-c4-containers.puml`](../../../output_diagrams/06-c4-containers.puml) / PNG — container responsibilities & relations
+- [`output_diagrams/06a-c4-focus-session-service`](../../../output_diagrams/06a-c4-focus-session-service.puml) … [`06h-c4-focus-ads-service`](../../../output_diagrams/06h-c4-focus-ads-service.puml) — per-service container-focus views
 - [`output_diagrams/04-monorepo-boundaries.mmd`](../../../output_diagrams/04-monorepo-boundaries.mmd) / PNG — app/package boundaries
 
 ## White spots

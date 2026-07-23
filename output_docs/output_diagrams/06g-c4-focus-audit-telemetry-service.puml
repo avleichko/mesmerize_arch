@@ -1,0 +1,20 @@
+@startuml 06g-c4-focus-audit-telemetry-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — audit-telemetry-service
+
+Container(audit_svc, "audit-telemetry-service", "NestJS worker, ECS", "Diagnostic/audit ingest (no PHI)")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "*.audit / diagnostic events")
+ContainerDb(s3, "Object Storage", "S3", "Diagnostic store path [Inferred]")
+
+Rel(sqs, audit_svc, "Consume *.audit / diagnostic events")
+Rel(audit_svc, s3, "Diagnostic artifacts\n[Inferred]", "ARCHITECTURE / ADR-014")
+
+note right of audit_svc
+  **Focus:** audit-telemetry-service
+  Confirmed on 06: SQS consumer only (no Gateway Rel)
+  No PHI in diagnostic payloads (ADR-002)
+end note
+
+SHOW_LEGEND()
+@enduml

@@ -1,0 +1,32 @@
+@startuml 06b-c4-focus-content-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — content-service
+
+Container(smart_app, "SMART Web App", "React", "Recommend UI")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(content_svc, "content-service", "NestJS, ECS", "Catalog, ICD-10→content recommend, CMS projections")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "CMS sync / content.updated")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Catalog / projections")
+ContainerDb(s3, "Object Storage", "S3", "Media refs")
+System_Ext(sanity, "Sanity CMS", "Editorial metadata")
+System_Ext(biodigital, "BioDigital", "3D anatomy")
+System_Ext(mjh, "MJH / Pharmacy Times", "Articles")
+
+Rel(smart_app, gateway, "HTTPS REST recommend\n[Inferred]", "ARCHITECTURE")
+Rel(gateway, content_svc, "REST")
+Rel(content_svc, sqs, "CMS sync jobs / content.updated")
+Rel(content_svc, postgres, "R/W")
+Rel(content_svc, s3, "Media refs")
+Rel(content_svc, sanity, "Content sync")
+Rel(content_svc, biodigital, "Model IDs / embeds")
+Rel(content_svc, mjh, "Article sync")
+
+note right of content_svc
+  **Focus:** content-service
+  Confirmed: Gateway, SQS, Postgres, S3, Sanity, BioDigital, MJH
+  Inferred: SMART recommend via Gateway
+end note
+
+SHOW_LEGEND()
+@enduml

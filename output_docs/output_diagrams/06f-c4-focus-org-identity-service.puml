@@ -1,0 +1,23 @@
+@startuml 06f-c4-focus-org-identity-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — org-identity-service
+
+Container(device_apps, "Device PWA / Web Apps", "React", "Command Center admin UI")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(org_svc, "org-identity-service", "NestJS, ECS", "Orgs, users, Auth0 JWT/RBAC")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Org / tenancyMode / users")
+System_Ext(auth0, "Auth0", "Admin authentication")
+
+Rel(device_apps, gateway, "HTTPS REST\n[Inferred]", "ARCHITECTURE — admin JWT path")
+Rel(gateway, org_svc, "REST")
+Rel(org_svc, postgres, "R/W")
+Rel(org_svc, auth0, "OIDC / JWT validation")
+
+note right of org_svc
+  **Focus:** org-identity-service
+  Admin / Command Center — not clinician SMART EHR token path
+end note
+
+SHOW_LEGEND()
+@enduml

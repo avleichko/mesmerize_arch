@@ -1,0 +1,25 @@
+@startuml 06e-c4-focus-billing-evidence-service
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — C4 Container Focus — billing-evidence-service
+
+Container(smart_app, "SMART Web App", "React", "Approve / export evidence")
+System_Ext(ehr, "athenahealth EHR", "DocumentReference writeback (browser)")
+Container(gateway, "API Gateway / Edge", "CloudFront + ALB", "TLS / REST routing")
+Container(billing_svc, "billing-evidence-service", "NestJS, ECS", "Rules suggestions, approve, export")
+ContainerQueue(sqs, "Async backbone", "Amazon SQS + DLQs", "session.ended / engagement.completed")
+ContainerDb(postgres, "PostgreSQL 16", "RDS", "Evidence / suggestion rows")
+
+Rel(smart_app, gateway, "HTTPS REST approve/export\n[Inferred]", "ADR-008")
+Rel(gateway, billing_svc, "REST")
+Rel(sqs, billing_svc, "Consume session.ended / engagement.completed")
+Rel(billing_svc, postgres, "R/W")
+Rel(smart_app, ehr, "FHIR DocumentReference\nwith EHR token\n[Inferred]", "ADR-003 — browser only")
+
+note right of billing_svc
+  **Focus:** billing-evidence-service
+  HITL approve; writeback is browser→EHR — service never calls EHR
+end note
+
+SHOW_LEGEND()
+@enduml
