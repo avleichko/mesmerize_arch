@@ -1,0 +1,40 @@
+@startuml mesmerize-sqs-request-reply-correlation
+title Mesmerize — SQS Request/Reply + Correlation Identifier\nPer target-service reply queue · Per-operation timeout · ADR-014
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+participant "Caller Service\n(e.g. session-service)" as Caller
+queue "billing.requests" as Req
+participant "billing-evidence-service" as Billing
+queue "billing.replies" as Rep
+
+== 1. Build request ==
+Caller -> Caller : correlationId = UUID()\nreplyTo = "billing.replies"\ntimeout = op-specific (e.g. 5s / 30s / 120s)\nenvelope: tenantId, messageType, payload\n(**no** patient id / EHR token)
+
+== 2. Send request ==
+Caller -> Req : SendMessage(request)\nMessageAttributes: correlationId, replyTo, tenantId
+
+== 3. Process ==
+Billing -> Req : ReceiveMessage
+Billing -> Billing : Validate tenantId\nExecute work (e.g. compute suggestions)
+Billing -> Rep : SendMessage(reply)\n**same correlationId**\npayload = result **or** error (enriched)
+
+== 4. Correlate reply ==
+Caller -> Rep : Long-poll / receive\n**filter MessageAttributes.correlationId**
+Caller -> Caller : Match correlationId\nComplete wait **or** timeout → fail path
+
+note over Caller, Rep
+  **Correlation Identifier**
+  Only the reply with matching correlationId
+  completes this wait. Other replies ignored
+  by this waiter (or routed to other waiters).
+end note
+
+note right of Caller
+  Interactive SMART/device hot path
+  prefers **REST** to owning service (ADR-014 matrix).
+  Use SQS RR when work is offloaded / durable.
+end note
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml mesmerize-sqs-enricher-dlq
+title Mesmerize — Content Enricher + Dead Letter Queue\nFailure / poison message path · ADR-014 · NFR-REL-01
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+participant "Consumer\n(any microservice)" as Cons
+queue "service.requests\nor service.events" as Q
+queue "service.*.dlq" as DLQ
+participant "Ops alerting\n(email / monitoring)" as Ops
+
+== Happy path ==
+Q -> Cons : ReceiveMessage (attempt n)
+Cons -> Cons : Process OK
+Cons -> Q : DeleteMessage
+
+== Failure path ==
+Q -> Cons : ReceiveMessage (attempt n)
+Cons -> Cons : Process **fails**\n(retry with exponential backoff\nper NFR-REL-01 / visibility timeout)
+
+alt Attempts < maxReceiveCount
+  Cons -> Q : Return / visibility timeout\n(message available again)
+else Attempts >= maxReceiveCount
+  Cons -> Cons : **Content Enricher**\nAdd to message / attributes:\n• errorCode, errorMessage\n• failedService, failedAt\n• tenantId, correlationId, messageType\n• receiveCount, lastException summary\n• original payload ref (no PHI)
+  Cons -> DLQ : Send enriched poison message
+  Cons -> Q : Delete from source (or SQS redrive policy)
+  DLQ -> Ops : Alarm / email / Datadog event\n(incident research uses enriched fields)
+end
+
+note over Cons, DLQ
+  **Content Enricher** purpose:
+  make DLQ messages actionable for incident research
+  without requiring live debugger access to the worker.
+  Still **no** patient identifiers or EHR tokens in enrichments.
+end note
+
+@enduml

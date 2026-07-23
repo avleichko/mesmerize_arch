@@ -1,0 +1,151 @@
+@startuml mesmerize-aws-deployment-reference
+title Mesmerize Content Evidence Platform — AWS Reference Deployment\nGeneric (Dev / Staging / Prod) · ADR-010 · ADR-013 · ADR-014 · NFR ASRs\nLogical ECS services shown; early pilot may co-locate tasks on one cluster
+
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam defaultFontSize 11
+skinparam PackageBorderColor #546E7A
+skinparam PackageBackgroundColor #ECEFF1
+
+actor "Clinician\n(Athena iframe)" as Clinician
+actor "Devices\n(Esper PWA)" as Devices
+actor "Admin\n(Command Center)" as Admin
+
+cloud "External SaaS" as EXT {
+  rectangle "athenahealth\nSMART / FHIR" as Athena
+  rectangle "Auth0" as Auth0
+  rectangle "Esper MDM" as Esper
+  rectangle "Sanity / BioDigital / MJH" as CMS
+  rectangle "SMS / email\n(Bridge codes)" as SMS
+}
+
+cloud "Mesmerize-owned AWS Account" as AWS {
+
+  rectangle "CI/CD & Ops" as CICD #FFF8E1 {
+    rectangle "GitHub Actions" as GHA
+    rectangle "Amazon ECR" as ECR
+    rectangle "Terraform state\n(S3 + lock)" as TF
+    rectangle "Observability\n(Datadog / approved)" as OBS
+  }
+
+  frame "Region (multi-AZ)" as REG {
+
+    rectangle "Edge" as EDGE #E3F2FD {
+      rectangle "CloudFront\nSMART static + media CDN" as CF
+      rectangle "ALB (HTTPS)\nREST + Socket.io TG\n(sticky for device-realtime)" as ALB
+    }
+
+    frame "VPC" as VPC {
+
+      frame "Public subnets (AZ-a / AZ-b)" as PUB {
+        rectangle "NAT Gateway(s)" as NAT
+        ALB -[hidden]-> NAT
+      }
+
+      frame "Private subnets — Compute (AZ-a / AZ-b)" as PRIVC {
+        frame "ECS Fargate Cluster" as ECS {
+          rectangle "session-service" as SESS
+          rectangle "content-service" as CONT
+          rectangle "device-realtime-service\n(Socket.io)" as DEV
+          rectangle "engagement-service" as ENG
+          rectangle "billing-evidence-service" as BILL
+          rectangle "org-identity-service" as ORG
+          rectangle "audit-telemetry-service" as AUD
+          rectangle "ads-service\n(optional)" as ADS
+        }
+        note right of ECS
+          **Pilot note:** logical services may share
+          task definitions / services initially;
+          scale out to 1:1 later.
+        end note
+      }
+
+      frame "Private subnets — Data (AZ-a / AZ-b)" as PRIVD {
+        database "RDS PostgreSQL 16\nBridge default (shared +\ntenantId)\nSilo: extra DBs per org" as RDS
+        database "ElastiCache Redis 7\nSocket.io adapter + cache" as REDIS
+      }
+    }
+
+    rectangle "Messaging" as MSG #FFF3E0 {
+      queue "SQS *.requests" as QREQ
+      queue "SQS *.replies" as QREP
+      queue "SQS *.events" as QEVT
+      queue "SQS *.dlq" as QDLQ
+    }
+
+    rectangle "Object & logs" as OBJ #E8F5E9 {
+      storage "S3 media\n{tenantId}/{clinicId}/…" as S3M
+      storage "S3 / Kinesis\ndiagnostic logs\n(≤90d retention)" as S3L
+      storage "S3 SMART assets\n(origin for CloudFront)" as S3S
+    }
+
+    rectangle "Security" as SEC #FFEBEE {
+      rectangle "Secrets Manager\n+ IAM task roles" as SECURE
+      rectangle "WAF (optional on ALB/CF)" as WAF
+    }
+  }
+}
+
+Clinician --> Athena : EHR SSO / FHIR
+Athena --> CF : SMART launch iframe
+Clinician --> CF : HTTPS SMART app
+Admin --> Auth0 : Login
+Admin --> ALB : HTTPS Command Center
+Devices --> Esper : Device token
+Devices --> ALB : HTTPS + Socket.io
+CF --> S3S : Origin
+CF --> ALB : API / dynamic
+ALB --> SESS
+ALB --> CONT
+ALB --> DEV
+ALB --> ENG
+ALB --> BILL
+ALB --> ORG
+ALB --> AUD
+ALB --> ADS
+
+SESS --> RDS
+CONT --> RDS
+DEV --> RDS
+DEV --> REDIS
+ENG --> RDS
+BILL --> RDS
+ORG --> RDS
+AUD --> RDS
+ADS --> RDS
+
+SESS --> QREQ
+SESS --> QREP
+SESS --> QEVT
+BILL --> QREQ
+BILL --> QREP
+ENG --> QEVT
+AUD --> QEVT
+DEV --> QEVT
+QREQ ..> QDLQ : redrive / enrich
+QEVT ..> QDLQ : redrive / enrich
+
+CONT --> S3M
+ADS --> S3M
+AUD --> S3L
+CONT --> CMS : sync
+ORG --> Auth0
+DEV --> Esper : identity mirror
+SESS --> SMS : Bridge codes (via provider)
+
+GHA --> ECR : build/push
+GHA --> ECS : deploy
+TF ..> VPC : provisions
+OBS ..> ECS : metrics/logs/traces
+OBS ..> QDLQ : alarms
+
+note bottom of AWS
+  **Environment deltas (same topology)**
+  • **Dev** — smaller sizes; relaxed; may share resources
+  • **Staging** — PHI-free; Athena **sandbox**; no prod patient traffic
+  • **Prod** — pilot-gated org(s); stricter secrets/network; Bridge default tenancy
+  **Invariants:** no patient identifiers on RDS/S3/SQS; EHR tokens never reach ECS APIs;
+  diagnostic logs exclude PHI; tenantId on all messages/rows.
+end note
+
+@enduml

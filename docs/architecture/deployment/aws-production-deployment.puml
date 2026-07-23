@@ -1,0 +1,150 @@
+@startuml mesmerize-aws-production-deployment
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title Mesmerize Content Evidence Platform — AWS Production Deployment\nPilot-gated Production · Mesmerize-owned AWS · 2026-07-23\nEvidence tags in labels: [C]=Confirmed [I]=Inferred [P]=Proposed [T]=TBD
+
+LAYOUT_WITH_LEGEND()
+
+Person(clinician, "Clinician / Nurse / MA [C]", "Athena SMART iframe")
+Person(admin, "Admin [C]", "Command Center")
+Person_Ext(patient, "Patient [C]", "Device display · no login")
+
+System_Ext(athena, "athenahealth [C]", "SMART + FHIR R4 · 3-legged OAuth")
+System_Ext(auth0, "Auth0 [C]", "Admin OIDC · BAA required")
+System_Ext(esper, "Esper MDM [C]", "Device tokens · fleet")
+System_Ext(cms, "Sanity / BioDigital / MJH [C]", "Content sources")
+System_Ext(sms, "SMS/email [C]", "Bridge OTP · BAA")
+System_Ext(obs, "Datadog / Mesmerize monitoring [I]", "Final vendor TBD with AM")
+
+Deployment_Node(awsacct, "AWS Account — Mesmerize-owned [C]", "Region: TBD [T] · DR Region: TBD [T]") {
+
+  Deployment_Node(edge, "Edge / global-regional services [C]", "Not inside VPC data plane") {
+    Container(r53, "Route 53 [P]", "DNS", "SMART + API DNS")
+    Container(cf, "CloudFront [C]", "CDN", "SMART SPA + media · HTTPS/ACM [I]")
+    Container(waf, "AWS WAF [P]", "WAF", "OWASP-oriented rules")
+    ContainerDb(s3web, "S3 SMART assets [C]", "S3", "React19+Vite+fhirclient.js origin")
+  }
+
+  Deployment_Node(vpc, "VPC Production [I]", "Multi-AZ assumed [I] · CIDR TBD [T]") {
+
+    Deployment_Node(public, "Public subnets AZ-a/b [I]", "Internet-facing") {
+      Container(alb, "ALB [C]", "ALB", "HTTPS:443 · REST TG + Socket.io sticky TG · health checks")
+      Container(nat, "NAT Gateway [I]", "NAT", "Private subnet egress")
+    }
+
+    Deployment_Node(appsub, "Private app subnets AZ-a/b [C]", "ECS Fargate · may co-locate early [C]") {
+      Container(svc_session, "session-service [C]", "Fargate/NestJS", "Sessions · ICD-10 only · no patient IDs\nScale: TBD [T]")
+      Container(svc_content, "content-service [C]", "Fargate/NestJS", "Recommend · CMS sync")
+      Container(svc_device, "device-realtime [C]", "Fargate/NestJS+Socket.io", "Pairing · commands · WSS sticky")
+      Container(svc_eng, "engagement-service [C]", "Fargate/NestJS", "Engagement store · SQS consumer")
+      Container(svc_bill, "billing-evidence [C]", "Fargate/NestJS", "Suggestions · SQS RR")
+      Container(svc_org, "org-identity [C]", "Fargate/NestJS", "tenancyMode silo|bridge · Auth0 JWT")
+      Container(svc_audit, "audit-telemetry [C]", "Fargate worker", "Diag/audit · no PHI")
+      Container(svc_ads, "ads-service [I]", "Fargate/NestJS", "Optional ads path")
+    }
+
+    Deployment_Node(datasub, "Private data subnets AZ-a/b [I]", "No public IPs") {
+      ContainerDb(rds, "RDS PostgreSQL 16 [C]", "RDS", "Bridge+tenantId default\nMulti-AZ: TBD [T]\nSilo=extra DBs/org [C]\nKMS: Proposed [P]")
+      ContainerDb(redis, "ElastiCache Redis 7 [C]", "ElastiCache", "Socket.io adapter · cache\nMulti-AZ: TBD [T]")
+    }
+  }
+
+  Deployment_Node(messaging, "SQS messaging [C]", "ADR-014 EIP patterns") {
+    ContainerQueue(qreq, "*.requests [C]", "SQS", "Request/Reply")
+    ContainerQueue(qrep, "*.replies [C]", "SQS", "correlationId + replyTo")
+    ContainerQueue(qevt, "*.events [C]", "SQS", "Fire-and-forget")
+    ContainerQueue(qdlq, "*.dlq [C]", "SQS", "Enricher → DLQ")
+  }
+
+  Deployment_Node(objects, "Object & diagnostic storage [C]", "") {
+    ContainerDb(s3media, "S3 media [C]", "S3", "{tenantId}/{clinicId}/…")
+    Container(kinesis, "Kinesis [I]", "Kinesis", "Diagnostic stream (Jul 14)")
+    ContainerDb(s3logs, "S3 diagnostic logs [C]", "S3", "≤90 days · no PHI")
+  }
+
+  Deployment_Node(secops, "Security & delivery [C/I/P]", "") {
+    Container(secrets, "Secrets Manager [P]", "Secrets Manager", "Task role secrets")
+    Container(kms, "KMS CMK [P]", "KMS", "RDS/S3/SQS encryption")
+    Container(gha, "GitHub Actions [C]", "CI/CD", "lint · test · build · deploy")
+    Container(ecr, "ECR [I]", "Registry", "Container images")
+    Container(tf, "Terraform [C]", "IaC", "Prov. network+data+compute")
+  }
+}
+
+Rel(clinician, athena, "Launch from chart", "EHR UI")
+Rel(athena, cf, "SMART EHR launch", "HTTPS iss+launch")
+Rel(clinician, cf, "Load SMART SPA", "HTTPS")
+Rel(cf, waf, "Filtered by", "Proposed")
+Rel(r53, cf, "Resolves", "Proposed DNS")
+Rel(cf, s3web, "Origin", "HTTPS")
+Rel(cf, alb, "API calls", "HTTPS")
+
+Rel(admin, auth0, "Login", "OIDC")
+Rel(admin, alb, "Admin APIs", "HTTPS + JWT")
+
+Rel(alb, svc_session, "REST", "HTTPS sync")
+Rel(alb, svc_content, "REST", "HTTPS sync")
+Rel(alb, svc_device, "REST + WSS", "sticky sync")
+Rel(alb, svc_eng, "REST", "HTTPS sync")
+Rel(alb, svc_bill, "REST", "HTTPS sync")
+Rel(alb, svc_org, "REST", "HTTPS sync")
+Rel(alb, svc_ads, "REST", "HTTPS sync")
+
+Rel(svc_session, rds, "Prisma R/W", "TLS sync")
+Rel(svc_content, rds, "Prisma R/W", "TLS sync")
+Rel(svc_device, rds, "Prisma R/W", "TLS sync")
+Rel(svc_device, redis, "Adapter/cache", "sync")
+Rel(svc_eng, rds, "Prisma R/W", "TLS sync")
+Rel(svc_bill, rds, "Prisma R/W", "TLS sync")
+Rel(svc_org, rds, "Prisma R/W", "TLS sync")
+Rel(svc_audit, rds, "Metadata", "TLS sync")
+
+Rel(svc_content, s3media, "Objects", "IAM")
+Rel(svc_ads, s3media, "Ad assets", "IAM")
+
+Rel(svc_session, qevt, "session.* events", "SQS async")
+Rel(svc_device, qevt, "device/engagement hooks", "SQS async")
+Rel(svc_eng, qevt, "Consume engagement", "SQS async")
+Rel(svc_session, qreq, "Billing.ComputeRequest", "SQS RR")
+Rel(svc_bill, qreq, "Consume", "SQS")
+Rel(svc_bill, qrep, "Reply correlationId", "SQS RR")
+Rel(svc_session, qrep, "Await reply", "SQS RR")
+Rel(qreq, qdlq, "Poison path", "async")
+Rel(qevt, qdlq, "Poison path", "async")
+
+Rel(svc_audit, kinesis, "Diag events", "async")
+Rel(kinesis, s3logs, "Archive", "≤90d")
+
+Rel(svc_content, cms, "Sync content", "HTTPS")
+Rel(svc_org, auth0, "JWKS validate", "HTTPS")
+Rel(svc_device, esper, "Device registry", "HTTPS/ops")
+Rel(svc_session, sms, "OTP send", "HTTPS")
+
+Rel(svc_session, secrets, "Read secrets", "IAM [P]")
+Rel(rds, kms, "Encrypt", "Proposed")
+Rel(s3media, kms, "SSE-KMS", "Proposed")
+
+Rel(svc_session, obs, "Telemetry", "dotted ops")
+Rel(svc_device, obs, "Telemetry", "ops")
+Rel(qdlq, obs, "Alarms", "ops")
+
+Rel(gha, ecr, "Push image", "CI")
+Rel(ecr, svc_session, "Deploy", "CD rolling TBD")
+Rel(ecr, svc_device, "Deploy", "CD")
+Rel(tf, vpc, "Provision", "IaC")
+
+note right of athena
+  **FHIR token never reaches ECS**
+  Browser-only FHIR to Athena (ADR-002/005).
+  Platform APIs receive ICD-10 + deviceGroup + sessionId only.
+end note
+
+note bottom of vpc
+  **Availability [I/T]:** Multi-AZ placement inferred from HA goals;
+  RDS/Redis Multi-AZ flags and autoscaling min/max are **TBD**.
+  **RTO/RPO:** not defined in kb — do not invent numbers.
+  **Tenancy:** Bridge shared DB + tenantId (default);
+  Silo = additional RDS per Organization.
+end note
+
+@enduml

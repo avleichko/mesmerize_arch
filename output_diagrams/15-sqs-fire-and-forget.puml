@@ -1,0 +1,30 @@
+@startuml mesmerize-sqs-fire-and-forget
+title Mesmerize — SQS Fire-and-Forget (Async)\nADR-014 · NFR durable engagement / audit facts
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+
+participant "Publisher\n(e.g. device-realtime\nor session-service)" as Pub
+queue "engagement.events" as Evt
+participant "engagement-service" as Eng
+queue "audit.events" as Aud
+participant "audit-telemetry-service" as Audit
+
+Pub -> Evt : SendMessage\nmessageType=engagement.recorded\ntenantId, clinicId?, sessionId,\ncontentId, icd10, duration…\n(**no** replyTo / no wait)
+Pub -> Pub : Continue immediately\n(fire-and-forget)
+
+Evt -> Eng : ReceiveMessage
+Eng -> Eng : Persist engagement\n(de-identified)
+
+Pub -> Aud : SendMessage\nmessageType=audit.append\n(optional parallel fact)
+Aud -> Audit : ReceiveMessage
+Audit -> Audit : Write diagnostic/audit store\n(no PHI)
+
+note over Pub, Eng
+  Use for: session.ended, engagement.recorded,
+  device.command.acked, audit events.
+  Publisher does **not** block on consumer success;
+  durability via SQS + retries + DLQ (see diagram 16).
+end note
+
+@enduml

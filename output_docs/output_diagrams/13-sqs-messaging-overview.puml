@@ -1,0 +1,40 @@
+@startuml mesmerize-sqs-messaging-overview
+title Mesmerize — SQS / REST Communication Overview\nADR-014 · Edge REST · Internal REST or SQS by matrix\nPatterns: Request/Reply · Correlation ID · Fire-and-forget · Content Enricher · DLQ
+
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+
+actor "Clinician / Device" as Client
+rectangle "API Gateway / Edge" as GW #E3F2FD
+
+rectangle "Service A\n(e.g. session / content)" as A #B3D4FC
+rectangle "Service B\n(e.g. billing-evidence)" as B #B3D4FC
+rectangle "Service C\n(e.g. engagement / audit)" as C #B3D4FC
+
+queue "B.requests" as BREQ #FFF3E0
+queue "B.replies" as BREP #FFF3E0
+queue "C.events" as CEVT #E8F5E9
+queue "*.dlq" as DLQ #FFCDD2
+
+Client --> GW : REST (interactive)
+GW --> A : REST
+A --> B : REST\n(when simple sync OK)
+A --> BREQ : SQS Request/Reply\n(correlationId + replyTo)
+BREP --> A : Reply matched by\ncorrelationId
+A --> CEVT : Fire-and-forget\n(async fact)
+BREQ --> B
+B --> BREP : Reply
+CEVT --> C
+BREQ ..> DLQ : after enrich +\nmax receives
+CEVT ..> DLQ : after enrich +\nmax receives
+
+legend right
+  |= Pattern |= Use |
+  | REST | Edge + optional internal sync |
+  | Request/Reply | Internal wait-for-result |
+  | Correlation ID | Match request ↔ reply |
+  | Fire-and-forget | Async facts |
+  | Content Enricher + DLQ | Error / poison path |
+endlegend
+
+@enduml
