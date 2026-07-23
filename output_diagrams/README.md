@@ -17,6 +17,11 @@ Mermaid sources for AI agents and reviewers. Render in any Mermaid-compatible vi
 | [10-multitenancy-bridge.puml](10-multitenancy-bridge.puml) | Mode B: shared DB + tenantId + S3 folders (pilot default) |
 | [11-smart-3legged-oauth-athena.puml](11-smart-3legged-oauth-athena.puml) | SMART 3-legged OAuth / Authorization Code Grant from Athena |
 | [12-smart-3legged-oauth-athena-detailed.puml](12-smart-3legged-oauth-athena-detailed.puml) | **High-fidelity** SMART 3-legged OAuth from Athena (discovery → token → FHIR → session → writeback) |
+| [13-sqs-messaging-overview.puml](13-sqs-messaging-overview.puml) | REST edge + SQS patterns overview |
+| [14-sqs-request-reply-correlation.puml](14-sqs-request-reply-correlation.puml) | Request/Reply + Correlation Identifier |
+| [15-sqs-fire-and-forget.puml](15-sqs-fire-and-forget.puml) | Fire-and-forget async events |
+| [16-sqs-enricher-dlq.puml](16-sqs-enricher-dlq.puml) | Content Enricher + Dead Letter Queue |
+| [17-aws-deployment-reference.puml](17-aws-deployment-reference.puml) | **AWS reference deployment** (VPC, ECS, RDS, Redis, SQS, S3, CI/CD) |
 
 **Render notes:** PlantUML needs C4-PlantUML (includes remote stdlib). Mermaid C4: use [Mermaid Live](https://mermaid.live) or a viewer with C4 support.
 

@@ -15,6 +15,7 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 | 0a | [`kb/`](kb/) | Source evidence (Word/PDF/notes). **Analyze before inventing behavior.** |
 | 0b | [`docs/adr/README.md`](docs/adr/README.md) | Confirmed decision register (#1–#20) + ADR links |
 | 0c | [`templates/`](templates/) | Formal doc templates (SAD, etc.). **If a matching template exists, use it.** |
+| 0d | [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/`](output_docs/nfr/) | Non-functional requirements; **ASR** rows are binding for architecture |
 | 1 | [`docs/ai/PROJECT_CONTEXT.md`](docs/ai/PROJECT_CONTEXT.md) | Business purpose, stakeholders, success metrics |
 | 2 | [`docs/ai/ARCHITECTURE.md`](docs/ai/ARCHITECTURE.md) | Components, boundaries, data flow |
 | 3 | [`docs/ai/CURRENT_STATE.md`](docs/ai/CURRENT_STATE.md) | What exists vs. to-be-built |
@@ -45,6 +46,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 7. **Prefer extending existing PWA patterns** over rewriting the live fleet app in place. Production `touchscreen-ux` is treated as read-only for Newfire; new work extends/copies.
 8. **Honor the do-not-build list** (Redox, Deepgram, Claude SOAP notes, patient CRUD, clearinghouse, DICOM push, etc.) in [ADR-011](docs/adr/011-do-not-build.md).
 9. **Multitenancy:** Organization is the tenant; clinic is sub-scope. Support **Silo** (isolated DB) and **Bridge** (`tenantId` column + S3 `{tenantId}/{clinicId}/` folders). Pilot default Bridge. See [ADR-013](docs/adr/013-multitenancy-silo-and-bridge.md).
+10. **Honor ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/ASR_CHECKLIST.md`](output_docs/nfr/ASR_CHECKLIST.md) (security, reliability, iframe/a11y, observability, SMART launch, tenancy).
 
 ## In scope vs out of scope (SOW #3)
 
@@ -55,6 +57,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 ## Working rules
 
 - **Always check `kb/` and `docs/adr/` first** before architecture or product-behavior changes. Treat the [confirmed decision register](docs/adr/README.md) as binding.
+- **Always check NFRs / ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) (export: [`output_docs/nfr/`](output_docs/nfr/)). Do not introduce designs that conflict with **ASR** marked requirements.
 - **Always check `templates/`** before creating formal architecture / SAD / stakeholder docs; use the matching template if one exists.
 - **Analyze `kb/` again** when a task touches EHR, PHI, devices, recommendations, billing, or writeback — even if you already read `docs/ai/*`.
 - **Do not invent requirements.** If kb marks something `[PROPOSED]`, `Unknown`, or “Needs Further Discussion”, treat it as open — ask or document the assumption.

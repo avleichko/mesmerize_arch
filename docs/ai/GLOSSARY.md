@@ -37,7 +37,9 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **SOW #3** | Newfire Statement of Work governing current delivery scope |
 | **Phase 1–4** | SOW execution phases (design → build → harden → pilot) |
 | **Safe Harbor** | HIPAA de-identification framing used in kb for ICD-10-without-identifiers |
-| **BAA** | Business Associate Agreement |
+| **ASR** | Architecturally Significant Requirement — NFR that drives architecture ([NFR.md](NFR.md)) |
+| **NFR** | Non-functional requirement (see `output_docs/nfr/`) |
+
 | **RBAC** | Role-based access control (Command Center; timing per Q&A) |
 | **POC ecosystem** | Demo multi-device journey used as reference behavior |
 | **mesmerize-platform** | Target Turborepo monorepo for the new platform |

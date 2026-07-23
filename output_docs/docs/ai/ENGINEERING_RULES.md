@@ -24,6 +24,15 @@ Canonical folder: [`templates/`](../../templates/) — see [`templates/README.md
 4. If no template matches, proceed with `docs/ai/*` + ADRs and note that no template was found.
 5. Template structure does not authorize inventing product requirements — content still comes from `kb/` + ADRs.
 
+## Non-functional requirements (binding ASRs)
+
+Full catalog: [`docs/ai/NFR.md`](NFR.md) and [`output_docs/nfr/NFR_CATALOG.md`](../../output_docs/nfr/NFR_CATALOG.md).
+
+**Architecturally significant (must not conflict):** zero-PHI servers; browser-held FHIR token; no ambient notes path; tenant isolation; exponential backoff retries; durable engagement proof; WCAG 2.1 AA; white-label; ambulatory-only; engagement vs diagnostic log split; diagnostic retention ≤ 90 days; SMART 3-legged EHR launch; server-mediated devices; tenant-isolated S3; separate audit telemetry; HIPAA-aligned AWS / OWASP+pen-test path.
+
+Do **not** invent numeric availability/latency SLOs — none are fixed in kb (see Open items in NFR catalog).
+
+
 ## Stack (reference architecture — binding via [ADR-010](../adr/010-technology-stack.md))
 
 | Layer | Choice |
@@ -61,19 +70,27 @@ Canonical folder: [`templates/`](../../templates/) — see [`templates/README.md
 - Content matching: curated metadata ICD-10 mapping first; **no ML recommender** under SOW unless metadata path fails and scope is explicitly reopened.
 - UUID-based content / engagement tracking (meeting alignment) to avoid PHI on device.
 
-## Device / realtime rules
+## Messaging rules (SQS)
 
-- All command traffic **server-mediated** (session-based), not peer SMART↔device for application commands.
-- Socket.io for push + heartbeats; exponential backoff retries for transaction failures (meeting alignment).
+See [ADR-014](../adr/014-sqs-messaging-patterns.md).
+
+- Edge: REST (+ Socket.io for devices). Do not put SMART iframe hot-path on SQS request/reply by default.
+- Internal wait-for-result: SQS **Request/Reply** to `{service}.requests`, reply on `{service}.replies`, match **`correlationId`**, set **`replyTo`**, **per-operation timeout**.
+- Async facts: **Fire-and-forget** to event/command queues.
+- On repeated failure: **Content Enricher** (error context, no PHI) → **DLQ**.
+- All messages: `tenantId` required; no patient identifiers / EHR tokens.
+
+- All command traffic **server-mediated** (session-based), not peer SMART↔device for application commands — **NFR-INT-02**.
+- Socket.io for push + heartbeats; exponential backoff retries for transaction failures — **NFR-REL-01**.
 - Extend existing PWA; production repo is **read-only** for partner edits — work on copy/extension.
-- White-labeling (customer branding/CSS) is a **hard requirement** per Jul 14 notes.
-- Product setting: **ambulatory care only** (not inpatient/surgical) per Jul 14 notes.
+- White-labeling (customer branding/CSS) is a **hard requirement** — **NFR-UX-02**.
+- Product setting: **ambulatory care only** (not inpatient/surgical) — **NFR-UX-04**.
 
 ## Frontend rules
 
-- SMART app must work in **EHR iframe** (narrow sidebar ~400–800px cited in Implementation Context); no pop-up-dependent flows.
-- Responsive for provider desktop/tablet; exam-room device is a separate fixed kiosk surface — do not merge responsive requirements.
-- Accessibility target for clinical UI: **WCAG 2.1 AA** (SOW Phase 2).
+- SMART app must work in **EHR iframe** (narrow sidebar ~400–800px cited in Implementation Context); no pop-up-dependent flows — **NFR-PERF-01**.
+- Responsive for provider desktop/tablet; exam-room device is a separate fixed kiosk surface — do not merge responsive requirements — **NFR-UX-03**.
+- Accessibility target for clinical UI: **WCAG 2.1 AA** (SOW Phase 2) — **NFR-UX-01**.
 - Brand tokens: Tailwind preset; Implementation Context cites Urbanist/Inter and Navy/Purple/Magenta/Orange from POC — follow existing design system when present; do not invent a new brand.
 
 ## Billing / writeback rules
@@ -94,13 +111,14 @@ Canonical folder: [`templates/`](../../templates/) — see [`templates/README.md
 ## Process rules for agents
 
 1. **Always check `kb/` and `docs/adr/` first** (see mandatory section above).
-2. **Always check `templates/`** before formal architecture / SAD documents; use matching templates when present.
-3. Read `AGENTS.md` invariants before coding.
-4. Prefer smallest diff; no drive-by refactors.
-5. Do not “complete” ambient/audio/DICOM features under SOW #3 ([ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md)).
-6. When kb says `[PROPOSED]` or Unknown, surface it in PR/notes.
-7. Update or add an ADR when changing a hard boundary; update the decision register if a Confirmed decision changes.
-8. Sync meaningful doc changes to `output_docs/` when exporting for stakeholders.
+2. **Always check NFRs/ASRs** ([`NFR.md`](NFR.md) / `output_docs/nfr/`) before infra, security, logging, or API boundary changes.
+3. **Always check `templates/`** before formal architecture / SAD documents; use matching templates when present.
+4. Read `AGENTS.md` invariants before coding.
+5. Prefer smallest diff; no drive-by refactors.
+6. Do not “complete” ambient/audio/DICOM features under SOW #3 ([ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md)).
+7. When kb says `[PROPOSED]` or Unknown, surface it in PR/notes.
+8. Update or add an ADR when changing a hard boundary; update the decision register if a Confirmed decision changes; update NFR catalog if an ASR changes.
+9. Sync meaningful doc changes to `output_docs/` when exporting for stakeholders.
 
 ## Explicit don’ts
 

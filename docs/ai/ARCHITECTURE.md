@@ -40,6 +40,24 @@ Binding: [ADR-013](../adr/013-multitenancy-silo-and-bridge.md). Diagrams: `outpu
 
 Data-access layer resolves DB connection and S3 prefix from `organization.tenancyMode` (`silo` \| `bridge`).
 
+## Service communication (REST + SQS)
+
+Binding: [ADR-014](../adr/014-sqs-messaging-patterns.md). Diagrams: `13`–`16` in `output_diagrams/`.
+
+| Pattern | Use |
+|---------|-----|
+| REST | Edge interactive; optional internal sync |
+| SQS Request/Reply + Correlation ID | Internal wait-for-result (`{service}.requests` / `{service}.replies`) |
+| Fire-and-forget | Async facts (engagement, audit, session.ended) |
+| Content Enricher + DLQ | Poison/failure path for incident research |
+
+Envelope must include `tenantId` (+ `clinicId` when relevant); never EHR tokens or patient identifiers.
+
+## Non-functional / ASR summary
+
+Full catalog: [`NFR.md`](NFR.md) and [`output_docs/nfr/`](../../output_docs/nfr/). Architecturally significant NFRs (zero-PHI, browser FHIR token, tenancy, retries, WCAG, white-label, log split/retention, SMART 3-legged launch, server-mediated devices, tenant S3) **must not be violated** by container or technology choices.
+
+## Architectural principles
 
 1. **Token never leaves the browser** — EHR FHIR token stays in SMART app browser context.
 2. **No patient identifiers on Mesmerize servers** — only ICD-10 codes + device group ID + opaque session ID to backend.
@@ -145,6 +163,8 @@ mesmerize-platform/
 
 Mesmerize-owned AWS: ECS/Fargate, RDS PostgreSQL, ElastiCache/Redis, S3, CloudFront; Terraform; GitHub Actions. Environments: Dev / Staging / Prod (Staging PHI-free vs athena sandbox; Prod gated to pilot).
 
+**Reference deployment diagram:** `output_diagrams/17-aws-deployment-reference.puml` ([ADR-015](../adr/015-aws-deployment-reference.md)).
+
 ## Auth model
 
 See `output_diagrams/05-auth-model.mmd` and [`SECURITY.md`](SECURITY.md).
@@ -174,3 +194,5 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-011](../adr/011-do-not-build.md) (DNB-1–DNB-9)
 - [ADR-012](../adr/012-c4-persons-vs-stakeholders.md)
 - [ADR-013](../adr/013-multitenancy-silo-and-bridge.md)
+- [ADR-014](../adr/014-sqs-messaging-patterns.md)
+- [ADR-015](../adr/015-aws-deployment-reference.md)

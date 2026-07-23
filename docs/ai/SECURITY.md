@@ -3,6 +3,10 @@
 > **Sources:** Architecture (Security Architecture, PHI tables), Strategy Overview (PHI Boundary), Implementation Context, Mesmerize Responses Q&A, Jul 14 meeting notes.  
 > **Not legal advice.** Confirm BAAs and policies with Mesmerize compliance owner (**open in kb**).
 
+## NFR alignment
+
+Non-functional and **ASR** requirements: [`NFR.md`](NFR.md) / [`output_docs/nfr/`](../../output_docs/nfr/). Security-related ASRs: NFR-SEC-01…08, NFR-OPS-01…02, NFR-DATA-02/03. Do not weaken PHI boundary, tenant isolation, or log-retention rules without updating the NFR catalog + ADR.
+
 ## Multitenancy and data isolation
 
 See [ADR-013](../adr/013-multitenancy-silo-and-bridge.md).

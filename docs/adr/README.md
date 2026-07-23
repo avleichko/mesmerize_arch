@@ -79,6 +79,16 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | MT-4 | Mode **Bridge**: shared DB + `tenantId` column + isolated S3 folders `{tenantId}/{clinicId}/…` | [ADR-013](013-multitenancy-silo-and-bridge.md) |
 | MT-5 | Pilot / SOW #3 **default** = Bridge; Silo available per org | [ADR-013](013-multitenancy-silo-and-bridge.md) |
 
+### Messaging (Confirmed)
+
+| # | Decision | ADR |
+|---|----------|-----|
+| MSG-1 | Edge clients use **REST** (+ Socket.io for devices) | [ADR-014](014-sqs-messaging-patterns.md) |
+| MSG-2 | Internal: **REST or SQS** per decision matrix | [ADR-014](014-sqs-messaging-patterns.md) |
+| MSG-3 | SQS sync-style = **Request/Reply** + **Correlation Identifier**; per-target `{service}.replies`; per-op timeout | [ADR-014](014-sqs-messaging-patterns.md) |
+| MSG-4 | SQS async = **Fire-and-forget** | [ADR-014](014-sqs-messaging-patterns.md) |
+| MSG-5 | Failures: **Content Enricher** then **DLQ** | [ADR-014](014-sqs-messaging-patterns.md) |
+
 Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
 ## ADR index
@@ -98,3 +108,5 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [011](011-do-not-build.md) | Explicit “do not build” decisions |
 | [012](012-c4-persons-vs-stakeholders.md) | C4 Persons (runtime) vs SAD stakeholders |
 | [013](013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo DB vs Bridge + S3) |
+| [014](014-sqs-messaging-patterns.md) | SQS Request/Reply, correlation, enricher, DLQ, fire-and-forget |
+| [015](015-aws-deployment-reference.md) | AWS reference deployment topology |

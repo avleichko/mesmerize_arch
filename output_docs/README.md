@@ -7,5 +7,6 @@ Mirror of the canonical agent documentation tree for handoff/export.
 | `/AGENTS.md` | `AGENTS.md` |
 | `/docs/**` | `docs/**` |
 | `/output_diagrams/**` | `output_diagrams/**` |
+| `/docs/ai/NFR.md` | `nfr/NFR_CATALOG.md` (+ ASR checklist) |
 
 After changing canonical files, re-sync this folder before sharing externally.
