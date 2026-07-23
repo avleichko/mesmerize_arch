@@ -1,0 +1,46 @@
+@startuml mesmerize-multitenancy-overview
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Mesmerize — Multitenancy Overview\nTenant = Organization; Clinic/Site = sub-scope\nTwo modes: Silo (isolated DB) | Bridge (tenantId column + S3 folders)
+
+Person(admin, "Platform / Org Admin", "Configures Organization tenancyMode")
+
+System_Boundary(platform, "Mesmerize Platform") {
+  Container(core, "API / domain services", "NestJS", "session, content, device, engagement, billing…\nAll requests carry tenantId (= organizationId)")
+  ContainerQueue(sqs, "SQS", "AWS SQS", "Messages include tenantId (+ clinicId when relevant)")
+  Container(data, "Data access layer", "NestJS / data service", "Resolves DB + S3 prefix from org.tenancyMode")
+  ContainerDb(cfg, "Org config", "Postgres", "organizationId, tenancyMode: silo|bridge")
+}
+
+Boundary(silo, "Mode A — Silo (isolated DB)") {
+  ContainerDb(db1, "DB tenant A", "Aurora/Postgres", "Physical isolation per Organization")
+  ContainerDb(db2, "DB tenant B", "Aurora/Postgres", "Physical isolation per Organization")
+  ContainerDb(s3s, "S3 org roots / buckets", "S3", "s3://…/{tenantId}/{clinicId}/…")
+}
+
+Boundary(bridge, "Mode B — Bridge (shared DB + tenant column)") {
+  ContainerDb(shared, "Shared DB", "Aurora/Postgres", "All tables: tenantId (+ clinicId sub-scope)")
+  ContainerDb(s3b, "Shared S3 bucket", "S3", "Isolated folders s3://…/{tenantId}/{clinicId}/…")
+}
+
+Rel(admin, cfg, "Sets tenancyMode per Organization")
+Rel(core, sqs, "Async commands/events")
+Rel(sqs, data, "Consume with tenantId")
+Rel(core, data, "Sync data access")
+Rel(data, cfg, "Lookup tenancyMode")
+Rel(data, db1, "If silo → org A connection")
+Rel(data, db2, "If silo → org B connection")
+Rel(data, s3s, "If silo → org S3 root")
+Rel(data, shared, "If bridge → shared DB WHERE tenantId = ?")
+Rel(data, s3b, "If bridge → tenant/clinic prefix")
+
+note right of cfg
+  **Defaults**
+  Pilot / SOW #3: Bridge
+  Enterprise isolation: Silo
+  tenantId = organizationId
+  clinicId = sub-scope only
+end note
+
+SHOW_LEGEND()
+@enduml

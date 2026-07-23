@@ -1,0 +1,41 @@
+@startuml mesmerize-multitenancy-silo
+title Mesmerize Multitenancy — Mode A: Silo (Isolated DB)\nTenant = Organization | Clinic = sub-scope | S3 per-org isolation
+
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam defaultFontName Helvetica
+
+rectangle "Domain services\n(NestJS microservices)" as SVC #B3D4FC
+queue "SQS\n(tenantId in message)" as SQS #B3D4FC
+rectangle "Data access layer\nresolves connection by organizationId" as DATA #B3D4FC
+
+database "Org config\ntenancyMode = silo" as CFG #E8E8E8
+
+frame "Silo 1 — Organization A (tenantId=A)" as S1 {
+  database "Aurora/Postgres\nDB for tenant A\n(only org A data)" as DBA #B3D4FC
+  storage "S3\ns3://media/{A}/{clinicId}/...\nor dedicated bucket per org" as S3A #B3D4FC
+}
+
+frame "Silo 2 — Organization B (tenantId=B)" as S2 {
+  database "Aurora/Postgres\nDB for tenant B\n(only org B data)" as DBB #B3D4FC
+  storage "S3\ns3://media/{B}/{clinicId}/...\nor dedicated bucket per org" as S3B #B3D4FC
+}
+
+SVC --> SQS : publish/consume
+SQS --> DATA
+SVC --> DATA : REST/sync access
+DATA --> CFG : read tenancyMode + connection
+DATA --> DBA : route when tenantId=A
+DATA --> DBB : route when tenantId=B
+DATA --> S3A : objects for org A
+DATA --> S3B : objects for org B
+
+note bottom of DATA
+  Physical DB isolation per Organization.
+  Clinic/site is a folder + column inside the org DB,
+  not a separate database.
+  No cross-tenant connections.
+end note
+
+@enduml

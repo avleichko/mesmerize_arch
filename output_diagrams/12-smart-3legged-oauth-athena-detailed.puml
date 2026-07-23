@@ -1,0 +1,202 @@
+@startuml mesmerize-smart-3legged-oauth-athena-detailed
+title Mesmerize — High-Fidelity SMART on FHIR Launch\n3-Legged OAuth 2.0 / Authorization Code Grant from Athenahealth\nMVP: EHR launch only · EHR SSO · No Mesmerize login · ADR-005 / ADR-002
+
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 280
+skinparam wrapWidth 200
+skinparam ParticipantPadding 8
+skinparam BoxPadding 8
+skinparam NoteBackgroundColor #FFF8E7
+skinparam NoteBorderColor #C4A35A
+
+actor "Clinician\n(or Nurse / MA)" as User #E8F4E8
+
+box "Athenahealth (EHR)" #F5F5F5
+  participant "Athena UI\nHyperspace / chart" as UI
+  participant "SMART Launch\nBroker" as LaunchBroker
+  participant "OAuth 2.0 /\nOIDC Auth Server" as AS
+  participant "FHIR R4\nResource Server" as FHIR
+end box
+
+box "Mesmerize SMART App (browser only)" #E3F2FD
+  participant "Launch page\n/launch" as Launch
+  participant "fhirclient.js\n(SMART client)" as FC
+  participant "Callback page\n/callback" as CB
+  participant "SMART App UI\n(React 19)" as App
+end box
+
+box "Mesmerize Cloud (zero PHI)" #FFF3E0
+  participant "SMART App Host\n(static / CloudFront)" as Host
+  participant "Platform API\nsession-service etc." as API
+  database "Postgres\n(de-identified)" as DB
+end box
+
+== A. Preconditions (registration & hosting) ==
+
+note over Host, AS
+  **Registered SMART confidential client (architecture)**
+  • client_id: **mesmerize-content-evidence**
+  • client_name: Mesmerize Patient Education & Billing Evidence
+  • launch_url: https://smart.mesmerize.com/launch
+  • redirect_uri: https://smart.mesmerize.com/callback
+  • grant_types: **authorization_code** (3-legged only for clinician MVP)
+  • token_endpoint_auth_method: **private_key_jwt**
+  • response_types: code
+  • MVP scopes:
+    launch/encounter
+    patient/Patient.read
+    patient/Condition.read
+    patient/Encounter.read
+    patient/DocumentReference.write
+  • Hosting: HTTPS, CORS for EHR origins, iframe-friendly
+    (no X-Frame-Options deny for Athena)
+  • **Not used for SMART app:** Auth0 / Mesmerize password login
+  • **Not MVP:** standalone launch, 2-legged client_credentials,
+    imaging scopes (ADR-009)
+end note
+
+== B. EHR launch from active chart / encounter ==
+
+User -> UI : Open patient chart + encounter\n(active clinical context)
+User -> UI : Click **Mesmerize** (SMART app)
+UI -> LaunchBroker : Request EHR launch\nwith current patient + encounter
+LaunchBroker -> Host : HTTP(S) navigate iframe to launch_url\n**?iss=<FHIR base URL>&launch=<opaque launch token>**
+Host -> Launch : Serve /launch (SPA shell)
+
+note right of Launch
+  **Why 3-legged?**
+  Provider is already in an Athena encounter.
+  App must obtain **authenticated provider** identity
+  AND **patient/encounter** launch context.
+  2-legged client_credentials cannot do that.
+end note
+
+== C. SMART discovery ==
+
+Launch -> FC : EHR launch bootstrap\n(iss, launch)
+FC -> FHIR : GET {iss}/.well-known/smart-configuration\n(or metadata / CapabilityStatement as required)
+FHIR --> FC : authorization_endpoint\ntoken_endpoint\ncapabilities (launch-ehr, authorize-post, …)\nscopes_supported, code_challenge_methods_supported
+
+note over FC
+  fhirclient.js discovers AuthZ + token endpoints
+  for this Athena sandbox / production FHIR base.
+end note
+
+== D. Authorization Code Grant (leg 1–2: user agent + AuthZ) ==
+
+FC -> FC : Create **state** (CSRF)\nOptional **PKCE** code_verifier/challenge\nif required by Athena tenant config
+FC -> AS : **HTTP 302 / authorize**\nresponse_type=**code**\nclient_id=mesmerize-content-evidence\nredirect_uri=https://smart.mesmerize.com/callback\nscope=launch/encounter\n  patient/Patient.read\n  patient/Condition.read\n  patient/Encounter.read\n  patient/DocumentReference.write\naud={iss FHIR base}\nlaunch={launch token}\nstate={state}\n[code_challenge / method if PKCE]
+
+AS -> UI : Reuse existing **Athena EHR SSO session**\n(no Mesmerize credentials prompted)
+AS -> AS : Bind authorization code to:\n• authenticated practitioner\n• launch context (patient, encounter)\n• approved scopes\n• client_id + redirect_uri
+
+alt User / org already authorized app
+  AS -> CB : **302 redirect**\nhttps://smart.mesmerize.com/callback\n?code={authorization_code}&state={state}
+else First-time authorize / consent (if Athena requires)
+  AS -> User : Consent / enable app (org policy)
+  User -> AS : Approve
+  AS -> CB : 302 redirect with code + state
+end
+
+CB -> FC : Hand off callback query params
+FC -> FC : Validate **state** matches\n(reject if mismatch)
+
+== E. Token exchange (leg 3: SMART app ↔ token endpoint) ==
+
+FC -> AS : **POST token_endpoint**\ngrant_type=**authorization_code**\ncode={authorization_code}\nredirect_uri=https://smart.mesmerize.com/callback\nclient_id=mesmerize-content-evidence\n**client_assertion_type**=\n  urn:ietf:params:oauth:client-assertion-type:jwt-bearer\n**client_assertion**= signed JWT (**private_key_jwt**)\n[code_verifier if PKCE]
+
+note over FC, AS
+  Confidential client authenticates with **private_key_jwt**
+  (architecture). Private key never leaves Mesmerize control;
+  assertion proves client identity at token endpoint.
+end note
+
+AS -> AS : Verify code (one-time), client assertion,\nredirect_uri, PKCE (if used), launch binding
+AS --> FC : **200 Token response**\naccess_token (EHR FHIR Bearer)\ntoken_type=Bearer\nexpires_in\nscope=(granted)\nid_token (if OIDC claims present)\nrefresh_token (if issued by Athena)\n**patient**={FHIR Patient id}\n**encounter**={FHIR Encounter id}\n[fhirUser / need_patient_banner / …]
+
+FC -> App : SMART session ready **in browser memory only**
+
+note over App #FFCDD2
+  **HARD INVARIANT (ADR-002)**
+  EHR **access_token**, Patient id, Encounter id, name/MRN
+  **MUST NOT** be sent to Mesmerize Platform API, logs, or SQS.
+  Token lifetime governed by Athena; app clears on expiry/logout.
+end note
+
+== F. Browser-side FHIR reads (EHR access_token) ==
+
+App -> FHIR : GET /Patient/{patient}\nAuthorization: Bearer {access_token}
+FHIR --> App : Patient (display name for UI header only)
+
+App -> FHIR : GET /Condition?patient={patient}\n&clinical-status=active\nAuthorization: Bearer {access_token}
+FHIR --> App : Condition[] → extract **ICD-10** codes
+
+App -> FHIR : GET /Encounter/{encounter}\nAuthorization: Bearer {access_token}
+FHIR --> App : Encounter status / context\n(for chart linkage at writeback time)
+
+note over App
+  Acceptance (UC1): recommendations render for the
+  **correct** patient/encounter **without** manual re-selection.
+end note
+
+== G. Mesmerize Platform session (separate credential) ==
+
+App -> API : **POST /api/sessions**\n{\n  tenantId / organizationId,\n  deviceGroupId,\n  conditions: [ICD-10…],\n  …\n}\nAuthorization: Mesmerize session bootstrap\n(**not** EHR Bearer token)
+
+API -> DB : Persist de-identified Session\n(Mesmerize UUID — not patient id)
+API --> App : {\n  sessionId,\n  mesmerizeAccessToken,\n  …\n}
+
+note over API, DB
+  Backend may store: sessionId, clinic/device group,
+  ICD-10[], engagement, billing suggestions.
+  Backend must **reject** payloads containing patient identifiers.
+end note
+
+== H. Clinical workflow (uses Mesmerize token + browser FHIR context) ==
+
+App -> API : GET /api/content/recommend?…\n(ICD-10 set + device filters)\nAuthorization: Bearer {mesmerizeAccessToken}
+API --> App : Ranked education content
+App -> API : Device pair + POST command\n(push to exam room via device-realtime)
+note right of App
+  Device path is server-mediated (ADR-007).
+  Parallel ambient AI in Athena (if any)
+  is independent — Mesmerize is not a scribe.
+end note
+
+== I. Optional writeback (still 3-legged EHR token, browser-side) ==
+
+App -> App : Physician reviews billing evidence\n(human-in-the-loop; Nurse/MA cannot approve writeback)
+alt Writeback enabled for customer
+  App -> FHIR : **POST /DocumentReference**\nAuthorization: Bearer {EHR access_token}\n(engagement / service-delivery summary;\nLOINC 69730-0 framing per architecture)
+  FHIR --> App : 201 Created
+else Writeback disabled (per-org config)
+  App -> App : Skip EHR write; export/audit only
+end
+
+== J. Failure / security paths (summary) ==
+
+note over Launch, AS
+  **Reject / abort if:**
+  • state mismatch or missing code
+  • private_key_jwt assertion invalid
+  • scope escalation beyond MVP set
+  • token response missing patient/encounter when launch/encounter required
+  • Platform API called with EHR Bearer token
+  • standalone launch attempted in MVP build
+end note
+
+legend right
+  |= Concept |= Mesmerize choice |
+  | Grant | authorization_code (3-legged) |
+  | Launch | EHR launch only (Athena chart) |
+  | SSO | Athena / EHR — no Mesmerize login |
+  | Client auth | private_key_jwt |
+  | Client id | mesmerize-content-evidence |
+  | FHIR token | Browser only |
+  | Platform auth | Separate Mesmerize session token |
+  | Pilot EHR | athenahealth (Epic/Cerner later) |
+endlegend
+
+@enduml

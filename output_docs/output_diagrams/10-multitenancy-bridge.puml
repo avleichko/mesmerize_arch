@@ -1,0 +1,61 @@
+@startuml mesmerize-multitenancy-bridge
+title Mesmerize Multitenancy — Mode B: Bridge\nShared DB + tenantId column + isolated S3 folders\n(Default for SOW #3 / pilot)
+
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam roundCorner 8
+skinparam defaultFontName Helvetica
+
+rectangle "Domain services\n(NestJS microservices)" as SVC #B3D4FC
+queue "SQS\n(tenantId + optional clinicId)" as SQS #B3D4FC
+rectangle "Data access layer\nALWAYS filter by tenantId" as DATA #B3D4FC
+
+database "Org config\ntenancyMode = bridge" as CFG #E8E8E8
+
+frame "Bridge — Shared Aurora/Postgres" as BR {
+  database "Shared DB" as DB #B3D4FC
+
+  entity "organization" as ORG {
+    * id : tenantId
+    --
+    name
+    tenancyMode
+  }
+
+  entity "tenant-owned table\n(e.g. session, engagement)" as TBL {
+    * id
+    * tenantId <<FK organization>>
+    clinicId
+    deviceGroupId
+    value / payload
+  }
+
+  entity "clinic (sub-scope)" as CLINIC {
+    * id : clinicId
+    * tenantId
+    name
+  }
+
+  ORG ||--o{ TBL : tenantId
+  ORG ||--o{ CLINIC : tenantId
+}
+
+frame "Shared S3 bucket — folder isolation" as S3F {
+  storage "s3://mesmerize-media/\n  {tenantId}/\n    {clinicId}/\n      content|exports|ads/..." as S3 #B3D4FC
+}
+
+SVC --> SQS
+SQS --> DATA
+SVC --> DATA
+DATA --> CFG
+DATA --> DB : WHERE tenantId = :tenantId\n(and clinicId when scoped)
+DATA --> S3 : put/get under\n{tenantId}/{clinicId}/
+
+note bottom of DATA
+  Logical isolation via tenantId column.
+  Fail closed: queries without tenantId are forbidden.
+  S3 isolation via prefixes (not separate buckets required).
+  Pilot default mode.
+end note
+
+@enduml

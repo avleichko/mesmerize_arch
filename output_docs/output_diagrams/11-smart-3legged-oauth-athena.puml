@@ -1,0 +1,67 @@
+@startuml mesmerize-smart-3legged-oauth-athena
+title Mesmerize SMART on FHIR — 3-Legged OAuth / Authorization Code Grant\nEHR launch from Athena (MVP) — ADR-005\nNo separate Mesmerize login for SMART app
+
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Clinician / Nurse / MA" as User
+participant "Athena EHR\n(chart / encounter)" as Athena
+participant "SMART App browser\n(React + fhirclient.js)" as SMART
+participant "Athena\nAuthorization Server" as AuthZ
+participant "Athena\nFHIR R4 API" as FHIR
+participant "Mesmerize Platform API\n(session / content / devices)" as API
+
+== 1. EHR launch (only MVP entry) ==
+User -> Athena : Opens patient chart / encounter\nand launches Mesmerize
+Athena -> SMART : Redirect / iframe to launch URL\niss + launch parameters\n(HTTPS https://smart…/launch)
+
+note right of SMART
+  **EHR launch only** (no standalone launch for MVP).
+  App needs authenticated **provider** +
+  **patient/encounter** context → **3-legged**
+  Authorization Code Grant (not 2-legged).
+end note
+
+== 2. Authorization Code Grant (3-legged) ==
+SMART -> AuthZ : Authorize request\nresponse_type=code\nclient_id=mesmerize-content-evidence\nscope=launch/encounter\n  patient/Patient.read\n  patient/Condition.read\n  patient/Encounter.read\n  patient/DocumentReference.write\nredirect_uri=…/callback\n(aud / state / PKCE as required)
+AuthZ -> User : EHR SSO session already established\n(user consents / continues in EHR context)
+AuthZ -> SMART : Redirect to /callback?code=…&state=…
+SMART -> AuthZ : Token request\ngrant_type=authorization_code\ncode + client auth (private_key_jwt)
+AuthZ -> SMART : access_token (+ id_token / refresh as issued)\nFHIR base URL / patient / encounter context
+
+note over SMART
+  **FHIR access_token stays in the browser only**
+  Never sent to Mesmerize Platform API (ADR-002).
+end note
+
+== 3. Browser-side FHIR (EHR token) ==
+SMART -> FHIR : GET Patient, Condition, Encounter\nAuthorization: Bearer <EHR access_token>
+FHIR -> SMART : Patient display name,\nICD-10 Conditions, Encounter
+
+== 4. Mesmerize session (separate token — no Mesmerize login UI) ==
+SMART -> API : POST /api/sessions\nICD-10 codes + deviceGroupId only\n(+ tenantId/org context as applicable)\n**No** patient id / MRN / encounter id
+API -> SMART : opaque sessionId +\nMesmerize session token
+
+note over API
+  Backend is zero-PHI:
+  receives ICD-10 + device group + session id.
+  Clinician did **not** sign into Mesmerize
+  separately — Auth0 is for Command Center only.
+end note
+
+== 5. Later writeback (same EHR token, still browser-side) ==
+SMART -> FHIR : POST DocumentReference\n(after physician approve; if enabled)\nAuthorization: Bearer <EHR access_token>
+FHIR -> SMART : 201 Created
+
+legend right
+  |= Step |= Mechanism |
+  | Launch | Athena EHR launch (iframe) |
+  | Auth | 3-legged OAuth / Authorization Code Grant |
+  | SSO | Athena / EHR SSO (no Mesmerize login) |
+  | FHIR | Browser ↔ Athena FHIR |
+  | Platform | Separate Mesmerize session token |
+endlegend
+
+@enduml
