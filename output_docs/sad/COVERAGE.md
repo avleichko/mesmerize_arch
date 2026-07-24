@@ -331,14 +331,14 @@
 |---|------|--------|
 | 1 | Purpose stated | [x] |
 | 2 | Actors / components covered | [x] |
-| 3 | Required diagrams embedded (`18` primary, `17` companion) | [x] |
+| 3 | Required diagrams embedded (`18` primary, `17` companion, `21-aws-network-topology`, `22-aws-security-group-tiers`) | [x] |
 | 4 | Interfaces / interactions described | [x] |
 | 5 | Data ownership noted (RDS / Redis / S3) | [x] |
 | 6 | Security / PHI notes | [x] |
 | 7 | Evidence links (ADR-016 + touchscreen-ux extract; dual ladders) | [x] |
 | 8 | Open questions listed | [x] |
 | 9 | White spots only as colored callouts | [x] |
-| * | **Chapter-specific:** both AWS diagrams embedded; TBD Region/RTO called out | [x] |
+| * | **Chapter-specific:** AWS diagrams `17`/`18`/`21`/`22` embedded; TBD Region/RTO called out | [x] |
 
 **Score:** 10 / 10 = **100%** → band **75** (capped; many blocking Unknowns — not Stakeholder-ready)
 

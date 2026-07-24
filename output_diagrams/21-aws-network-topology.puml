@@ -1,0 +1,105 @@
+@startuml 21-aws-network-topology
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title Mesmerize Content Evidence Platform — AWS Network Topology (Ladder A)\nSubnet / traffic plane · Mesmerize-owned AWS · 2026-07-24\nEvidence: [C]=Confirmed [I]=Inferred [P]=Proposed [U]=Unknown
+
+LAYOUT_WITH_LEGEND()
+
+Person(clinician, "Clinician / Nurse / MA [C]", "Athena SMART iframe")
+Person(admin, "Admin [C]", "Command Center")
+Person_Ext(patient, "Patient / device [C]", "Exam-room display · no login")
+
+System_Ext(athena, "athenahealth [C]", "SMART + FHIR R4 · outside VPC")
+System_Ext(auth0, "Auth0 [C]", "Admin OIDC · outside VPC")
+System_Ext(esper, "Esper MDM [C]", "Device fleet · outside VPC")
+System_Ext(cms, "Sanity / BioDigital / MJH [C]", "Content sources · outside VPC")
+System_Ext(sms, "SMS/email [C]", "Bridge OTP · outside VPC")
+
+Deployment_Node(awsacct, "AWS Account — Mesmerize-owned [C]", "Region: Unknown [U] · no invented CIDR/Region") {
+
+  Deployment_Node(edge, "Edge (outside VPC) [C]", "Global / regional edge") {
+    Container(r53, "Route 53 [P]", "DNS", "SMART + API DNS")
+    Container(cf, "CloudFront [C]", "CDN", "SMART SPA + media · HTTPS")
+    Container(waf, "AWS WAF [P]", "WAF", "OWASP-oriented rules")
+  }
+
+  Deployment_Node(vpc, "VPC [I]", "Multi-AZ assumed [I] · CIDR Unknown [U]") {
+
+    Deployment_Node(public, "Public subnets AZ-a/b [I]", "Internet-facing") {
+      Container(alb, "ALB [C]", "ALB", "HTTPS:443 · REST + Socket.io sticky TG")
+      Container(nat, "NAT Gateway [I]", "NAT", "Private subnet egress to Internet")
+      Container(igw, "Internet Gateway [I]", "IGW", "Public subnet Internet path")
+    }
+
+    Deployment_Node(appsub, "Private app subnets AZ-a/b [C]", "ECS Fargate · co-locate OK early [C]") {
+      Container(ecs, "ECS/Fargate NestJS services [C]", "Fargate", "session · content · device-realtime ·\nengagement · billing · org · audit")
+    }
+
+    Deployment_Node(datasub, "Private data subnets AZ-a/b [I]", "No public IPs · no Internet [I]") {
+      ContainerDb(rds, "RDS PostgreSQL 16 [C]", "RDS", "Bridge+tenantId default")
+      ContainerDb(redis, "ElastiCache Redis 7 [C]", "ElastiCache", "Socket.io adapter · cache")
+    }
+
+    Deployment_Node(vpce, "VPC endpoints [P/I]", "Reduce NAT for AWS APIs") {
+      Container(vpce_s3, "S3 Gateway endpoint [P/I]", "Gateway VPCe", "Private path to S3")
+      Container(vpce_sqs, "SQS Interface endpoint [P]", "Interface VPCe", "443 from ECS")
+      Container(vpce_ecr, "ECR Interface endpoint [P]", "Interface VPCe", "Pull images")
+      Container(vpce_sec, "Secrets Manager Interface [P]", "Interface VPCe", "Task secrets")
+      Container(vpce_kms, "KMS Interface endpoint [P]", "Interface VPCe", "CMK decrypt/encrypt")
+    }
+  }
+
+  Deployment_Node(regional, "Regional AWS services (outside VPC) [C]", "Not in VPC data plane") {
+    ContainerDb(s3media, "S3 media bucket [C]", "S3", "{tenantId}/{clinicId}/…")
+    ContainerQueue(sqs, "SQS queues [C]", "SQS", "requests · replies · events · dlq")
+    Container(ecr, "ECR [I]", "Registry", "Container images")
+    Container(secrets, "Secrets Manager [P]", "Secrets", "Task role secrets")
+    Container(kms, "KMS CMK [P]", "KMS", "RDS/S3/SQS encryption")
+  }
+}
+
+Rel(clinician, cf, "Load SMART SPA", "HTTPS")
+Rel(admin, alb, "Admin APIs", "HTTPS")
+Rel(patient, alb, "Device WSS/REST", "HTTPS/WSS")
+
+Rel(r53, cf, "Resolves", "Proposed DNS")
+Rel(cf, waf, "Filtered by", "Proposed")
+Rel(cf, alb, "API / origin path", "HTTPS")
+Rel(igw, alb, "Public ingress", "HTTPS")
+
+Rel(alb, ecs, "Target groups", "HTTPS / WSS sticky")
+Rel(ecs, rds, "Prisma R/W", "TLS · private")
+Rel(ecs, redis, "Adapter/cache", "private")
+
+Rel(ecs, vpce_s3, "S3 via gateway", "IAM [P/I]")
+Rel(vpce_s3, s3media, "Private AWS path", "Gateway")
+Rel(ecs, vpce_sqs, "Queue APIs", "443 [P]")
+Rel(vpce_sqs, sqs, "Private AWS path", "Interface")
+Rel(ecs, vpce_ecr, "Image pull", "443 [P]")
+Rel(vpce_ecr, ecr, "Private AWS path", "Interface")
+Rel(ecs, vpce_sec, "Read secrets", "443 [P]")
+Rel(vpce_sec, secrets, "Private AWS path", "Interface")
+Rel(ecs, vpce_kms, "Crypto APIs", "443 [P]")
+Rel(vpce_kms, kms, "Private AWS path", "Interface")
+
+Rel(ecs, nat, "Egress to approved externals", "HTTPS via NAT [I]")
+Rel(nat, igw, "Outbound", "NAT→IGW")
+Rel(nat, athena, "Platform→EHR APIs (no FHIR token)", "HTTPS [C]")
+Rel(nat, auth0, "JWKS / OIDC", "HTTPS [C]")
+Rel(nat, esper, "Device registry", "HTTPS [C]")
+Rel(nat, cms, "Content sync", "HTTPS [C]")
+Rel(nat, sms, "OTP send", "HTTPS [C]")
+
+note right of edge
+  **Ladder A only**
+  No Netlify / TTV on this plane.
+  FHIR access token never leaves browser.
+end note
+
+note bottom of vpc
+  **Evidence honesty:** Multi-AZ VPC, NAT, IGW, private data placement = **Inferred [I]**.
+  WAF, Route 53, VPC endpoints = **Proposed [P]** (or [P/I] where HA goals imply private AWS paths).
+  **CIDR and Region = Unknown [U]** — do not invent values (see Ch.18 Q-07).
+end note
+
+@enduml

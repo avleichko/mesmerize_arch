@@ -1,0 +1,61 @@
+@startuml 22-aws-security-group-tiers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Deployment.puml
+
+title Mesmerize — Logical Security Group Tiers (Proposed allow paths)\nLadder A · Mesmerize-owned AWS · 2026-07-24\nAll allow paths Proposed [P] until Terraform / security review · No invented AWS SG IDs
+
+LAYOUT_WITH_LEGEND()
+
+Person_Ext(internet, "Internet [C]", "Clients · SMART / admin / devices")
+
+Deployment_Node(edge_tier, "Edge / WAF tier [P]", "Logical · no AWS SG ID invented") {
+  Container(edge_waf, "CloudFront + WAF path [P]", "Edge", "HTTPS 443 from Internet")
+}
+
+Deployment_Node(alb_tier, "sg-alb [P]", "Logical SG label · ALB") {
+  Container(sg_alb, "Application Load Balancer [C]", "ALB", "Inbound 443 from Edge / clients [I/P]")
+}
+
+Deployment_Node(ecs_tier, "sg-ecs [P]", "Logical SG label · ECS Fargate") {
+  Container(sg_ecs, "ECS Fargate NestJS tasks [C]", "Fargate", "Inbound TG ports from sg-alb only [P]")
+}
+
+Deployment_Node(data_tier, "sg-data [P]", "Logical SG label · data plane") {
+  ContainerDb(sg_data, "RDS PostgreSQL 16 + ElastiCache Redis 7 [C]", "Data", "Inbound 5432 / 6379 from sg-ecs only [P]")
+}
+
+Deployment_Node(vpce_tier, "sg-vpce [P]", "Logical SG label · interface endpoints") {
+  Container(sg_vpce, "Interface VPC endpoints [P]", "VPCe", "Inbound 443 from sg-ecs [P]")
+}
+
+Rel(internet, edge_waf, "HTTPS", "443 [P]")
+Rel(edge_waf, sg_alb, "Origin / filtered path", "443 [P]")
+Rel(sg_alb, sg_ecs, "Target group ports", "TG ports [P]")
+Rel(sg_ecs, sg_data, "Postgres / Redis", "5432, 6379 [P]")
+Rel(sg_ecs, sg_vpce, "AWS APIs via VPCe", "443 [P]")
+
+note right of edge_waf
+  **Proposed allow path**
+  Internet → Edge/WAF :443 [P]
+  → sg-alb :443 [P]
+end note
+
+note right of sg_ecs
+  **Outbound [P]**
+  sg-ecs → VPC endpoints :443
+  + NAT to approved externals
+  (athenahealth, Auth0, Esper, CMS, SMS)
+end note
+
+note bottom of sg_data
+  **sg-data:** no Internet egress **[I]**
+  **Deny-by-default** between unrelated tiers **[P]**
+  Sticky ALB TG (device-realtime) = compute/ingress concern (ADR-007/015) — not a Confirmed SG rule.
+end note
+
+note bottom of vpce_tier
+  Evidence: all allow rows **Proposed [P]** until Terraform / security review.
+  Logical tier names only — **no invented AWS SG IDs**.
+  Ladder A only — no Netlify / TTV on this plane.
+end note
+
+@enduml

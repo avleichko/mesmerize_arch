@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `13-deployment-and-infrastructure` |
 | SAD mapping | Mesmerize extension |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-07-24 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -29,6 +29,42 @@ Externals remain outside the VPC: athenahealth, Auth0, Esper, Sanity / BioDigita
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
   <strong>Proposed:</strong> Route 53 + WAF in front of CloudFront/ALB for production hardening (recommended; not mandated by the ADR-010 component list).
+</p>
+
+### Network topology
+
+DevOps network plane for **Ladder A** (platform AWS) only: VPC / subnet / edge / egress and logical security-group tiers. Claims are tagged Confirmed / Inferred / Proposed / Unknown — do **not** invent CIDR blocks or Region as Confirmed. Ladder B (Netlify / TTV) is out of scope for this plane; see [Chapter 17](17-ci-cd.md).
+
+![AWS network topology (Ladder A)](../../output_diagrams/21-aws-network-topology.png)
+
+*Figure 13-3: AWS network topology — edge (CloudFront Confirmed; Route 53 / WAF Proposed), Multi-AZ VPC Inferred, public / private app / private data subnets, VPC endpoints Proposed/Inferred, NAT egress to approved externals. CIDR and Region Unknown (ADR-015).*
+
+Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run ECS/Fargate NestJS services (Confirmed; early co-locate OK). Private data subnets hold RDS PostgreSQL 16 and ElastiCache Redis 7 (Confirmed). S3 media is regional (outside VPC). Sticky ALB target group for `device-realtime-service` remains an ingress/compute concern (ADR-007 / ADR-015), not a Confirmed SG rule dump.
+
+![AWS security group tiers (Proposed allow paths)](../../output_diagrams/22-aws-security-group-tiers.png)
+
+*Figure 13-4: Logical security-group tiers — Proposed allow paths until Terraform / security review confirms. No invented AWS SG IDs.*
+
+| Tier | Members | Proposed inbound | Source |
+|------|---------|------------------|--------|
+| Edge / WAF | CloudFront + WAF path | HTTPS 443 | Internet |
+| sg-alb | Application Load Balancer | 443 | CloudFront / clients **[I/P]** |
+| sg-ecs | ECS Fargate tasks | App ports via target groups (typically 443/container) | sg-alb only |
+| sg-data | RDS, Redis | 5432 (Postgres), 6379 (Redis) | sg-ecs only |
+| sg-vpce | Interface VPC endpoints | 443 | sg-ecs |
+
+**Outbound (Proposed):** sg-ecs → VPC endpoints + NAT to approved externals; sg-data **no Internet** **[I]**; deny-by-default between unrelated tiers. All allow rows are **Proposed** until confirmed.
+
+<p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
+  <strong>Inferred:</strong> Multi-AZ VPC, NAT Gateway, and private data-subnet placement for HA goals (ADR-015 wording).
+</p>
+
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> WAF, Route 53, VPC endpoints (S3 gateway; SQS / ECR / Secrets Manager / KMS interface), and the SG tier allow matrix above.
+</p>
+
+<p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
+  <strong>Unknown:</strong> VPC <strong>CIDR</strong> blocks and production <strong>AWS Region</strong> — not documented; do not invent. Region decision tracked as <strong>Q-07</strong> in <a href="18-assumptions-and-open-questions.md">Chapter 18</a>.
 </p>
 
 ### Compute
@@ -129,6 +165,14 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 
 *Figure 13-2: Generic multi-AZ AWS reference with Graphviz AWS icons — same shape for Dev/Staging/Prod; stakeholder overview (ADR-015).*
 
+![AWS network topology (Ladder A)](../../output_diagrams/21-aws-network-topology.png)
+
+*Figure 13-3: AWS network topology — VPC / AZ / subnet / edge / endpoints / egress (Ladder A). CIDR and Region Unknown.*
+
+![AWS security group tiers (Proposed allow paths)](../../output_diagrams/22-aws-security-group-tiers.png)
+
+*Figure 13-4: Logical security-group tiers with Proposed allow paths (no invented SG IDs).*
+
 ## Evidence
 
 - [Chapter 17 — CI/CD](17-ci-cd.md) — dual delivery ladders (full narrative)
@@ -139,11 +183,13 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — SQS RR / events / DLQ
 - [`docs/architecture/deployment/aws-production-deployment.md`](../../../docs/architecture/deployment/aws-production-deployment.md) — production package narrative + matrices
 - [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — Cloud / infra section
+- [`output_diagrams/21-aws-network-topology.puml`](../../output_diagrams/21-aws-network-topology.puml) / [`.png`](../../output_diagrams/21-aws-network-topology.png) — Ladder A network topology
+- [`output_diagrams/22-aws-security-group-tiers.puml`](../../output_diagrams/22-aws-security-group-tiers.puml) / [`.png`](../../output_diagrams/22-aws-security-group-tiers.png) — logical SG tiers (Proposed allows)
 
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> AWS Region / DR Region; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; AWS account ID. CI/CD unknowns (deploy strategy, platform branch promotion) — see [Chapter 17](17-ci-cd.md).
+  <strong>Unknown:</strong> AWS Region / DR Region (<strong>Q-07</strong>); VPC <strong>CIDR</strong>; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; AWS account ID. CI/CD unknowns (deploy strategy, platform branch promotion) — see [Chapter 17](17-ci-cd.md). Region open question: <a href="18-assumptions-and-open-questions.md">Chapter 18 — Q-07</a>.
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
