@@ -9,14 +9,14 @@
 
 ## Purpose of this chapter
 
-Describe the Content Evidence Platform’s runtime containers and monorepo boundaries: who owns what, how edge clients reach NestJS services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs.
+Describe the Content Evidence Platform’s runtime containers and monorepo boundaries: who owns what, how edge clients reach **Python / FastAPI** platform services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs.
 
 ## Narrative
 
 ### Planes and invariants
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Three planes — <strong>Cloud (AWS)</strong> (SMART hosting, NestJS platform services, PostgreSQL + Redis, S3), <strong>EHR SMART launch</strong> (pilot athenahealth iframe), <strong>clinic edge</strong> (Microtouch / PWA devices, Command Center, Esper MDM) (ARCHITECTURE.md).
+  <strong>Confirmed:</strong> Three planes — <strong>Cloud (AWS)</strong> (SMART hosting, <strong>Python / FastAPI</strong> platform services, PostgreSQL + Redis, S3), <strong>EHR SMART launch</strong> (pilot athenahealth iframe), <strong>clinic edge</strong> (Microtouch / PWA devices, Command Center, Esper MDM) (ARCHITECTURE.md; ADR-017).
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -30,7 +30,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 ### Technology stack (runtime)
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> React 19 / Vite / Tailwind frontends; <code>fhirclient.js</code> for SMART; NestJS / TypeScript backend; PostgreSQL 16 + Prisma; Redis 7; Socket.io; Turborepo + npm workspaces; Auth0 for admin / Command Center; Esper MDM; Sanity + BioDigital + MJH content; Mesmerize-owned AWS (ECS/Fargate, RDS, ElastiCache, S3, CloudFront) (ADR-010 S1–S13).
+  <strong>Confirmed:</strong> React 19 / Vite / Tailwind frontends; <code>fhirclient.js</code> for SMART; <strong>Python / FastAPI</strong> backend; PostgreSQL 16 + <strong>SQLAlchemy 2 / Alembic</strong>; Redis 7; Socket.io (<code>python-socketio</code> on server); polyglot monorepo (pnpm for TS apps; uv/Poetry for API); Auth0 for admin / Command Center; Esper MDM; Sanity + BioDigital + MJH content; Mesmerize-owned AWS (ECS/Fargate, RDS, ElastiCache, S3, CloudFront) (ADR-010 S1–S13 as amended by ADR-017).
 </p>
 
 ## Component Responsibilities
@@ -47,14 +47,14 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
   <strong>Confirmed:</strong> Prefer <strong>extending</strong> the live PWA lineage over a greenfield rewrite; production fleet app is extend/copy, not in-place overwrite by delivery partners (ADR-007). Extend-PWA / device runtime delivery uses <strong>Ladder B</strong> (Netlify web preview ≠ device; manual TTV filesync; Esper tags) — not Ladder A ECS (ADR-007; ADR-016). Detail in [Chapter 13](13-deployment-and-infrastructure.md).
 </p>
 
-### NestJS platform services
+### Platform services (Python / FastAPI)
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Logical NestJS containers (ECS/Fargate): session, content, device-realtime, engagement, billing-evidence, org-identity, audit-telemetry, and optional ads — plus Postgres / Redis / S3 / SQS (ARCHITECTURE.md C4; ADR-010; ADR-015). Early pilot may <strong>co-locate</strong> tasks (ADR-015).
+  <strong>Confirmed:</strong> Logical platform containers (ECS/Fargate): session, content, device-realtime, engagement, billing-evidence, org-identity, audit-telemetry, and optional ads — plus Postgres / Redis / S3 / SQS (ARCHITECTURE.md C4; ADR-010; ADR-015; ADR-017). Early pilot may <strong>co-locate</strong> tasks (ADR-015). Implementation language is <strong>Python</strong> (FastAPI reference).
 </p>
 
-| NestJS service | Responsibilities | Primary dependencies |
-|----------------|------------------|----------------------|
+| Platform service | Responsibilities | Primary dependencies |
+|------------------|------------------|----------------------|
 | **session-service** | Opaque session lifecycle; store ICD-10 set, clinic/device group, status; publish `session.started` / `session.ended` | PostgreSQL; SQS |
 | **content-service** | Catalog, ICD-10→content recommend, CMS projections / sync jobs | PostgreSQL; S3 (media refs); SQS; Sanity; BioDigital; MJH |
 | **device-realtime-service** | Device registry mirror, pairing, Device Command API, Socket.io rooms / presence | PostgreSQL; Redis (Socket.io adapter); SQS; Esper identity mirror; sticky ALB |
@@ -65,7 +65,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 | **ads-service** *(optional)* | Ad delivery / proof-of-play — not on the core clinical path | PostgreSQL; S3; SQS |
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> Monorepo <code>apps/api</code> is the NestJS entry that hosts or fronts these logical services; process-per-service vs co-located modules is a deploy choice (ADR-015 co-locate OK early), not a different product boundary.
+  <strong>Inferred:</strong> Monorepo <code>apps/api</code> (Python / FastAPI) is the entry that hosts or fronts these logical services; process-per-service vs co-located modules is a deploy choice (ADR-015 co-locate OK early), not a different product boundary.
 </p>
 
 ### Shared packages (monorepo)
@@ -97,7 +97,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 
 ![C4 container diagram](../../output_diagrams/06-c4-containers.png)
 
-*Figure 8-1: C4 containers — SMART app, device PWAs, gateway, NestJS services, Postgres/Redis/S3/SQS, and externals (athenahealth, Auth0, Esper, Sanity, BioDigital, MJH).*
+*Figure 8-1: C4 containers — SMART app, device PWAs, gateway, Python platform services, Postgres/Redis/S3/SQS, and externals (athenahealth, Auth0, Esper, Sanity, BioDigital, MJH).*
 
 ### Interaction summary
 
@@ -105,7 +105,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 |------|-----|-----|-------|
 | Clinician / EHR | SMART Web App | EHR launch iframe | Pilot athenahealth |
 | SMART Web App | athenahealth FHIR | Browser HTTPS + EHR token | Token never to Mesmerize |
-| SMART Web App | Gateway → NestJS | HTTPS REST + Mesmerize session token | ICD-10 + deviceGroup + sessionId only |
+| SMART Web App | Gateway → Platform API | HTTPS REST + Mesmerize session token | ICD-10 + deviceGroup + sessionId only |
 | Device PWA | Gateway / device-realtime | HTTPS REST + Socket.io | Esper device token |
 | Gateway | session / content / device / engagement / billing / org / ads | REST | ALB routing |
 | session / device / content | SQS | Publish lifecycle, commands, CMS jobs | Fire-and-forget or RR per ADR-014 |
@@ -123,9 +123,9 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
   <strong>Proposed:</strong> Coarse domain microservices (Approach 1 on the C4 diagram) as the target runtime shape; final process boundaries for pilot may still co-locate on one ECS cluster until scale requires split (ADR-015).
 </p>
 
-### Container focus diagrams (NestJS services)
+### Container focus diagrams (platform services)
 
-The following are **C4 container-focus** views derived from diagram `06`: each isolates one NestJS service and shows **all** of its neighbors. Edges present on `06` are **Confirmed** for this pack’s C4 model; additional edges from ARCHITECTURE / ADRs are labeled **Inferred**. These are not module-level C4 Component diagrams.
+The following are **C4 container-focus** views derived from diagram `06`: each isolates one platform service and shows **all** of its neighbors. Edges present on `06` are **Confirmed** for this pack’s C4 model; additional edges from ARCHITECTURE / ADRs are labeled **Inferred**. These are not module-level C4 Component diagrams. Implementation language is **Python** (ADR-017); diagram titles may still say “NestJS” historically until PNGs are regenerated.
 
 #### session-service
 
@@ -275,11 +275,11 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Final process-per-service vs co-located NestJS modules for pilot cutover timing; exact public REST route catalog per service beyond architecture API groups.
+  <strong>Unknown:</strong> Final process-per-service vs co-located Python service modules for pilot cutover timing; exact public REST route catalog per service beyond architecture API groups.
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> <code>apps/api</code> as the deployable NestJS surface that maps to the logical C4 services until split.
+  <strong>Inferred:</strong> <code>apps/api</code> as the deployable FastAPI surface that maps to the logical C4 services until split.
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
@@ -290,5 +290,5 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 
 Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
 
-- **A-05** — NestJS services as separate ECS services by cutover
+- **A-05** — Platform (Python) services as separate ECS services by cutover
 - Related pilot scope / RBAC depth: **Q-10**

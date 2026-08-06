@@ -1,5 +1,6 @@
 # REFERENCE ONLY — not executed in the mesmerize docs repo.
 # Copy to a platform monorepo as: .github/workflows/ci.yml
+# Stack: Python / FastAPI Platform API (ADR-017) + optional Node frontends (polyglot).
 # Source patterns: touchscreen-ux .github/workflows/ci.yml (Confirmed there; Proposed here).
 # Spec: docs/superpowers/specs/2026-07-23-ci-templates-adoption-from-touchscreen-ux-design.md
 #
@@ -14,85 +15,100 @@ on:
     branches: [main, staging]
 
 jobs:
-  lint:
+  # --- Ladder A: Platform API (Python) ---
+  api-lint:
     runs-on: ubuntu-latest
-    # Optional: continue-on-error: true  # only while tracked lint debt exists
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          # touchscreen-ux uses Node 22; Ladder A pin is Unknown until stack ADR — set explicitly when adopting
-          node-version: '22'
-          # cache: 'npm'  # TODO: enable when package manager is fixed (npm|pnpm|yarn)
-      - name: Install
+          # TODO: pin per Q-15 (recommend 3.12+)
+          python-version: '3.12'
+      - name: Install (uv or poetry)
         run: |
-          # TODO: lockfile install (e.g. npm ci / pnpm install --frozen-lockfile)
-          echo "TODO: install dependencies"
+          # TODO: e.g. pip install uv && uv sync --frozen
+          #   or: pip install poetry && poetry install --no-root
+          echo "TODO: install Python dependencies"
           exit 1
-      - name: Lint
+      - name: Ruff
         run: |
-          # TODO: package lint script
-          echo "TODO: lint"
+          # TODO: uv run ruff check .   OR   poetry run ruff check .
+          echo "TODO: ruff"
           exit 1
 
-  typecheck:
+  api-typecheck:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: '22'
+          python-version: '3.12'
       - name: Install
         run: |
-          # TODO: lockfile install
-          echo "TODO: install dependencies"
+          echo "TODO: install Python dependencies"
           exit 1
-      - name: Typecheck
+      - name: Mypy
         run: |
-          # TODO: e.g. tsc -b / nest build --typecheck
-          echo "TODO: typecheck"
+          # TODO: uv run mypy src
+          echo "TODO: mypy"
           exit 1
 
-  test:
+  api-test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: '22'
+          python-version: '3.12'
       - name: Install
         run: |
-          # TODO: lockfile install
-          echo "TODO: install dependencies"
+          echo "TODO: install Python dependencies"
           exit 1
-      - name: Test
+      - name: Pytest
         run: |
-          # TODO: unit/integration test command
-          echo "TODO: test"
+          # TODO: uv run pytest -q
+          echo "TODO: pytest"
           exit 1
 
-  build:
-    needs: [typecheck, test]
+  api-image:
+    needs: [api-typecheck, api-test]
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API container
+        run: |
+          # TODO: docker build -t mesmerize-api:$GITHUB_SHA apps/api
+          # Later: push ECR — deploy strategy Unknown (ADR-016)
+          echo "TODO: docker build (Python base image)"
+          exit 1
+
+  # --- Optional: TypeScript frontends in the same polyglot repo ---
+  web-ci:
+    runs-on: ubuntu-latest
+    # Remove this job if frontends live in a separate repo / Ladder B only.
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
+          # cache: 'pnpm'
       - name: Install
         run: |
-          # TODO: lockfile install
-          echo "TODO: install dependencies"
+          # TODO: corepack enable && pnpm install --frozen-lockfile
+          echo "TODO: pnpm install (frontends)"
           exit 1
-      - name: Inject build config from secrets/vars
-        env:
-          # TODO: map platform secrets/vars (not committed client .env / VITE_*)
-          EXAMPLE_API_URL: ${{ vars.EXAMPLE_API_URL }}
+      - name: Lint / typecheck / test / build
         run: |
-          # TODO: write env file or export for build; prefer cloud secret store for runtime
-          echo "TODO: configure build env from GHA secrets/vars or skip if not needed for compile"
-      - name: Build
-        run: |
-          # TODO: production build (and later: docker build / push ECR — deploy strategy Unknown)
-          echo "TODO: build"
+          # TODO: pnpm lint && pnpm typecheck && pnpm test && pnpm build
+          # Scope to smart-launcher / exam-room / waiting-room as applicable
+          echo "TODO: frontend CI"
           exit 1

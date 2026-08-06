@@ -9,7 +9,7 @@
 
 Three planes:
 
-1. **Cloud (AWS)** — SMART app hosting, NestJS Platform API, application services, PostgreSQL (engagement only) + Redis, S3 media/ads.
+1. **Cloud (AWS)** — SMART app hosting, **Python / FastAPI** Platform API, application services, PostgreSQL (engagement only) + Redis, S3 media/ads.
 2. **EHR SMART launch** — Epic / Cerner / Athena launch SMART app in iframe (pilot: **athenahealth**).
 3. **Clinic edge** — Microtouch exam-room devices, waiting-room TVs, Command Center; Esper MDM.
 
@@ -87,9 +87,9 @@ Architecture doc also lists imaging read scopes for **Patient Imaging Mirror** �
 
 Registered client (architecture): `mesmerize-content-evidence`, `private_key_jwt`, authorization_code.
 
-### Platform API (`apps/api`, NestJS)
+### Platform API (`apps/api` or `services/`, Python / FastAPI)
 
-Serves SMART app and devices. **Never** talks to EHR; **never** processes audio/notes.
+Serves SMART app and devices. **Never** talks to EHR; **never** processes audio/notes. Language/framework: [ADR-017](../adr/017-python-platform-backend.md).
 
 Documented API groups:
 
@@ -112,15 +112,15 @@ Application services (architecture diagram): Session, Content, Billing Evidence 
 
 Fleet scale (Q&A): ~4,400 exam-room/touchscreen devices (~3,480 active); Esper UUID + serial + M-number alias; room/provider mapping is a known gap for pilot targeting.
 
-### Billing evidence engine (`packages/billing-engine`)
+### Billing evidence engine (`packages/billing-engine` or Python package)
 
 **Input:** content engagement events only (no transcript).  
 **Output:** CPT suggestions + structured evidence (time thresholds, conditions addressed, categories such as counseling/CCM/ACP/etc. per strategy docs).  
 **Does not:** primary E/M MDM determination, claim generation, PA, coverage checks.
 
-### FHIR engagement package (`packages/fhir-engagement`)
+### FHIR engagement package (browser / shared formatting)
 
-Formats engagement / service-delivery summary as FHIR **DocumentReference** (architecture cites LOINC 69730-0 Instructions category). Replaces heavier clinical-note writeback designs.
+Formats engagement / service-delivery summary as FHIR **DocumentReference** (architecture cites LOINC 69730-0 Instructions category). Used from the **SMART browser** with the EHR token — not a server-side EHR adapter. Replaces heavier clinical-note writeback designs.
 
 ### Content sources
 
@@ -140,25 +140,21 @@ Session (Mesmerize UUID, clinicId, deviceGroupId, ICD-10 conditions[], times, st
 
 Documented as WebRTC P2P imaging display with signaling-only on Mesmerize servers. **SOW #3 explicitly excludes DICOM push / screen mirroring** — treat as future foundation, not current delivery scope. Tech meeting notes also mark imaging strategy as needing further discussion.
 
-## Monorepo structure (target)
+## Monorepo structure (target — polyglot, ADR-017)
 
 ```
-mesmerize-platform/
+mesmerize-monorepo/   # or mesmerize-platform/
   apps/
-    api/          # NestJS
-    web/          # Device views
-    smart-app/    # SMART on FHIR
-  packages/
-    shared/           # Types, Zod, constants, Socket.io events
-    ui/
-    billing-engine/
-    fhir-engagement/  # not server-side EHR adapters
-    config/
+    api/              # Python / FastAPI (Platform API) — not NestJS
+    web/              # Device views (TS) and/or extend touchscreen-ux (Ladder B)
+    smart-app/        # SMART on FHIR (React/TS)
+  packages/           # TS shared for frontends (types, UI)
+  # Python packages for API domain (billing rules, models) via uv/Poetry
   docs/
-  infrastructure/   # docker, terraform, esper
+  infrastructure/     # docker, terraform, esper
 ```
 
-**Remove / avoid vs older plans:** `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models.
+**Remove / avoid vs older plans:** NestJS as API target, Prisma as ORM, `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models, `packages/webrtc` imaging mirror in MVP (ADR-009).
 
 ## Cloud / infra (confirmed direction in Q&A)
 

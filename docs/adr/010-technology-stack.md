@@ -1,8 +1,8 @@
 # ADR-010: Technology stack (platform reference architecture)
 
-- **Status:** Accepted (reference architecture; CTO ratification noted as ongoing in kb where applicable)
-- **Decisions:** Stack register #S1–#S15 (see table)
-- **Sources:** Architecture v2.0 monorepo/infra, Implementation Context, Mesmerize Responses Q&A (Technical Constraints), cost/observability notes citing Datadog
+- **Status:** Accepted (reference architecture; CTO ratification noted as ongoing in kb where applicable). **Partial supersession:** **S3** and **S5** updated by [ADR-017](017-python-platform-backend.md) (2026-08-06) — Platform backend is **Python / FastAPI**; ORM is **SQLAlchemy 2 + Alembic**. NestJS / Prisma rows below are **historical**.
+- **Decisions:** Stack register #S1–#S15 (see table; S3/S5 per ADR-017)
+- **Sources:** Architecture v2.0 monorepo/infra, Implementation Context, Mesmerize Responses Q&A (Technical Constraints), cost/observability notes citing Datadog; ADR-017
 
 ## Context
 
@@ -14,12 +14,12 @@ Delivery needs a single, agent-visible stack so Newfire and Mesmerize implemente
 |---|------|----------|
 | S1 | Frontend | **React 19**, **TypeScript**, **Vite**, **Tailwind** |
 | S2 | SMART library | **`fhirclient.js`** (`fhirclient` npm) |
-| S3 | Backend | **NestJS / TypeScript** |
+| S3 | Backend | **Python** / **FastAPI** ([ADR-017](017-python-platform-backend.md); was NestJS / TypeScript) |
 | S4 | Database | **PostgreSQL 16** |
-| S5 | ORM | **Prisma** |
+| S5 | ORM | **SQLAlchemy 2** + **Alembic** ([ADR-017](017-python-platform-backend.md); was Prisma) |
 | S6 | Cache / realtime support | **Redis 7** |
-| S7 | Realtime communication | **Socket.io** |
-| S8 | Monorepo | **Turborepo + npm workspaces** |
+| S7 | Realtime communication | **Socket.io** (Python server: **python-socketio** — ADR-017) |
+| S8 | Monorepo | **Polyglot:** pnpm (+ Turborepo optional) for TS apps; **uv** or **Poetry** for Python API ([ADR-017](017-python-platform-backend.md)) |
 | S9 | Auth | **EHR OAuth (SMART)** for clinician SMART app; **Auth0 + RBAC** for admin / Command Center |
 | S10 | Device management | **Esper MDM** + existing **TelemetryTV / PWA** fleet (integrate; do not build a new MDM) |
 | S11 | Content | **Sanity CMS** + **BioDigital** + **MJH / Pharmacy Times** + current **PWA JSON** content |
@@ -37,7 +37,7 @@ Delivery needs a single, agent-visible stack so Newfire and Mesmerize implemente
 
 ## Consequences
 
-- Agents default to this stack; alternative frameworks require a superseding ADR + human approval.
+- Agents default to this stack (with S3/S5/S8 as amended by ADR-017); alternative frameworks require a superseding ADR + human approval.
 - Local Docker Compose should align on PostgreSQL 16 + Redis 7.
-- New MDM, non-AWS prod hosts, or replacing Prisma/NestJS/React without ADR are rejected by default.
+- New MDM, non-AWS prod hosts, or replacing FastAPI/Python, SQLAlchemy, or React without ADR are rejected by default. Reintroducing NestJS/Prisma as the Platform API target requires superseding ADR-017.
 - Content integrations must account for **both** Sanity/BioDigital/MJH **and** existing PWA JSON (extend, don’t ignore fleet content — [ADR-007](007-extend-pwa-server-mediated-devices.md)).

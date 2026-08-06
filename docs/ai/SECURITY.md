@@ -78,7 +78,7 @@ Total BAAs cited: **2–3** under Content Evidence plan.
 
 ## Device PWA client config vs platform secrets
 
-touchscreen-ux committed `.env` / `VITE_*` is **device PWA client-bundle** policy (build-time public config for the exam-room app) — not Content Evidence platform secrets. Platform secret handling remains **Proposed** via AWS Secrets Manager (or equivalent); do not invent PHI in secrets or promote PWA `.env` posture to NestJS/ECS. See touchscreen-ux [`DEPLOYMENT.md`](../../kb/customer-reference/touchscreen-ux/DEPLOYMENT.md) extract context in [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md) and [ADR-016](../adr/016-git-branching-and-delivery-ladders.md).
+touchscreen-ux committed `.env` / `VITE_*` is **device PWA client-bundle** policy (build-time public config for the exam-room app) — not Content Evidence platform secrets. Platform secret handling remains **Proposed** via AWS Secrets Manager (or equivalent); do not invent PHI in secrets or promote PWA `.env` posture to Python/ECS. See touchscreen-ux [`DEPLOYMENT.md`](../../kb/customer-reference/touchscreen-ux/DEPLOYMENT.md) extract context in [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md) and [ADR-016](../adr/016-git-branching-and-delivery-ladders.md).
 
 ## Writeback and human control
 

@@ -32,7 +32,7 @@ Provide **fuller product/platform term definitions** for Word template §10. Sho
 | **Content Evidence Platform** | Current product architecture (v2): education delivery + engagement evidence + billing suggestions — not ambient scribing |
 | **SMART on FHIR app** | Provider-facing web app launched from EHR iframe via SMART/OAuth2 |
 | **fhirclient.js** | Browser SMART client library (`fhirclient` npm) |
-| **Platform API** | NestJS backend for sessions, content, devices, billing evidence — no EHR calls |
+| **Platform API** | Python / FastAPI backend for sessions, content, devices, billing evidence — no EHR calls |
 | **Session ID** | Opaque Mesmerize UUID for an encounter-scoped work session — **not** patient ID |
 | **Device group** | Clinic/site grouping of devices used for targeting |
 | **tenantId** | Equals **organizationId** — multitenancy boundary ([ADR-013](../../../docs/adr/013-multitenancy-silo-and-bridge.md)) |

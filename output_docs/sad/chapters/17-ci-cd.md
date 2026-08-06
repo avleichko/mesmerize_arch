@@ -9,7 +9,7 @@
 
 ## Purpose of this chapter
 
-Describe **dual delivery ladders** for the Content Evidence Platform: **Ladder A** (platform AWS — NestJS/ECS) and **Ladder B** (device/PWA — touchscreen-ux / extend-PWA). Branching, PR conventions, CI checks, and release paths are classified Confirmed / Inferred / Proposed / Unknown. This chapter does **not** invent platform deploy strategy (rolling / blue-green / canary) and does **not** claim Netlify or TelemetryTV (TTV) filesync for NestJS/ECS services ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md)).
+Describe **dual delivery ladders** for the Content Evidence Platform: **Ladder A** (platform AWS — **Python / FastAPI** on ECS) and **Ladder B** (device/PWA — touchscreen-ux / extend-PWA). Branching, PR conventions, CI checks, and release paths are classified Confirmed / Inferred / Proposed / Unknown. This chapter does **not** invent platform deploy strategy (rolling / blue-green / canary) and does **not** claim Netlify or TelemetryTV (TTV) filesync for Python/ECS platform services ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md); [ADR-017](../../../docs/adr/017-python-platform-backend.md)).
 
 Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md); this chapter owns delivery narrative only.
 
@@ -59,7 +59,8 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 
 | Product | Checks | Evidence |
 |---------|--------|----------|
-| **Platform (Ladder A)** | GitHub Actions: lint · test · build → image → ECS (direction) | Confirmed direction (ADR-010, ADR-015, ADR-016) |
+| **Platform API (Ladder A)** | GitHub Actions: **ruff** (lint) · **mypy** (typecheck) · **pytest** · container **build** → ECR → ECS | Confirmed direction (ADR-010, ADR-015, ADR-016, ADR-017) |
+| **Platform frontends (if in same repo)** | Node: lint · `tsc` · vitest/jest · production build (parallel job) | Proposed (polyglot monorepo) |
 | **touchscreen-ux (Ladder B)** | `ci.yml` — lint, `tsc -b`, vitest, production build | Confirmed (extract / DEPLOYMENT.md) |
 | **touchscreen-ux** | `check-content-links.yml` — nav links / orphan JSON under `src/data/**` | Confirmed |
 | **touchscreen-ux** | `contrast-audit.yml` — WCAG contrast (Playwright + axe) | Confirmed |
@@ -67,7 +68,11 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 | **touchscreen-ux** | `check-ingest-endpoint.yml` — analytics ingest probe | Confirmed |
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
-  <strong>Proposed:</strong> Platform monorepo CI adopts the core gate shape (parallel lint · typecheck · test · build; PR template; CODEOWNERS) documented in <a href="../../../docs/ci-templates/">docs/ci-templates/</a> (adoption matrix + tool-agnostic stubs sourced from touchscreen-ux Confirmed <code>.github</code>). Exact <em>live</em> NestJS workflow inventory is not yet frozen in a platform repo.
+  <strong>Proposed:</strong> Platform monorepo CI adopts the gate shape in <a href="../../../docs/ci-templates/">docs/ci-templates/</a>: Python API jobs (ruff · mypy · pytest · image build) plus optional Node frontend jobs; PR template; CODEOWNERS. Customer scaffold today has PR template only — no live workflows yet (<a href="../../../docs/architecture/customer-monorepo-analysis.md">customer-monorepo-analysis</a>).
+</p>
+
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> Ladder A container runtime for API is <strong>Python</strong> (not Node/NestJS). Do not document Netlify/TTV as the platform deploy path (ADR-017; ADR-016).
 </p>
 
 ## Evidence
@@ -76,6 +81,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 - [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../../kb/customer-reference/touchscreen-ux-devops-extract.md) — Ladder B / org branching / CI extract
 - [ADR-007](../../../docs/adr/007-extend-pwa-server-mediated-devices.md) — extend PWA; Esper / device path
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — Terraform + GitHub Actions; ECS/Fargate (S14)
+- [ADR-017](../../../docs/adr/017-python-platform-backend.md) — Python / FastAPI platform API; Python CI gates
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment (Ladder A topology)
 - [Chapter 13](13-deployment-and-infrastructure.md) — runtime AWS topology (pointer)
 - [`docs/ci-templates/`](../../../docs/ci-templates/) — Ladder A CI template pack + adoption matrix (Proposed)

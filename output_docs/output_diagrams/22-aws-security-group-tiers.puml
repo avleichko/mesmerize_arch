@@ -16,7 +16,7 @@ Deployment_Node(alb_tier, "sg-alb [P]", "Logical SG label · ALB") {
 }
 
 Deployment_Node(ecs_tier, "sg-ecs [P]", "Logical SG label · ECS Fargate") {
-  Container(sg_ecs, "ECS Fargate NestJS tasks [C]", "Fargate", "Inbound TG ports from sg-alb only [P]")
+  Container(sg_ecs, "ECS Fargate Python tasks [C]", "Fargate", "Inbound TG ports from sg-alb only [P]")
 }
 
 Deployment_Node(data_tier, "sg-data [P]", "Logical SG label · data plane") {

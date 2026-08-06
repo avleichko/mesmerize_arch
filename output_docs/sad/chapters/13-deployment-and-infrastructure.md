@@ -39,7 +39,7 @@ DevOps network plane for **Ladder A** (platform AWS) only: VPC / subnet / edge /
 
 *Figure 13-3: AWS network topology — edge (CloudFront Confirmed; Route 53 / WAF Proposed), Multi-AZ VPC Inferred, public / private app / private data subnets, VPC endpoints Proposed/Inferred, NAT egress to approved externals. CIDR and Region Unknown (ADR-015).*
 
-Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run ECS/Fargate NestJS services (Confirmed; early co-locate OK). Private data subnets hold RDS PostgreSQL 16 and ElastiCache Redis 7 (Confirmed). S3 media is regional (outside VPC). Sticky ALB target group for `device-realtime-service` remains an ingress/compute concern (ADR-007 / ADR-015), not a Confirmed SG rule dump.
+Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run ECS/Fargate **Python / FastAPI** services (Confirmed; early co-locate OK; ADR-017). Private data subnets hold RDS PostgreSQL 16 and ElastiCache Redis 7 (Confirmed). S3 media is regional (outside VPC). Sticky ALB target group for `device-realtime-service` remains an ingress/compute concern (ADR-007 / ADR-015), not a Confirmed SG rule dump.
 
 ![AWS security group tiers (Proposed allow paths)](../../output_diagrams/22-aws-security-group-tiers.png)
 
@@ -70,7 +70,7 @@ Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run 
 ### Compute
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Logical <strong>ECS/Fargate</strong> NestJS services: session, content, device-realtime, engagement, billing-evidence, org-identity, audit-telemetry, and optional ads. Early pilot may <strong>co-locate</strong> tasks on one cluster (ADR-015). No Lambda/EKS required by current ADRs.
+  <strong>Confirmed:</strong> Logical <strong>ECS/Fargate</strong> platform services (Python / FastAPI): session, content, device-realtime, engagement, billing-evidence, org-identity, audit-telemetry, and optional ads. Early pilot may <strong>co-locate</strong> tasks on one cluster (ADR-015; ADR-017). No Lambda/EKS required by current ADRs.
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
@@ -80,7 +80,7 @@ Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run 
 ### Data stores
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> <strong>RDS PostgreSQL 16</strong> (Prisma) with Bridge tenancy default (<code>tenantId</code> = organizationId); Silo = additional RDS instance(s) per org, not a different VPC pattern by default (ADR-013). <strong>ElastiCache Redis 7</strong> for Socket.io adapter / cache. <strong>S3</strong> media at <code>{tenantId}/{clinicId}/…</code>; SMART static assets; diagnostic logs with ≤90-day retention.
+  <strong>Confirmed:</strong> <strong>RDS PostgreSQL 16</strong> (SQLAlchemy 2 + Alembic) with Bridge tenancy default (<code>tenantId</code> = organizationId); Silo = additional RDS instance(s) per org, not a different VPC pattern by default (ADR-013; ADR-017). <strong>ElastiCache Redis 7</strong> for Socket.io adapter / cache. <strong>S3</strong> media at <code>{tenantId}/{clinicId}/…</code>; SMART static assets; diagnostic logs with ≤90-day retention.
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
@@ -143,7 +143,7 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 | Component | AWS target | Evidence |
 |-----------|------------|----------|
 | SMART Web App | CloudFront ← S3 | Confirmed |
-| NestJS platform services | ECS Fargate (private app) | Confirmed |
+| Python / FastAPI platform services | ECS Fargate (private app) | Confirmed (ADR-017) |
 | device-realtime | ECS + sticky ALB TG | Confirmed |
 | Platform data | RDS PostgreSQL 16 | Confirmed |
 | Cache / Socket.io bus | ElastiCache Redis 7 | Confirmed |

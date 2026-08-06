@@ -32,7 +32,7 @@ Deployment_Node(awsacct, "AWS Account — Mesmerize-owned [C]", "Region: Unknown
     }
 
     Deployment_Node(appsub, "Private app subnets AZ-a/b [C]", "ECS Fargate · co-locate OK early [C]") {
-      Container(ecs, "ECS/Fargate NestJS services [C]", "Fargate", "session · content · device-realtime ·\nengagement · billing · org · audit")
+      Container(ecs, "ECS/Fargate Python services [C]", "Fargate", "session · content · device-realtime ·\nengagement · billing · org · audit · FastAPI")
     }
 
     Deployment_Node(datasub, "Private data subnets AZ-a/b [I]", "No public IPs · no Internet [I]") {

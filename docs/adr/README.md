@@ -41,12 +41,12 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 |---|------|----------|-----|
 | S1 | Frontend | React 19, TypeScript, Vite, Tailwind | [ADR-010](010-technology-stack.md) |
 | S2 | SMART library | `fhirclient.js` | [ADR-010](010-technology-stack.md) |
-| S3 | Backend | NestJS / TypeScript | [ADR-010](010-technology-stack.md) |
+| S3 | Backend | **Python / FastAPI** (was NestJS/TS) | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
 | S4 | Database | PostgreSQL 16 | [ADR-010](010-technology-stack.md) |
-| S5 | ORM | Prisma | [ADR-010](010-technology-stack.md) |
+| S5 | ORM | **SQLAlchemy 2 + Alembic** (was Prisma) | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
 | S6 | Cache / realtime support | Redis 7 | [ADR-010](010-technology-stack.md) |
-| S7 | Realtime communication | Socket.io | [ADR-010](010-technology-stack.md), [ADR-007](007-extend-pwa-server-mediated-devices.md) |
-| S8 | Monorepo | Turborepo + npm workspaces | [ADR-010](010-technology-stack.md) |
+| S7 | Realtime communication | Socket.io (python-socketio on server) | [ADR-010](010-technology-stack.md), [ADR-007](007-extend-pwa-server-mediated-devices.md), [ADR-017](017-python-platform-backend.md) |
+| S8 | Monorepo | Polyglot: pnpm/Turborepo (TS) + uv/Poetry (Python API) | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
 | S9 | Auth | EHR OAuth for SMART app; Auth0 + RBAC for admin/Command Center | [ADR-010](010-technology-stack.md), [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | S10 | Device management | Esper MDM + existing TelemetryTV/PWA fleet | [ADR-010](010-technology-stack.md), [ADR-007](007-extend-pwa-server-mediated-devices.md) |
 | S11 | Content | Sanity CMS + BioDigital + MJH / Pharmacy Times + current PWA JSON content | [ADR-010](010-technology-stack.md) |
@@ -95,7 +95,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 |---|----------|--------|-----|
 | DEL-1 | Dual delivery: **Ladder A** platform (GHA → ECR → ECS + Terraform) vs **Ladder B** device/PWA (Netlify ≠ device; TTV filesync; Esper) | Confirmed (A direction / B touchscreen-ux) | [ADR-016](016-git-branching-and-delivery-ladders.md), [ADR-015](015-aws-deployment-reference.md) |
 | DEL-2 | Org Git ladder `feature → staging → main`; PRs to `staging`; content-vs-code split | Confirmed touchscreen-ux; **Proposed** for platform repos | [ADR-016](016-git-branching-and-delivery-ladders.md) |
-| DEL-3 | Do **not** claim Netlify or TTV filesync for NestJS/ECS | Confirmed | [ADR-016](016-git-branching-and-delivery-ladders.md) |
+| DEL-3 | Do **not** claim Netlify or TTV filesync for Python/ECS platform services | Confirmed | [ADR-016](016-git-branching-and-delivery-ladders.md), [ADR-017](017-python-platform-backend.md) |
 
 Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
@@ -112,10 +112,11 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [007](007-extend-pwa-server-mediated-devices.md) | Extend PWA; Device Command API; Socket.io; Esper IDs; pairing |
 | [008](008-engagement-telemetry-billing-hitl-writeback.md) | De-identified telemetry; suggestions; HITL; disable-able writeback |
 | [009](009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope |
-| [010](010-technology-stack.md) | Technology stack (React/NestJS/AWS/…) |
+| [010](010-technology-stack.md) | Technology stack (React / Python FastAPI / AWS / …; S3–S5/S8 via ADR-017) |
 | [011](011-do-not-build.md) | Explicit “do not build” decisions |
 | [012](012-c4-persons-vs-stakeholders.md) | C4 Persons (runtime) vs SAD stakeholders |
 | [013](013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo DB vs Bridge + S3) |
 | [014](014-sqs-messaging-patterns.md) | SQS Request/Reply, correlation, enricher, DLQ, fire-and-forget |
 | [015](015-aws-deployment-reference.md) | AWS reference deployment topology |
 | [016](016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders |
+| [017](017-python-platform-backend.md) | Platform backend Python / FastAPI (supersedes ADR-010 S3/S5) |

@@ -8,7 +8,7 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 
 ## Read first (required context)
 
-**Always check `kb/` and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, multitenancy, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15**, do-not-build **DNB-1–DNB-9**, multitenancy **MT-1–MT-5**) — do not contradict them without a superseding ADR and human approval.
+**Always check `kb/` and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, multitenancy, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15** as amended by **ADR-017** Python backend, do-not-build **DNB-1–DNB-9**, multitenancy **MT-1–MT-5**) — do not contradict them without a superseding ADR and human approval.
 
 | Order | Doc | Purpose |
 |------:|-----|---------|

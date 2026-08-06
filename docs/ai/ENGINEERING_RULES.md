@@ -39,12 +39,12 @@ Do **not** invent numeric availability/latency SLOs — none are fixed in kb (se
 |-------|--------|
 | Frontend | React 19, TypeScript, Vite, Tailwind |
 | SMART library | `fhirclient.js` |
-| Backend | NestJS / TypeScript |
+| Backend | **Python / FastAPI** ([ADR-017](../adr/017-python-platform-backend.md); was NestJS/TS) |
 | Database | PostgreSQL 16 |
-| ORM | Prisma |
+| ORM | **SQLAlchemy 2 + Alembic** (was Prisma) |
 | Cache / realtime support | Redis 7 |
-| Realtime | Socket.io |
-| Monorepo | Turborepo + npm workspaces |
+| Realtime | Socket.io (server: python-socketio) |
+| Monorepo | Polyglot: pnpm (+ Turborepo optional) for TS apps; uv or Poetry for Python API |
 | Auth | EHR OAuth (SMART app); Auth0 + RBAC (admin / Command Center) |
 | Device management | Esper MDM + TelemetryTV / existing PWA fleet |
 | Content | Sanity CMS + BioDigital + MJH / Pharmacy Times + current PWA JSON |
@@ -54,14 +54,16 @@ Do **not** invent numeric availability/latency SLOs — none are fixed in kb (se
 
 ## Monorepo conventions
 
-- Prefer packages in `packages/*` for shared types, billing rules, FHIR formatting, UI.
-- `apps/smart-app` owns browser-side FHIR I/O only.
-- `apps/api` owns session/content/device/billing APIs — **no EHR HTTP clients**.
-- Do not reintroduce `packages/ai-services` or server-side FHIR EHR adapters (`fhir-client` Epic/Cerner/Athena adapters were replaced by `fhir-engagement`).
+- Prefer shared **TypeScript** packages in `packages/*` for frontends (types used by SMART/device UIs).
+- Prefer shared **Python** packages for Platform API domain logic (billing rules, engagement models) — no EHR HTTP clients on the server.
+- `apps/smart-app` / `smart-launcher` owns browser-side FHIR I/O only.
+- Platform API (`apps/api` or `services/`) owns session/content/device/billing APIs in **Python** — **no EHR HTTP clients**.
+- Do not reintroduce NestJS as the Platform API target ([ADR-017](../adr/017-python-platform-backend.md)). Do not reintroduce `packages/ai-services` or server-side FHIR EHR adapters.
+- Customer scaffold may still show NestJS stubs — treat as legacy relative to ADR-017 ([customer-monorepo-analysis](../architecture/customer-monorepo-analysis.md)).
 
 ## Schema and API rules
 
-- Prisma/DB: Organization, User, Device, Session, ContentItem, ContentEngagement, BillingSuggestion — **no** Patient, Medication, Allergy, Coverage, Transcript, ClinicalNote tables.
+- DB (SQLAlchemy / Alembic): Organization, User, Device, Session, ContentItem, ContentEngagement, BillingSuggestion — **no** Patient, Medication, Allergy, Coverage, Transcript, ClinicalNote tables.
 - **Multitenancy ([ADR-013](../adr/013-multitenancy-silo-and-bridge.md)):** `tenantId` = `organizationId`; `clinicId`/`deviceGroupId` are sub-scopes. Support **Silo** (DB per org) and **Bridge** (shared DB + `tenantId` column). Pilot default = Bridge. S3 paths always `{tenantId}/{clinicId}/…` (or org-dedicated bucket in Silo).
 - Session create payload from SMART app: condition codes + device group context — **never** patient ID; always associate with `tenantId` (+ clinic/device group).
 - Bridge mode: every tenant-owned query **must** filter by `tenantId` (fail closed).
@@ -112,7 +114,7 @@ See [ADR-014](../adr/014-sqs-messaging-patterns.md).
 
 - **Branch prefixes / PRs:** Prefer `content/`, `feat/`, `fix/`, `chore/`, `refactor/`, `docs/`; all PRs target `staging` (`feature → staging → main`). **Confirmed** for touchscreen-ux (device PWA); **Proposed** for Content Evidence platform repos until adopted ([ADR-016](../adr/016-git-branching-and-delivery-ladders.md)).
 - **Content vs code:** Where a repo holds content JSON, use separate branches/PRs (`content/*` vs `feat/` / `fix/` / etc.) — **Confirmed** for touchscreen-ux; platform services use `feat/` / `fix/` / etc. (content prefix only when the repo holds JSON content).
-- **Dual ladders:** **Ladder A** (platform AWS): GitHub Actions → ECR → ECS + Terraform ([ADR-010](../adr/010-technology-stack.md), [ADR-015](../adr/015-aws-deployment-reference.md)); deploy strategy Unknown. **Ladder B** (device/PWA): Netlify web preview ≠ device path; human-triggered TelemetryTV (TTV) filesync; `staging` = QA/canary, `main` = production fleet. Do not claim Netlify/TTV for NestJS/ECS. Details: [ADR-016](../adr/016-git-branching-and-delivery-ladders.md); extract: [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md).
+- **Dual ladders:** **Ladder A** (platform AWS): GitHub Actions → ECR → ECS + Terraform ([ADR-010](../adr/010-technology-stack.md), [ADR-015](../adr/015-aws-deployment-reference.md)); API images are **Python**; deploy strategy Unknown. **Ladder B** (device/PWA): Netlify web preview ≠ device path; human-triggered TelemetryTV (TTV) filesync; `staging` = QA/canary, `main` = production fleet. Do not claim Netlify/TTV for Python/ECS platform services. Details: [ADR-016](../adr/016-git-branching-and-delivery-ladders.md); extract: [`kb/customer-reference/touchscreen-ux-devops-extract.md`](../../kb/customer-reference/touchscreen-ux-devops-extract.md).
 
 ## Process rules for agents
 

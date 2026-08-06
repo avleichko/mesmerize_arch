@@ -31,7 +31,7 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 | A-02 | RDS + Redis Multi-AZ on for Staging/Prod | Standard HA without inventing RTO | Cost/ops veto for pilot | [13](13-deployment-and-infrastructure.md) |
 | A-03 | Ladder A Phase 1 deploy strategy = rolling | Simplest ECS default | Canary/blue-green mandated | [13](13-deployment-and-infrastructure.md), [17](17-ci-cd.md) |
 | A-04 | Platform repos use `feature → staging → main` | Matches ADR-016 Proposed | Different promotion model | [02](02-scope.md), [17](17-ci-cd.md) |
-| A-05 | NestJS services = separate ECS services by cutover | Blast-radius / boundary clarity | Long-lived co-locate for cost | [08](08-system-architecture.md) |
+| A-05 | Python platform services = separate ECS services by cutover | Blast-radius / boundary clarity | Long-lived co-locate for cost | [08](08-system-architecture.md), [ADR-017](../../../docs/adr/017-python-platform-backend.md) |
 | A-06 | Queues `{env}-{service}-{purpose}`; RR timeout default 30s until measured | Unblocks messaging build | Different standard | [12](12-messaging-and-integration.md) |
 | A-07 | SMS = one US-capable provider (Twilio-class) chosen at build | Common clinic messaging pattern | Other vendor already contracted | [12](12-messaging-and-integration.md) |
 | A-08 | Silo: dedicated DB + secrets namespace; shared S3 + prefix until scale | ADR-013 spirit | Dedicated buckets day one | [11](11-multitenancy.md) |
@@ -60,6 +60,7 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 | Q-12 | Engagement log retention years if beyond A-09? | Storage / compliance | Brandon / MM / compliance | [14](14-nfr-and-quality-attributes.md) |
 | Q-13 | Who promotes Ladder A Staging → Prod and with what gates? | Delivery | Ops / eng lead | [17](17-ci-cd.md) |
 | Q-14 | HIPAA policy pack delivery date from Mesmerize (AM)? | Security appendix | AM / compliance | [10](10-security-and-privacy.md) |
+| Q-15 | Python version pin + package manager (uv vs Poetry) for Platform API? | Ladder A CI / images | Eng lead | [ADR-017](../../../docs/adr/017-python-platform-backend.md), [17](17-ci-cd.md) |
 
 ## Traceability (theme → IDs)
 
@@ -69,6 +70,7 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 | RTO / RPO / Multi-AZ | A-02, Q-06 |
 | Deploy / branching / promotion | A-03, A-04, Q-13 |
 | Process split / ECS | A-05 |
+| Python runtime / tooling | Q-15 |
 | Messaging / SMS | A-06, A-07 |
 | Multitenancy Silo | A-08, Q-11 |
 | Logs / observability | A-09, A-10, Q-09, Q-12 |

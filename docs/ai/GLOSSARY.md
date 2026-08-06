@@ -9,7 +9,7 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **SMART v1 plan** | Earlier SMART plan that included ambient audio / Deepgram / Claude notes — superseded |
 | **SMART on FHIR app** | Provider-facing web app launched from EHR iframe via SMART/OAuth2 |
 | **fhirclient.js** | Open-source SMART client library (`fhirclient` npm) used in browser |
-| **Platform API** | NestJS backend for sessions, content, devices, billing evidence — no EHR calls |
+| **Platform API** | Python / FastAPI backend for sessions, content, devices, billing evidence — no EHR calls ([ADR-017](../adr/017-python-platform-backend.md)) |
 | **Session ID** | Opaque Mesmerize UUID for an encounter-scoped work session — **not** patient ID |
 | **Device group** | Clinic/site grouping of devices used for targeting |
 | **M-number** | Operator device alias prefix used with serial/location in fleet ops |

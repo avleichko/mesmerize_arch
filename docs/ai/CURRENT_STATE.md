@@ -12,7 +12,7 @@
 | Pilot EHR | **athenahealth** first; Epic/Cerner roadmap analysis in Phase 1 |
 | Live devices | ~**4,400** exam-room/touchscreen devices (~3,480 active) on Esper + TelemetryTV |
 | Live PWA | `MesmerizeTeam/touchscreen-ux` — specialty/slug content, **no ICD-10 tags** |
-| New platform monorepo | Initialized (`mesmerize-platform/`): Turborepo, NestJS skeleton, React 19/Vite placeholders, Prisma v1, Docker Compose, package stubs |
+| New platform monorepo | Customer scaffold at `~/myProjects/newfire/mesmerize-monorepo` (pnpm/Turborepo, NestJS-labeled `apps/api` stubs, React/TS device + SMART apps). **Delivery backend language = Python / FastAPI** ([ADR-017](../adr/017-python-platform-backend.md)) — re-scaffold API; see [`customer-monorepo-analysis.md`](../architecture/customer-monorepo-analysis.md) |
 | POC reference | `poc-ecosystem/` feature-complete demo (multi-device Socket.io, BioDigital, ICD-10 mapping demo, billing logic demo) |
 | ICD-10 content tagging | **Low/partial** for new corpus; **0** on current PWA topics — Phase 1 mapping deliverable |
 | Imaging mirror / DICOM | Documented in architecture; **out of SOW #3**; needs further discussion per Jul 14 |
@@ -23,7 +23,7 @@
 
 From **POC** (Implementation Context): multi-device journey demo, Socket.io sync, BioDigital embeds, ICD-10→content mapping engine (demo), billing logic samples, shared TS types, brand tokens.
 
-From **mesmerize-platform**: monorepo, NestJS modules + health, Prisma + seed, React placeholder pages, Tailwind brand preset, stubs including billing-engine / ui / (legacy) ai-services & fhir-client to be removed or replaced.
+From **mesmerize-monorepo** (customer): pnpm workspace stubs for api / smart-launcher / exam-room / waiting-room; PR template with PHI gate; strategy docs aligned to Content Evidence. NestJS/Prisma direction in those stubs is **superseded** by ADR-017 (Python). `packages/webrtc` is **out of SOW**.
 
 From **operations**: Esper MDM, TelemetryTV, proof-of-play telemetry, condition-targeted **ad** campaigns (useful head start, not the same as clinical ICD-10 content tags), athena Marketplace Developer Console account (sandbox details to confirm).
 
@@ -31,12 +31,14 @@ From **operations**: Esper MDM, TelemetryTV, proof-of-play telemetry, condition-
 
 | Asset | Action |
 |-------|--------|
-| `packages/ai-services` | Remove |
-| `packages/fhir-client` EHR adapters | Replace with `packages/fhir-engagement` |
-| Patient / med / allergy / coverage / transcript / note Prisma models | Remove |
+| NestJS `apps/api` scaffold | Replace with **Python / FastAPI** (ADR-017) |
+| Prisma schemas / Nest modules | Replace with **SQLAlchemy 2 + Alembic**; no patient/note/transcript tables |
+| `packages/ai-services` | Remove if present |
+| `packages/fhir-client` EHR adapters | Replace with browser `fhir-engagement` formatting only |
+| `packages/webrtc` / imaging mirror | **Do not build** (ADR-009) |
 | Redox config | Remove |
 | Session APIs | Ensure no patient identifiers |
-| `apps/smart-app` | Add |
+| `apps/smart-app` / `smart-launcher` | Keep TS SMART path; wire ICD-10 session create |
 | ICD-10 metadata on content | Build (Phase 1) |
 | Device room mapping | Close gap for pilot targeting |
 | Socket.io push + pairing on extended PWA | Net-new vs live slug PWA |

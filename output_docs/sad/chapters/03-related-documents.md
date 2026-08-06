@@ -35,6 +35,7 @@ Provide a **navigation table** to the ADRs, agent docs, NFRs, deployment notes, 
 | [014](../../../docs/adr/014-sqs-messaging-patterns.md) | SQS messaging patterns | Messaging |
 | [015](../../../docs/adr/015-aws-deployment-reference.md) | AWS reference deployment topology | Deployment (Ladder A) |
 | [016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders | Deployment / ops; Ladder A vs B |
+| [017](../../../docs/adr/017-python-platform-backend.md) | Python / FastAPI platform backend | Stack supersession of ADR-010 S3/S5 |
 
 Register / index: [`docs/adr/README.md`](../../../docs/adr/README.md).
 
