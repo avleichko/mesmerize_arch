@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `15-key-terms-and-abbreviations` |
 | SAD mapping | Template §10 Key terms and abbreviations |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Stakeholder-ready · 100% |
 
 ## Purpose of this chapter
@@ -52,12 +52,14 @@ Provide **fuller product/platform term definitions** for Word template §10. Sho
 | **Zero-PHI-on-servers** | No patient identifiers stored or processed on Mesmerize backend |
 | **EHR-agnostic core** | Decoupled models/APIs/auth so Epic/Cerner can be modular later |
 | **SOW #3** | Newfire Statement of Work governing current delivery scope |
+| **Patient Imaging Mirror** | In-scope exam-room imaging **display**: **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC mirror ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)). Not a Mesmerize DICOM viewer. |
+| **DICOM viewer (Mesmerize)** | **Do-not-build** — no Mesmerize DICOM parser/viewer (including Cornerstone/OHIF as a Mesmerize component); no WADO ingest; no server-side imaging payloads ([ADR-011](../../../docs/adr/011-do-not-build.md) DNB-9) |
 | **ASR** | Architecturally Significant Requirement — NFR that drives architecture |
 | **NFR** | Non-functional requirement (see `output_docs/nfr/`) |
 | **mesmerize-platform** | Target Turborepo monorepo for the new platform |
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> Superseded plans (Control plan, SMART v1), ops aliases (M-number, TelemetryTV), content sources (BioDigital, MJH), and out-of-scope concepts (Patient Imaging Mirror) remain in GLOSSARY only to keep §10 focused on active SAD vocabulary.
+  <strong>Inferred:</strong> Superseded plans (Control plan, SMART v1), ops aliases (M-number, TelemetryTV), and content sources (BioDigital, MJH) remain in GLOSSARY only to keep §10 focused on active SAD vocabulary. Patient Imaging Mirror is <strong>in-scope</strong> here (Tier 1 + Tier 2); Mesmerize DICOM viewer stays DNB.
 </p>
 
 ## Abbreviations (supplement to Chapter 04)
@@ -78,5 +80,6 @@ Additional expansions used in SAD body copy; see also [Chapter 04](04-definition
 ## Evidence
 
 - [`docs/ai/GLOSSARY.md`](../../../docs/ai/GLOSSARY.md) — canonical terms and acronyms
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — Patient Imaging Mirror = Tier 1 + Tier 2 in-scope; DICOM viewer = DNB
 - [Chapter 04](04-definitions-and-acronyms.md) — short acronym list; template §4
 - [`templates/README.md`](../../../templates/README.md) — §10 Key terms and abbreviations

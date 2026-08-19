@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `05-business-context` |
 | SAD mapping | Template §5 Business Context (Business Objective, Expected Business Value, Key Stakeholders) |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -26,7 +26,7 @@ Deliver an **EHR-integrated Content Evidence Platform**: providers launch a SMAR
 Supporting objectives from SOW #3 + Mesmerize Q&A:
 
 1. **SMART on FHIR** education delivery (provider pushes relevant content).
-2. **Foundation only** for future advanced features (e.g. imaging to screens) — DICOM push remains **out of scope**.
+2. **Exam-room imaging to screens** is **in scope** (Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC mirror per [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)). A Mesmerize **DICOM viewer** and server-side DICOM / imaging payloads remain **out of scope** ([ADR-011](../../../docs/adr/011-do-not-build.md) DNB-9).
 3. Pilot timing that supports **1,000+ screens** proof points for **July 2027** pharma planning.
 4. **Avoid handling PHI** wherever possible.
 

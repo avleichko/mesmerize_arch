@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `03-related-documents` |
 | SAD mapping | Template §3 Related Documents |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -15,7 +15,7 @@ Provide a **navigation table** to the ADRs, agent docs, NFRs, deployment notes, 
   <strong>Confirmed:</strong> Confirmed decisions live in the ADR register ([<code>docs/adr/README.md</code>](../../../docs/adr/README.md)). Do not contradict a Confirmed decision without a superseding ADR and human approval.
 </p>
 
-## Architecture Decision Records (001–016)
+## Architecture Decision Records (001–019)
 
 | ADR | Title | Use in SAD |
 |-----|-------|------------|
@@ -27,15 +27,17 @@ Provide a **navigation table** to the ADRs, agent docs, NFRs, deployment notes, 
 | [006](../../../docs/adr/006-icd10-content-match-cpt-billing-output.md) | ICD-10 content match; CPT/HCPCS/HCC on billing output | Recommendation / billing |
 | [007](../../../docs/adr/007-extend-pwa-server-mediated-devices.md) | Extend PWA; Device Command API; Socket.io | Devices |
 | [008](../../../docs/adr/008-engagement-telemetry-billing-hitl-writeback.md) | De-identified telemetry; suggestions; HITL | Engagement / billing |
-| [009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope | Out of scope |
+| [009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope (**Superseded** by [019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) | Historical SOW-exclusion only |
 | [010](../../../docs/adr/010-technology-stack.md) | Technology stack | System / deployment |
-| [011](../../../docs/adr/011-do-not-build.md) | Explicit do-not-build decisions | Scope guardrails |
+| [011](../../../docs/adr/011-do-not-build.md) | Explicit do-not-build decisions | Scope guardrails (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads) |
 | [012](../../../docs/adr/012-c4-persons-vs-stakeholders.md) | C4 Persons vs SAD stakeholders | Business context |
 | [013](../../../docs/adr/013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo vs Bridge) | Tenancy |
 | [014](../../../docs/adr/014-sqs-messaging-patterns.md) | SQS messaging patterns | Messaging |
 | [015](../../../docs/adr/015-aws-deployment-reference.md) | AWS reference deployment topology | Deployment (Ladder A) |
 | [016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders | Deployment / ops; Ladder A vs B |
 | [017](../../../docs/adr/017-python-platform-backend.md) | Python / FastAPI platform backend | Stack supersession of ADR-010 S3/S5 |
+| [018](../../../docs/adr/018-customer-decision-repo-second-kb.md) | Customer decision repo as second KB | Always-check `customer-kb/` like `kb/` |
+| [019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) | Exam-room imaging display and imaging evidence (supersedes 009) | In-scope Tier 1 + Tier 2; no Mesmerize DICOM viewer |
 
 Register / index: [`docs/adr/README.md`](../../../docs/adr/README.md).
 
@@ -74,13 +76,22 @@ Also: [`AGENTS.md`](../../../AGENTS.md) (invariants) · [`kb/`](../../../kb/) (s
 | [Chapter 17](17-ci-cd.md) | SAD CI/CD — dual delivery ladders A/B |
 | [Chapter 18](18-assumptions-and-open-questions.md) | Assumptions (Proposed) + Must-answer open questions register |
 | Diagrams `17-*` / `18-*` | Stakeholder overview + technical production deploy |
-| Diagrams `19-*` / `20-*` | Ladder A (platform) + Ladder B (device/PWA) CI/CD |
+| Diagrams `19-*` / `20-*` | Ladder A (platform) + Ladder B (device/PWA) CI/CD *(filenames remain CI/CD; not imaging chapters)* |
+
+## Imaging (SAD extensions)
+
+| Document | Role |
+|----------|------|
+| [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) | Live imaging in-scope decision (#20); supersedes ADR-009 |
+| [Chapter 19](19-imaging-mirror-evidence-addendum.md) | Imaging evidence capture vs HITL write-back |
+| [Chapter 20](20-exam-room-imaging-mirror.md) | Exam-room imaging display / transport (Tier 1 + Tier 2) |
+| Diagrams `23-*` / `24-*` / `25-*` | Imaging evidence (Ch.19) + transport / Tier 1 vs Tier 2 sequences (Ch.20) |
 
 ## Diagram catalog
 
 | Catalog | Contents |
 |---------|----------|
-| [`output_diagrams/README.md`](../../../output_diagrams/README.md) | Source + PNG index (01–20) |
+| [`output_diagrams/README.md`](../../../output_diagrams/README.md) | Source + PNG index (01–25; **19–20** = CI/CD ladders; **23–25** = imaging) |
 | [`output_docs/output_diagrams/`](../../output_diagrams/) | Export mirror for chapter embeds |
 
 From chapter files, embed diagrams with Markdown image syntax and relative path `../../output_diagrams/<name>.png` (see pack README).

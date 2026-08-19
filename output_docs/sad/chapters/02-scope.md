@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `02-scope` |
 | SAD mapping | Template §2 Scope |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -13,10 +13,10 @@ Define the **document and delivery scope** for this SAD pack: what is in vs out 
 
 ## Document scope
 
-This pack covers the **architecture** of the Mesmerize Content Evidence Platform for the Newfire SOW #3 athenahealth pilot path: SMART launch, ICD-10 recommendation, device push, engagement, billing evidence (HITL), optional DocumentReference writeback, Bridge multitenancy default, and Mesmerize-owned AWS topology.
+This pack covers the **architecture** of the Mesmerize Content Evidence Platform for the Newfire SOW #3 athenahealth pilot path: SMART launch, ICD-10 recommendation, device push, engagement, billing evidence (HITL), optional DocumentReference writeback, exam-room imaging **display** (Tier 1 + Tier 2) and de-identified imaging evidence, Bridge multitenancy default, and Mesmerize-owned AWS topology.
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> In-scope delivery themes — SMART on FHIR app; ICD-10-based content recommendation; PWA/device integration; engagement capture; billing evidence + physician approve; site-configurable rules; writeback capability; <strong>one athenahealth pilot org</strong> (SOW #3; <code>AGENTS.md</code>).
+  <strong>Confirmed:</strong> In-scope delivery themes — SMART on FHIR app; ICD-10-based content recommendation; PWA/device integration; engagement capture; billing evidence + physician approve; site-configurable rules; writeback capability; exam-room imaging <strong>display</strong> (Tier 1 + Tier 2) + HITL imaging evidence; <strong>one athenahealth pilot org</strong> (SOW #3; <a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>).
 </p>
 
 ### In scope (this SAD)
@@ -26,9 +26,10 @@ This pack covers the **architecture** of the Mesmerize Content Evidence Platform
 | Product architecture | Content Evidence Platform (not ambient scribe) |
 | Pilot EHR | athenahealth first; EHR-agnostic core for later Epic/Cerner |
 | Security / PHI boundary | Zero patient IDs on Mesmerize servers; browser-held FHIR token |
+| Exam-room imaging display | **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC mirror ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
 | Environments | Dev / Staging / Prod topology (same shape; different notes) |
 | NFR / ASRs | Binding ASRs summarized; full catalog linked |
-| Explicit non-goals | ADR-009 imaging; ADR-011 do-not-build list |
+| Explicit non-goals | ADR-011 do-not-build (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads); ADR-019 forbidden list |
 
 ### Out of scope (this SAD / SOW #3)
 
@@ -38,13 +39,14 @@ This pack covers the **architecture** of the Mesmerize Content Evidence Platform
 | Redox / server EHR APIs | Redox; server-side EHR token handling | ADR-011 DNB-1, DNB-8 |
 | Patient CRUD on Mesmerize | Longitudinal patient record | ADR-011 DNB-6 |
 | Claims / EDI | Clearinghouse submission | ADR-011 DNB-7 |
-| DICOM / imaging mirror | Push, Patient Imaging Mirror, screen mirroring UX | [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md); DNB-9 |
+| Mesmerize DICOM viewer / WADO / server imaging payloads | Mesmerize DICOM parser/viewer; ImagingStudy / WADO ingest; storing imaging bytes in RDS or S3 | [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md); [ADR-011](../../../docs/adr/011-do-not-build.md) DNB-9 |
+| Four-EHR write-back adapters | Epic / Cerner / eCW write-back beyond athena DocumentReference | ADR-019 (roadmap) |
 | ML recommender | If metadata insufficient | SOW #3 / PROJECT_CONTEXT |
 | Multi–health-system production | Rollout beyond single athena pilot org | SOW #3 |
 | Word `.docx` assembly | Official template fill — later export pass | `output_docs/sad/README.md` |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> DICOM push / imaging mirror / screen mirroring is <strong>out of current SOW</strong>; keep architectural awareness only — do not implement under SOW #3 (ADR-009). Full DNB-1–DNB-9 list in [ADR-011](../../../docs/adr/011-do-not-build.md).
+  <strong>Confirmed:</strong> Exam-room imaging <strong>display</strong> (Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC mirror) and de-identified imaging <strong>evidence</strong> are <strong>in scope</strong> for the athenahealth pilot (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>, decision #20). Still out of scope: a Mesmerize <strong>DICOM viewer</strong>, WADO ingest, <code>ImagingStudy</code> pipeline, and <strong>server-side</strong> DICOM or imaging payloads (<a href="../../../docs/adr/011-do-not-build.md">ADR-011</a> DNB-9). <a href="../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md">ADR-009</a> is <strong>Superseded</strong> (historical SOW-exclusion only).
 </p>
 
 ## Environments
@@ -87,8 +89,9 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 
 ## Evidence
 
-- [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) — imaging out of SOW
-- [ADR-011](../../../docs/adr/011-do-not-build.md) — do-not-build list
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging display + evidence in-scope (Tier 1 + Tier 2)
+- [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) — superseded historical SOW-exclusion
+- [ADR-011](../../../docs/adr/011-do-not-build.md) — do-not-build list (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads)
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — Dev/Staging/Prod; Prod pilot-gated
 - [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — dual ladders; PWA Confirmed / platform Proposed
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — in/out goals

@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `10-security-and-privacy` |
 | SAD mapping | Mesmerize extension |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -23,7 +23,7 @@ Document the Content Evidence Platform security and privacy model: zero patient 
 |----------|--------------------------------------------------|-------|
 | SMART app browser | Yes, **session-only** | FHIR token + Patient/Encounter/Conditions; cleared when session/token ends |
 | Mesmerize Platform API / DB | **No patient identifiers** | ICD-10 + session UUID + device/clinic + engagement + billing suggestions |
-| Socket.io signaling | No patient content | Opaque signaling metadata |
+| Socket.io / WebRTC signaling | No patient content; no media | Opaque signaling metadata only — **not** WebRTC media ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
 | Exam-room device | Ephemeral display only | No patient identity on device; UUID engagement tracking |
 | EHR | System of record | Owns clinical chart and SMART access audit trail |
 
@@ -33,7 +33,7 @@ Document the Content Evidence Platform security and privacy model: zero patient 
 
 **Server-side allowed examples:** session ID, device ID, clinic/M-number, content ID, ICD-10, timestamps, durations, interaction events, billing suggestions keyed to session.
 
-**Not allowed on servers:** Patient ID/MRN/name/DOB/address/SSN/contact, insurance, meds/allergies, problem-list history as patient-linked records, FHIR resource dumps, audio, transcripts, clinical notes, imaging payloads.
+**Not allowed on servers:** Patient ID/MRN/name/DOB/address/SSN/contact, insurance, meds/allergies, problem-list history as patient-linked records, FHIR resource dumps, audio, transcripts, clinical notes, imaging **payloads** (pixels, DICOM, frames). Imaging **metadata** (`imaging_session`) is allowed.
 
 Tenant isolation (Silo / Bridge) is **orthogonal** to PHI rules: even correctly tenant-scoped data must not contain patient identifiers (see Chapter 11 / ADR-013).
 
@@ -67,7 +67,15 @@ Tenant isolation (Silo / Bridge) is **orthogonal** to PHI rules: even correctly 
 | `patient/Encounter.read` | Encounter.read |
 | `patient/DocumentReference.write` | Engagement / service-delivery writeback |
 
-Do not add imaging or other clinical scopes to MVP unless a superseding ADR says so (ADR-009).
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> Additive FHIR <strong>read</strong> strings until athena sandbox ratification (<strong>Q-16</strong>): <code>patient/DiagnosticReport.read</code>, <code>patient/DocumentReference.read</code>, <code>patient/Media.read</code>, <code>patient/Observation.read</code> (labs/reports). Intent is Confirmed in <a href="../../../docs/adr/005-smart-oauth-ehr-launch-mvp-scopes.md">ADR-005</a> / <a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>; this SAD tags the strings Proposed. Do <strong>not</strong> add <code>ImagingStudy</code> / DICOMweb / WADO.
+</p>
+
+### Scoped screen capture and P2P media (Tier 2)
+
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> Tier 2 uses <code>getDisplayMedia</code> scoped to the EHR/PACS <strong>window or tab only</strong> — full-desktop share is forbidden. WebRTC <strong>media is P2P</strong> (clinician browser ↔ exam-room device). Platform carries <strong>signaling only</strong>. No imaging bytes on Mesmerize servers (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>).
+</p>
 
 ### Auth0 for admin / Command Center
 
@@ -134,6 +142,8 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 - Server-side EHR credential vaults for FHIR
 - Patient-level ad targeting
 - Direct unmediated device channels for clinical context
+- Mesmerize DICOM viewer / WADO ingest / imaging payloads on servers (ADR-019; DNB-9)
+- Full-desktop `getDisplayMedia` (window/tab only)
 
 ## Diagrams
 
@@ -157,6 +167,7 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 
 - [ADR-002](../../../docs/adr/002-zero-phi-on-mesmerize-servers.md) — Zero PHI on Mesmerize servers; browser-held FHIR token
 - [ADR-005](../../../docs/adr/005-smart-oauth-ehr-launch-mvp-scopes.md) — 3-legged OAuth, EHR launch only, MVP scopes
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — scoped `getDisplayMedia`; P2P media; Proposed additive reads; no DICOM viewer
 - [ADR-012](../../../docs/adr/012-c4-persons-vs-stakeholders.md) — C4 Persons = runtime only; stakeholders in SAD tables
 - [`docs/ai/SECURITY.md`](../../../docs/ai/SECURITY.md) — PHI tables, auth surfaces, BAAs, logging, open items
 - Diagrams: `output_diagrams/02-phi-boundary`, `05-auth-model`, `11-smart-3legged-oauth-athena`, `12-smart-3legged-oauth-athena-detailed`
@@ -175,6 +186,6 @@ Total BAAs cited under Content Evidence plan: **2–3**.
 
 Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
 
-- **Q-01**, **Q-03**, **Q-04**, **Q-09**, **Q-14**
+- **Q-01**, **Q-03**, **Q-04**, **Q-09**, **Q-14**, **Q-16**
 - **A-10** — one observability vendor; PHI-safe log split
 - Related RBAC depth: **Q-10**

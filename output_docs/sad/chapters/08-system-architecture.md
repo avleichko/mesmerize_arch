@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `08-system-architecture` |
 | SAD mapping | Template §8 Component Responsibilities / Component Interactions |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -24,7 +24,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Device commands are <strong>server-mediated</strong>: SMART app → Platform Device Command API → Socket.io → device; SMART app never talks to devices directly (ADR-007).
+  <strong>Confirmed:</strong> Device commands are <strong>server-mediated</strong>: SMART app → Platform Device Command API → Socket.io → device; SMART app never talks to devices directly (ADR-007). For exam-room imaging, Platform also carries WebRTC <strong>signaling only</strong>; WebRTC <strong>media is P2P</strong> (clinician browser ↔ device) and must <strong>not</strong> traverse the API as a media path (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>). Signaling is this pack’s decision — <strong>not</strong> a customer <code>INFRASTRUCTURE.md</code> <code>D-xx</code>.
 </p>
 
 ### Technology stack (runtime)
@@ -57,7 +57,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 |------------------|------------------|----------------------|
 | **session-service** | Opaque session lifecycle; store ICD-10 set, clinic/device group, status; publish `session.started` / `session.ended` | PostgreSQL; SQS |
 | **content-service** | Catalog, ICD-10→content recommend, CMS projections / sync jobs | PostgreSQL; S3 (media refs); SQS; Sanity; BioDigital; MJH |
-| **device-realtime-service** | Device registry mirror, pairing, Device Command API, Socket.io rooms / presence | PostgreSQL; Redis (Socket.io adapter); SQS; Esper identity mirror; sticky ALB |
+| **device-realtime-service** | Device registry mirror, pairing, Device Command API, Socket.io rooms / presence, WebRTC **signaling** (SDP/ICE) for Tier 2 imaging — **no** WebRTC media on the API | PostgreSQL; Redis (Socket.io adapter); SQS; Esper identity mirror; sticky ALB |
 | **engagement-service** | De-identified engagement telemetry & session timelines; consume engagement events | PostgreSQL; SQS |
 | **billing-evidence-service** | Rules-engine CPT suggestions / evidence; approve; export; consume session/engagement facts | PostgreSQL; SQS; `packages/billing-engine` |
 | **org-identity-service** | Organizations, users, `tenancyMode`, Auth0 JWT / RBAC for admin surfaces | PostgreSQL; Auth0 |
@@ -106,7 +106,8 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 | Clinician / EHR | SMART Web App | EHR launch iframe | Pilot athenahealth |
 | SMART Web App | athenahealth FHIR | Browser HTTPS + EHR token | Token never to Mesmerize |
 | SMART Web App | Gateway → Platform API | HTTPS REST + Mesmerize session token | ICD-10 + deviceGroup + sessionId only |
-| Device PWA | Gateway / device-realtime | HTTPS REST + Socket.io | Esper device token |
+| Device PWA | Gateway / device-realtime | HTTPS REST + Socket.io | Esper device token; imaging display commands + **signaling** (not media) |
+| SMART Web App ↔ Device PWA | WebRTC **media** (Tier 2) | P2P | Window/tab-scoped share only; **not** via Platform API ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
 | Gateway | session / content / device / engagement / billing / org / ads | REST | ALB routing |
 | session / device / content | SQS | Publish lifecycle, commands, CMS jobs | Fire-and-forget or RR per ADR-014 |
 | engagement / billing / audit | SQS | Consume events / RR | No PHI in payloads |
@@ -161,7 +162,7 @@ Owns catalog, ICD-10→content recommend, and CMS projections/sync. Does **not**
 
 #### device-realtime-service
 
-Owns device registry mirror, pairing, Device Command API, and Socket.io rooms/presence. SMART never talks to devices directly (ADR-007).
+Owns device registry mirror, pairing, Device Command API, Socket.io rooms/presence, and WebRTC **signaling** for Tier 2 imaging. SMART never talks to devices directly (ADR-007). **No WebRTC media** on this service ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)).
 
 | Neighbor | Direction | Mechanism | Evidence |
 |----------|-----------|-----------|----------|
@@ -171,7 +172,7 @@ Owns device registry mirror, pairing, Device Command API, and Socket.io rooms/pr
 | Redis | → | R/W (adapter / presence) | Confirmed (`06`) |
 | SQS | → | device.command.* | Confirmed (`06`) |
 | Esper MDM | → | Identity / provisioning mirror | Confirmed (`06`) |
-| SMART Web App (via Gateway) | ← in | Pair / push commands | Inferred (ADR-007) |
+| SMART Web App (via Gateway) | ← in | Pair / push commands; imaging **signaling** (not media) | Inferred (ADR-007; ADR-019) |
 
 ![C4 focus — device-realtime-service](../../output_diagrams/06c-c4-focus-device-realtime-service.png)
 
@@ -264,6 +265,7 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 
 - [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — planes, components, monorepo, C4 building blocks
 - [ADR-007](../../../docs/adr/007-extend-pwa-server-mediated-devices.md) — extend PWA; server-mediated devices; Socket.io; Esper IDs
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — Device Command + signaling for imaging; no media on API; not a customer `D-xx`
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — S1–S15 stack
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — REST edge + SQS internal patterns
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — ECS co-locate / sticky ALB for device-realtime

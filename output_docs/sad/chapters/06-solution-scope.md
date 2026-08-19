@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `06-solution-scope` |
 | SAD mapping | Template §6 Solution Scope (Solution Description, Solution Architecture Diagram) |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -42,9 +42,11 @@ By **end of Q1 2027**, one athenahealth pilot org with a real clinician:
 | Billing evidence | CPT/HCPCS/HCC **suggestions** + evidence; physician review/approve (HITL) |
 | Rules engine | Site-configurable billing / content rules |
 | Writeback | Browser-side FHIR **DocumentReference** (engagement / service-delivery summary) |
+| Exam-room imaging display | **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC mirror ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
+| Imaging evidence | De-identified Platform `imaging_session` (concept Confirmed; name TBD) + physician HITL + browser DocumentReference |
 | Tenancy | Organization tenant; clinic sub-scope; pilot default **Bridge** |
 | Pilot footprint | **One athenahealth** organization |
-| Roadmap artifacts | EHR-agnostic core blueprint + Epic/Cerner integration **roadmap** (analysis, not full build) |
+| Roadmap artifacts | EHR-agnostic core blueprint + Epic/Cerner integration **roadmap** (analysis, not full build); four-EHR write-back adapters beyond athena DocumentReference |
 
 ### Out of scope (explicit)
 
@@ -54,22 +56,23 @@ By **end of Q1 2027**, one athenahealth pilot org with a real clinician:
 | Redox / server FHIR | Redox dependency; server-side EHR token or EHR API calls | DNB-1; DNB-8 |
 | Patient record on Mesmerize | Patient CRUD / longitudinal patient store | DNB-6 |
 | Claims / EDI | Clearinghouse or claim submission (PM system owns claims) | DNB-7 |
-| DICOM / imaging mirror | DICOM push, Patient Imaging Mirror, screen mirroring UX | ADR-009; DNB-9 |
+| Mesmerize DICOM viewer / WADO / server imaging payloads | Mesmerize DICOM parser/viewer; ImagingStudy / WADO ingest; storing imaging bytes in RDS or S3 | [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md); [ADR-011](../../../docs/adr/011-do-not-build.md) DNB-9 |
+| Four-EHR write-back adapters | Epic / Cerner / eCW write-back beyond athena DocumentReference | ADR-019 (roadmap) |
 | ML recommender | If metadata insufficient — not in SOW #3 | PROJECT_CONTEXT / SOW #3 |
 | Multi–health-system prod | Production rollout beyond single athena pilot org | SOW #3 |
 | Epic / Cerner MVP build | Marketplace registration & full integrations — roadmap only | ADR-004 |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> DICOM push / imaging mirror / screen mirroring is <strong>out of current SOW scope</strong>; keep architectural awareness only — do not implement imaging scopes, DICOM pipelines, or mirroring UX under SOW #3 (ADR-009).
+  <strong>Confirmed:</strong> Exam-room imaging <strong>display</strong> (Tier 1 + Tier 2) and HITL imaging <strong>evidence</strong> are <strong>in scope</strong> (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>, decision #20). Still out of scope: a Mesmerize <strong>DICOM viewer</strong>, WADO ingest, <code>ImagingStudy</code> pipeline, and <strong>server-side</strong> DICOM or imaging payloads (<a href="../../../docs/adr/011-do-not-build.md">ADR-011</a> DNB-9). <a href="../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md">ADR-009</a> is <strong>Superseded</strong> (historical SOW-exclusion only).
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> “Foundation for future” imaging / advanced features means design awareness and non-goals documentation — not delivery stubs that complete DNB items.
+  <strong>Inferred:</strong> Four-EHR write-back adapters (Observation/Provenance, eCW HL7, etc.) remain <strong>roadmap</strong> — not delivery stubs in this SOW. Imaging <strong>display</strong> is not a non-goal.
 </p>
 
 ### Do-not-build summary (DNB-1–DNB-9)
 
-Agents and delivery must reject: Redox; Deepgram; Claude SOAP; transcript storage; clinical note storage; patient CRUD; clearinghouse/EDI; server-side EHR tokens; DICOM push in current scope ([ADR-011](../../../docs/adr/011-do-not-build.md)).
+Agents and delivery must reject: Redox; Deepgram; Claude SOAP; transcript storage; clinical note storage; patient CRUD; clearinghouse/EDI; server-side EHR tokens; a Mesmerize **DICOM viewer** and **server-side DICOM or imaging payloads** ([ADR-011](../../../docs/adr/011-do-not-build.md) DNB-9). Imaging **display** (Tier 1 + Tier 2) is in scope per [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md).
 
 ## Solution Architecture Diagram
 
@@ -97,8 +100,9 @@ Agents and delivery must reject: Redox; Deepgram; Claude SOAP; transcript storag
 
 - [ADR-001](../../../docs/adr/001-content-evidence-not-ambient-scribe.md) — Content Evidence, not ambient scribe
 - [ADR-004](../../../docs/adr/004-athena-pilot-ehr-agnostic-core.md) — athena pilot; EHR-agnostic core
-- [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) — DICOM / imaging out of SOW
-- [ADR-011](../../../docs/adr/011-do-not-build.md) — DNB-1–DNB-9
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging display + evidence in-scope (Tier 1 + Tier 2)
+- [ADR-009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) — superseded historical SOW-exclusion
+- [ADR-011](../../../docs/adr/011-do-not-build.md) — DNB-1–DNB-9 (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads)
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — in/out of scope, success metric
 - `output_diagrams/01-system-context` · `output_diagrams/17-aws-deployment-reference`
 

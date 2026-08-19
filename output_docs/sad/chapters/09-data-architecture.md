@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `09-data-architecture` |
 | SAD mapping | Template §9 Data Architecture |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -23,9 +23,9 @@ Describe where Content Evidence data originates, the **logical** (not physical t
 
 *Figure 9-1: PHI boundary — patient-identifying FHIR context stays in the SMART browser; Mesmerize Platform holds only de-identified session / engagement / billing facts (`output_diagrams/02-phi-boundary`).*
 
-**Not stored on Mesmerize servers:** Patient ID / MRN / name / DOB / address / SSN / contact, insurance, meds / allergies, patient-linked problem-list history, FHIR resource dumps, EHR access tokens, audio, transcripts, clinical notes, imaging payloads.
+**Not stored on Mesmerize servers:** Patient ID / MRN / name / DOB / address / SSN / contact, insurance, meds / allergies, patient-linked problem-list history, FHIR resource dumps, EHR access tokens, audio, transcripts, clinical notes, imaging **payloads** (pixels, DICOM, frames, recordings).
 
-**Allowed server-side examples:** session UUID, device ID, clinic / device group, content ID, ICD-10 codes (without patient linkage), timestamps, durations, interaction events, billing suggestions keyed to session.
+**Allowed server-side examples:** session UUID, device ID, clinic / device group, content ID, ICD-10 codes (without patient linkage), timestamps, durations, interaction events, billing suggestions keyed to session, imaging **metadata** (`imaging_session`: timestamps, device id, opaque session id, tier `1` \| `2`, artifact type or `mirror` flag — concept Confirmed; implementation name TBD).
 
 ## Data Sources
 
@@ -58,6 +58,7 @@ Logical domain entities only — **no invented table schemas**.
 | **Session** | Opaque UUID, ICD-10 set, clinic/device group, status, times | No patient/encounter IDs |
 | **Content / catalog item** | Content ID, ICD-10 metadata mapping, format / specialty filters | Recommend input |
 | **ContentEngagement** | Session-keyed events, content ID, timestamps, durations, interactions | De-identified |
+| **imaging_session** | Timestamps, device id, opaque session id, tier (`1` \| `2`), artifact type or `mirror` flag | De-identified imaging **metadata** only — not Patient-linked; **not** pixels/DICOM ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
 | **BillingSuggestion** | Session-keyed CPT/HCPCS/HCC suggestions + evidence | HITL approve; no claims/EDI |
 | **Device** | Device / Esper identity, pairing, presence | No patient identity on device |
 | **Audit / diagnostic** | Operational events; no PHI | Separate from engagement; ≤90-day diagnostic retention |
@@ -76,7 +77,8 @@ Logical domain entities only — **no invented table schemas**.
 2. **Session open:** SMART → Platform session API with ICD-10 + deviceGroup + opaque session ID (Mesmerize session token).
 3. **Recommend:** content-service matches ICD-10 → content metadata; returns catalog candidates (no CPT as match key).
 4. **Push / play:** Device Command API → Socket.io → device; engagement events return de-identified to engagement-service.
-5. **Billing evidence:** engagement + ICD-10 context → billing-evidence suggestions (CPT/HCPCS/HCC); physician review/approve.
+4b. **Imaging (optional):** SMART reads web-native artifacts in the **browser** (or shares a window/tab). Platform receives opaque session + device group + artifact **kind / opaque id** (or signaling). **No** imaging payload on servers. De-identified `imaging_session` metadata is stored as Platform SoR.
+5. **Billing evidence:** engagement + ICD-10 context → billing-evidence suggestions (CPT/HCPCS/HCC); physician review/approve (HITL also covers imaging evidence).
 6. **Writeback (browser):** DocumentReference via EHR token; Platform never calls EHR FHIR APIs.
 7. **Tenancy:** Every persisted row / S3 object / SQS message scoped by `tenantId` (and `clinicId` when relevant).
 
@@ -93,6 +95,7 @@ Logical domain entities only — **no invented table schemas**.
 | Content catalog / ICD-10 mapping | **content-service** (+ CMS vendors as upstream) | Catalog + recommend |
 | Device registry / pairing / commands | **device-realtime-service** (+ Esper identity) | Command mediation |
 | Engagement telemetry | **engagement-service** | De-identified timelines |
+| Imaging session metadata | **Platform de-identified store** (SoR; implementation service TBD) | `imaging_session` concept — no pixels |
 | CPT/HCPCS/HCC suggestions + evidence | **billing-evidence-service** | Suggest only; human approve |
 | Org / users / `tenancyMode` | **org-identity-service** (+ Auth0 for admin identity) | Tenant config |
 | Diagnostic / audit ingest | **audit-telemetry-service** | No-PHI operational logs |
@@ -105,6 +108,7 @@ Logical domain entities only — **no invented table schemas**.
 ## Evidence
 
 - [ADR-002](../../../docs/adr/002-zero-phi-on-mesmerize-servers.md) — zero PHI / browser-held FHIR token
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — allowed imaging **metadata**; forbidden imaging **payloads**
 - [ADR-006](../../../docs/adr/006-icd10-content-match-cpt-billing-output.md) — ICD-10 match; CPT on billing output
 - [ADR-013](../../../docs/adr/013-multitenancy-silo-and-bridge.md) — Bridge default; Silo; S3 prefixes
 - [`docs/ai/SECURITY.md`](../../../docs/ai/SECURITY.md) — classification, allowed / not-allowed server fields

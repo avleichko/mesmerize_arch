@@ -4,12 +4,12 @@
 |-------|-------|
 | Chapter ID | `07-functional-architecture` |
 | SAD mapping | Template §7 Functional Architecture |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
 
-Describe the Content Evidence Platform’s **end-to-end clinical encounter capability chain** — launch → recommend → push → engage → suggest → approve → DocumentReference writeback — and the auth surfaces that enable it, without inventing undeclared APIs or ambient/audio paths.
+Describe the Content Evidence Platform’s **end-to-end clinical encounter capability chain** — launch → recommend → push → engage → optional imaging display → suggest → approve → DocumentReference writeback — and the auth surfaces that enable it, without inventing undeclared APIs or ambient/audio paths.
 
 ## Narrative
 
@@ -32,8 +32,10 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
 | 3 | **Recommend** | SMART → content-service | ICD-10 → content metadata match; ranked catalog (CPT not a match key) |
 | 4 | **Push** | SMART → Device Command API → device | Server-mediated Socket.io `show_content` / BioDigital; no direct SMART↔device |
 | 5 | **Engage** | Device → engagement-service | De-identified telemetry: content ID, timestamps, duration, interactions |
+| 5b | **Imaging display** *(optional)* | SMART → Device Command / signaling → device | **Tier 1** web-native artifact push **or** **Tier 2** window/tab-scoped WebRTC mirror ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)). Platform: command metadata + **signaling only**; no pixels / DICOM on servers. Tier 2 media is **P2P**. |
+| 5c | **Imaging evidence** *(optional)* | Platform `imaging_session` | De-identified timestamps, device id, opaque session id, tier (`1` \| `2`), artifact type or `mirror` flag — not Patient-linked |
 | 6 | **Suggest** | billing-evidence | CPT/HCPCS/HCC **suggestions + evidence** from engagement (not claims/EDI) |
-| 7 | **Approve** | Physician in SMART UI | Human-in-the-loop review/approve before any chart documentation use |
+| 7 | **Approve** | Physician in SMART UI | Human-in-the-loop review/approve before any chart documentation use (billing **and** imaging evidence) |
 | 8 | **Writeback** | SMART → EHR FHIR | Browser DocumentReference (education / service-delivery); optional / disable-able |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -53,8 +55,10 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
 3. **Recommend:** content-service ranks educational content from ICD-10 → catalog metadata; clinician may browse/search and refine selection.
 4. **Push:** Clinician selects exam-room device; SMART posts Device Command; Platform fans out via Socket.io to the PWA.
 5. **Engage:** Device emits de-identified engagement events; engagement-service stores session-keyed telemetry (no patient keys).
+5b. **Imaging display (optional):** After push/engage, the clinician may show a web-native report/image (**Tier 1**) or share the EHR/PACS **window or tab** (**Tier 2**). Commands and WebRTC **signaling** go through Platform; **media is P2P**; no imaging bytes on Mesmerize servers ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)).
+5c. **Imaging evidence (optional):** Platform records a de-identified `imaging_session` (concept Confirmed; implementation name TBD). Physician HITL still applies before writeback.
 6. **Suggest:** billing-evidence engine turns engagement + ICD-10 context into CPT/HCPCS/HCC suggestions with supporting evidence.
-7. **Approve:** Physician reviews suggestions in SMART UI; approval is required before writeback / official documentation use.
+7. **Approve:** Physician reviews suggestions **and** any imaging evidence in SMART UI; approval is required before writeback / official documentation use.
 8. **Writeback (when enabled):** `packages/fhir-engagement` formats a DocumentReference (architecture cites LOINC **69730-0** Instructions); SMART writes it to the EHR with the EHR token. Feature is **configurable / disable-able per customer**.
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -90,17 +94,19 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
 
 | Actor | Capabilities |
 |-------|--------------|
-| **Provider (clinician)** | Launch SMART; review ICD-10 context; select/push content; review engagement + billing evidence; approve; optional DocumentReference writeback |
-| **SMART Web App** | OAuth + FHIR read/write in browser; session/recommend/push/approve UX; format writeback via `fhir-engagement` |
-| **Mesmerize Platform** | Opaque session, recommend, device command, engagement ingest, billing suggestions — never EHR FHIR, never patient IDs |
-| **Exam-room device PWA** | Receive Socket.io commands; play content; emit de-identified engagement |
-| **EHR (athenahealth pilot)** | SMART launch host; FHIR Condition/Encounter/Patient read; DocumentReference write target |
+| **Provider (clinician)** | Launch SMART; review ICD-10 context; select/push content; optional exam-room imaging display (Tier 1 or Tier 2); review engagement + billing + imaging evidence; approve; optional DocumentReference writeback |
+| **SMART Web App** | OAuth + FHIR read/write in browser; session/recommend/push/approve UX; optional imaging artifact read / scoped window share; format writeback via `fhir-engagement` |
+| **Mesmerize Platform** | Opaque session, recommend, device command, engagement ingest, billing suggestions, imaging **signaling** + `imaging_session` metadata — never EHR FHIR, never patient IDs, never imaging bytes |
+| **Exam-room device PWA** | Receive Socket.io commands; play content; optional web-native artifact display or WebRTC P2P stream; emit de-identified engagement |
+| **EHR (athenahealth pilot)** | SMART launch host; FHIR Condition/Encounter/Patient read; optional DiagnosticReport/DocumentReference/Media/Observation **read** (Proposed strings — **Q-16**); DocumentReference write target |
 
 ## Evidence
 
 - [ADR-001](../../../docs/adr/001-content-evidence-not-ambient-scribe.md) — Content Evidence (not ambient scribe)
 - [ADR-003](../../../docs/adr/003-documentreference-engagement-writeback.md) — browser DocumentReference; HITL; no claims
 - [ADR-008](../../../docs/adr/008-engagement-telemetry-billing-hitl-writeback.md) — de-identified telemetry; suggest-only billing; disable-able writeback
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — optional imaging display + HITL evidence; no DICOM viewer
+- [ADR-005](../../../docs/adr/005-smart-oauth-ehr-launch-mvp-scopes.md) — MVP scopes; Proposed additive reads; no `ImagingStudy`
 - [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — SMART capabilities, API groups, happy path, auth model
 - [`output_diagrams/03-encounter-flow.mmd`](../../../output_diagrams/03-encounter-flow.mmd) / PNG — encounter sequence
 - [`output_diagrams/05-auth-model.mmd`](../../../output_diagrams/05-auth-model.mmd) / PNG — auth surfaces
@@ -111,8 +117,12 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
   <strong>Unknown:</strong> Exact DocumentReference payload field catalog and athenahealth acceptance criteria for pilot writeback (customer/EHR configuration dependent per ADR-003).
 </p>
 
-<p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> MVP SMART scopes align with Q&A (<code>launch/encounter</code>, Patient/Condition/Encounter read, DocumentReference write); imaging scopes remain out of SOW #3 (ADR-009).
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> MVP SMART scopes include <code>launch/encounter</code>, <code>patient/Patient.read</code>, <code>patient/Condition.read</code>, <code>patient/Encounter.read</code>, <code>patient/DocumentReference.write</code> (<a href="../../../docs/adr/005-smart-oauth-ehr-launch-mvp-scopes.md">ADR-005</a>). Do <strong>not</strong> add <code>ImagingStudy</code> / DICOMweb / WADO (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>).
+</p>
+
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> Additive FHIR <strong>read</strong> scope strings until athena sandbox ratification (<strong>Q-16</strong>): <code>patient/DiagnosticReport.read</code>, <code>patient/DocumentReference.read</code>, <code>patient/Media.read</code>, <code>patient/Observation.read</code> (labs/reports). Intent is Confirmed in ADR-005 / ADR-019; this SAD tags the <em>strings</em> Proposed. Do not treat them as Confirmed until Q-16 closes.
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
@@ -124,3 +134,4 @@ Describe the Content Evidence Platform’s **end-to-end clinical encounter capab
 Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
 
 - **Q-05** — DocumentReference writeback field catalog + athena pilot acceptance (includes LOINC/category coding)
+- **Q-16** — Ratify additive FHIR **read** scope strings with athena

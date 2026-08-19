@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `12-messaging-and-integration` |
 | SAD mapping | Mesmerize extension |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -16,7 +16,7 @@ Define how the Content Evidence Platform moves work across the edge and between 
 ### Edge vs internal transport
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Edge clients (SMART app, devices, Command Center → platform) use <strong>REST</strong>; device realtime uses <strong>Socket.io</strong>. Interactive edge answers (session, recommend, device list) are <strong>not</strong> SQS request/reply when REST to the owning service is sufficient (ADR-014).
+  <strong>Confirmed:</strong> Edge clients (SMART app, devices, Command Center → platform) use <strong>REST</strong>; device realtime uses <strong>Socket.io</strong>. Interactive edge answers (session, recommend, device list) are <strong>not</strong> SQS request/reply when REST to the owning service is sufficient (ADR-014). WebRTC <strong>signaling</strong> for exam-room imaging is a Platform realtime path — <strong>not</strong> the SQS hot path. WebRTC <strong>media is P2P</strong> and never traverses SQS or the API as a media payload (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>). Socket.io / WebRTC are this pack’s decision — <strong>not</strong> a customer <code>INFRASTRUCTURE.md</code> <code>D-xx</code>.
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -26,8 +26,11 @@ Define how the Content Evidence Platform moves work across the edge and between 
 | Need | Transport / pattern |
 |------|---------------------|
 | Interactive edge answer (session, recommend, device list) | REST |
+| Device commands / presence | Socket.io (realtime) — **not** SQS |
+| WebRTC **signaling** (Tier 2 imaging) | Platform realtime (Socket.io-class) — **not** the SQS hot path ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
+| WebRTC **media** (Tier 2) | **P2P** clinician browser ↔ device — never queued, never on the API |
 | Caller service needs result from another service | SQS Request/Reply + `correlationId` |
-| Emit fact / side effect (engagement, audit, session.ended) | SQS Fire-and-forget |
+| Emit fact / side effect (engagement, audit, session.ended, `imaging_session` metadata) | SQS Fire-and-forget |
 | Poison / repeated failure | Enrich → DLQ |
 
 ### SQS messaging overview
@@ -93,6 +96,7 @@ Define how the Content Evidence Platform moves work across the edge and between 
 ## Evidence
 
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — REST edge; SQS RR / fire-and-forget / enricher+DLQ; envelope; decision matrix
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging signaling ≠ SQS hot path; media P2P
 - [ADR-013](../../../docs/adr/013-multitenancy-silo-and-bridge.md) — `tenantId` on messages
 - [ADR-002](../../../docs/adr/002-zero-phi-on-mesmerize-servers.md) — No patient identifiers / EHR tokens on Mesmerize servers
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — Externals (Athena, Auth0, Esper, CMS, SMS)

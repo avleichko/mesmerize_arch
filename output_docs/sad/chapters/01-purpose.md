@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `01-purpose` |
 | SAD mapping | Template §1 Purpose of document |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -29,7 +29,7 @@ State **who** this Solution Architecture Definition (SAD) pack is for, **why** i
 1. **Single working artifact** for architecture review and iteration under `output_docs/sad/` — Markdown chapters with status callouts and diagram embeds.
 2. **Traceability** from SOW #3 / Mesmerize Q&A / `kb/` through confirmed ADRs (#1–#20, stack, DNB, multitenancy, messaging) into stakeholder-readable sections.
 3. **Template fidelity** — section spine matches [`templates/Solution_Architecture_Definition_template.docx`](../../../templates/Solution_Architecture_Definition_template.docx) so a later Word export does not invent a competing outline ([`templates/README.md`](../../../templates/README.md)).
-4. **Guardrails** — call out Confirmed / Inferred / Proposed / Unknown; honor do-not-build and imaging-out-of-SOW decisions so agents do not silently expand scope.
+4. **Guardrails** — call out Confirmed / Inferred / Proposed / Unknown; honor do-not-build ([ADR-011](../../../docs/adr/011-do-not-build.md), including **DNB-9**: no Mesmerize DICOM viewer and no server-side DICOM or imaging payloads) and [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) (exam-room imaging **display** + HITL evidence **in-scope**; no DICOM viewer / WADO ingest) so agents do not silently expand scope.
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
   <strong>Confirmed:</strong> Authoritative working pack lives under <code>output_docs/sad/</code> only. Filling the official Word <code>.docx</code> is <strong>out of scope</strong> for this Markdown pack; Word assembly is a later pass (<code>output_docs/sad/README.md</code>).
@@ -43,7 +43,7 @@ State **who** this Solution Architecture Definition (SAD) pack is for, **why** i
 | §2 Scope | [02-scope.md](02-scope.md) |
 | §3 Related Documents | [03-related-documents.md](03-related-documents.md) |
 | §4 Definitions and Acronyms | [04-definitions-and-acronyms.md](04-definitions-and-acronyms.md) |
-| §5–§11 (+ Mesmerize extensions) | Chapters 05–16 (see [pack README](../README.md)) |
+| §5–§11 (+ Mesmerize extensions) | Chapters 05–20 (see [pack README](../README.md)); Ch.19–20 = imaging evidence + display |
 
 - **Copy structure, do not overwrite** the template in `templates/`.
 - **Crosswalk** (when present): [`WORD_TEMPLATE_CROSSWALK.md`](../WORD_TEMPLATE_CROSSWALK.md) maps chapters → Word sections for export.
@@ -59,3 +59,5 @@ State **who** this Solution Architecture Definition (SAD) pack is for, **why** i
 - [`output_docs/sad/README.md`](../README.md) — pack purpose, chapter index, Word out of scope
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — product positioning and success metric
 - [`docs/adr/README.md`](../../../docs/adr/README.md) — confirmed decision register
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging display + evidence in-scope (supersedes ADR-009)
+- [ADR-011](../../../docs/adr/011-do-not-build.md) — DNB-1–DNB-9 (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads)

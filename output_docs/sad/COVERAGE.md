@@ -1,7 +1,7 @@
 # SAD Coverage Checklist
 
 **Pack:** `output_docs/sad/`  
-**Date:** 2026-07-23  
+**Date:** 2026-08-19  
 **Rule:** Shared items from the SAD design spec; chapter-specific minimums from Task 15. Mark `[x]` / `[ ]`. N/A items omitted from that chapter’s denominator. White spots must match colored **Unknown** / **Proposed** callouts in chapter bodies.
 
 **Shared items (adapt per chapter):**
@@ -69,7 +69,7 @@
 | # | Item | Status |
 |---|------|--------|
 | 1 | Purpose stated | [x] |
-| 2 | Actors / components covered (ADR / doc catalog 001–016) | [x] |
+| 2 | Actors / components covered (ADR / doc catalog 001–019) | [x] |
 | 7 | Evidence links (ADR-016 + touchscreen-ux DevOps extract under Deployment) | [x] |
 | 8 | Open questions listed or explicitly “none” | [ ] |
 | 9 | White spots only as colored callouts | [x] |
@@ -180,6 +180,7 @@
 
 **White spots (Proposed):**
 
+- Additive FHIR **read** scope strings until Q-16 (athena sandbox ratification).
 - Command Center RBAC role rollout timing (Auth0 remains IdP for admin).  
 - Bridge patient auth and waiting-room playlist optimization as adjacent surfaces; core path is exam-room Content Evidence → DocumentReference.
 
@@ -267,6 +268,7 @@
 
 **White spots (Proposed):**
 
+- Additive FHIR **read** scope strings until Q-16 (athena sandbox ratification).
 - OWASP hardening + pen test (SOW Phase 3) and formal HIPAA-aligned AWS policy handover — not yet a signed Mesmerize pack.
 
 ---
@@ -462,7 +464,7 @@
 | 1 | Purpose stated | [x] |
 | 2 | Actors / audience covered (Mesmerize product/ops/compliance) | [x] |
 | 7 | Evidence links (source chapters + ADR-016 + design spec) | [x] |
-| 8 | Open questions listed (Q-01…Q-14) | [x] |
+| 8 | Open questions listed (Q-01…Q-16) | [x] |
 | 9 | White spots only as colored callouts | [x] |
 | * | **Chapter-specific:** Assumptions A-01…A-10 (Proposed only); Must-answer Q register; no invented Confirmed Region/RTO/BAA/owners | [x] |
 | * | **Chapter-specific:** Traceability + how-to-close | [x] |
@@ -470,11 +472,72 @@
 
 **N/A:** diagrams; data ownership; Security/PHI narrative body (owned by Ch.10 — this chapter is the decision register).
 
-**Score:** 8 / 8 = **100%** → band **75** (capped while Q-01…Q-14 Unknown remains — not Stakeholder-ready)
+**Score:** 8 / 8 = **100%** → band **75** (capped while Q-01…Q-16 Unknown remains — not Stakeholder-ready)
 
-**White spots (Unknown):** All open **Q-01…Q-14** (see chapter register).
+**White spots (Unknown):** All open **Q-01…Q-16** (see chapter register).
 
 **White spots (Proposed):** Assumptions **A-01…A-10** (engineering defaults; do not clear source Unknowns until Mesmerize accepts).
+
+---
+
+## 19 — Imaging-Mirror Evidence Addendum
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Purpose stated | [x] |
+| 2 | Actors / components covered | [x] |
+| 3 | Required diagrams embedded (`23-imaging-evidence-capture-writeback`) | [x] |
+| 4 | Interfaces / interactions described (capture vs HITL write-back) | [x] |
+| 5 | Data ownership noted (Platform de-identified store is SoR) | [x] |
+| 6 | Security / PHI notes (no pixels / no Patient-linked evidence) | [x] |
+| 7 | Evidence links (ADR-019, ADR-002/003/008, DNB-9) | [x] |
+| 8 | Open questions listed (**Q-16**) | [x] |
+| 9 | White spots only as colored callouts | [x] |
+| * | **Chapter-specific:** taxonomy (`imaging_session`); capture universal; four-EHR write-back = roadmap | [x] |
+
+**Score:** 10 / 10 = **100%** → band **75** (capped while Unknown remains)
+
+**White spots (Unknown):**
+
+- Implementation persistence name for `imaging_session` (concept Confirmed).  
+- athena sandbox acceptance of Proposed additive FHIR **read** scope strings — **Q-16**.
+
+**White spots (Proposed):**
+
+- Exact additive FHIR **read** scope strings until Q-16.  
+- Four-EHR write-back adapters (Observation/Provenance, eCW HL7) remain roadmap.
+
+---
+
+## 20 — Exam-Room Imaging Mirror
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Purpose stated | [x] |
+| 2 | Actors / components covered | [x] |
+| 3 | Required diagrams embedded (`24-imaging-mirror-transport`, `25-imaging-tier1-tier2-sequence`) | [x] |
+| 4 | Interfaces / interactions described (Tier 1 command metadata; Tier 2 P2P + signaling) | [x] |
+| 5 | Data ownership noted (no pixels on Platform; five data types) | [x] |
+| 6 | Security / PHI notes (P1–P4; no DICOM viewer) | [x] |
+| 7 | Evidence links (ADR-019; not a customer `D-xx`) | [x] |
+| 8 | Open questions listed (**Q-16**; customer device-transport called out as not a pack Q-row) | [x] |
+| 9 | White spots only as colored callouts | [x] |
+| * | **Chapter-specific:** Tier 1 + Tier 2 in-scope; Tier 3 / DICOM viewer rejected | [x] |
+
+**N/A:** none (architecture chapter).
+
+**Score:** 10 / 10 = **100%** → band **75** (capped while Unknown remains)
+
+**White spots (Unknown):**
+
+- Customer **device-transport** product name — open in `INFRASTRUCTURE.md` (no `D-xx`). Pack signaling / WebRTC is ADR-019, not a customer-register settlement.  
+- Implementation persistence name for `imaging_session`.
+
+**White spots (Proposed):**
+
+- Exact additive FHIR **read** scope strings until **Q-16**.
+
+**Note:** Diagrams **19** / **20** PNGs remain Ladder A/B **CI/CD** (Chapter 17). Imaging figures are catalog **23** / **24** / **25**.
 
 ---
 

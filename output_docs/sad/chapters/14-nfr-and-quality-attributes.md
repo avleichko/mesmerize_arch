@@ -4,7 +4,7 @@
 |-------|-------|
 | Chapter ID | `14-nfr-and-quality-attributes` |
 | SAD mapping | Mesmerize extension |
-| Last updated | 2026-07-23 |
+| Last updated | 2026-08-19 |
 | Maturity | Review-ready · 75% |
 
 ## Purpose of this chapter
@@ -105,9 +105,10 @@ Summarize Architecturally Significant Requirements (ASRs) that bind the Content 
 | NFR-INT-01 | SMART 3-legged EHR launch (Athena pilot) |
 | NFR-INT-02 | Server-mediated device commands (REST + Socket.io) |
 | NFR-INT-04 | SQS patterns per ADR-014 (RR/correlation, fire-and-forget, enricher+DLQ; edge REST) |
+| NFR-INT-05 | Imaging display is server-mediated; no Mesmerize DICOM viewer; no imaging payloads on servers; EHR token stays in the browser ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md), ADR-002, ADR-007). Catalog row lives in the NFR pack. |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Authorization Code Grant EHR launch; SMART app never talks to devices directly; internal SQS as ADR-014; interactive edge remains REST (ADR-005, ADR-007, ADR-014).
+  <strong>Confirmed:</strong> Authorization Code Grant EHR launch; SMART app never talks to devices directly; internal SQS as ADR-014; interactive edge remains REST (ADR-005, ADR-007, ADR-014). Imaging display uses Device Command + <strong>signaling</strong>; WebRTC media is P2P (ADR-019).
 </p>
 
 ### Data integrity & isolation (ASR)
@@ -129,7 +130,7 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 | ID | Quality attribute | Note |
 |----|-------------------|------|
 | NFR-PERF-01 | Performance / UX | SMART usable in EHR iframe (~400–800px sidebar); no pop-up-dependent primary flows |
-| NFR-PERF-02 | Performance | Imaging/mirroring latency — **out of SOW** (ADR-009) |
+| NFR-PERF-02 | Performance | Qualitative device display / mirror latency concern — **in scope** ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)). Do **not** invent a numeric latency SLO. |
 | NFR-SCAL-02 | Scalability | Dual Bridge/Silo tenancy without rewriting domain APIs |
 | NFR-BUS-01 / 02 | Business | Suggest-only billing; physician HITL before writeback |
 | NFR-OPS-05 / 06 | Operability | Dev / Staging / Prod; Ladder A (GHA + Terraform / ECS) vs Ladder B (PWA/TTV) per ADR-016 |
@@ -141,7 +142,7 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 | [`docs/ai/NFR.md`](../../../docs/ai/NFR.md) | Canonical agent NFR + ASR list |
 | [`output_docs/nfr/NFR_CATALOG.md`](../../nfr/NFR_CATALOG.md) | Export catalog (full table) |
 | [`output_docs/nfr/ASR_CHECKLIST.md`](../../nfr/ASR_CHECKLIST.md) | Design-review checklist |
-| ADR-002, 005, 007, 008, 011, 013, 014, 016 | Decisions backing ASR statements (016 = dual delivery ladders / OPS) |
+| ADR-002, 005, 007, 008, 011, 013, 014, 016, 019 | Decisions backing ASR statements (016 = dual delivery ladders / OPS; 019 = imaging display + INT-05 / PERF-02) |
 | SOW #3 Phase 2 / 3 | WCAG 2.1 AA; OWASP + pen-test |
 
 ## Open items / decisions needed
