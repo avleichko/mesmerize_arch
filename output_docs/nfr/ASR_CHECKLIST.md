@@ -18,6 +18,8 @@ Use in design reviews and before merging infrastructure/API boundary changes.
 - [ ] **NFR-INT-01** SMART 3-legged EHR launch (Athena pilot)  
 - [ ] **NFR-INT-02** Server-mediated device commands (Socket.io)  
 - [ ] **NFR-INT-04** SQS patterns per ADR-014 (RR/correlation, fire-and-forget, enricher+DLQ; edge REST)  
+- [ ] **NFR-INT-05** Server-mediated imaging display; no Mesmerize DICOM viewer; no imaging payloads on servers; EHR token in browser  
+- [ ] **No imaging payloads on servers** — image bytes / DICOM never stored or logged on Platform (NFR-INT-05; not covered by NFR-SEC-01 identifiers alone)  
 - [ ] **NFR-DATA-01** UUID engagement integrity  
 - [ ] **NFR-DATA-02** Tenant-isolated S3 paths  
 - [ ] **NFR-DATA-03** Separate audit telemetry  

@@ -8,11 +8,12 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 
 ## Read first (required context)
 
-**Always check `kb/` and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, multitenancy, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15** as amended by **ADR-017** Python backend, do-not-build **DNB-1–DNB-9**, multitenancy **MT-1–MT-5**) — do not contradict them without a superseding ADR and human approval.
+**Always check `kb/`, `customer-kb/` (Mesmerize decision/infra repo), and `docs/adr/` before proposing or implementing changes** (especially architecture, auth/FHIR, devices, content matching, billing, writeback, stack/tooling, multitenancy, AWS/CI, or anything that might resurrect legacy ambient/Redox paths). Confirmed decisions in *this* repo live in [`docs/adr/README.md`](docs/adr/README.md) (product #1–#20, stack **S1–S15** as amended by **ADR-017** Python backend, customer-kb practice **ADR-018**, do-not-build **DNB-1–DNB-9**, multitenancy **MT-1–MT-5**) — do not contradict them without a superseding ADR and human approval. On conflict with customer `INFRASTRUCTURE.md` `D-xx`, **stop and ask** ([ADR-018](docs/adr/018-customer-decision-repo-second-kb.md)).
 
 | Order | Doc | Purpose |
 |------:|-----|---------|
 | 0a | [`kb/`](kb/) | Source evidence (Word/PDF/notes). **Analyze before inventing behavior.** |
+| 0a′ | [`customer-kb/`](customer-kb/) / [`docs/customer-kb/README.md`](docs/customer-kb/README.md) | Second knowledge base: Mesmerize **settled infra** (`INFRASTRUCTURE.md` `D-xx`). Default clone: `/Users/sasaaleksandrov/myProjects/newfire/mesmerize-monorepo`. `docs/prebuild-proposal/` is **not** Confirmed. |
 | 0b | [`docs/adr/README.md`](docs/adr/README.md) | Confirmed decision register (#1–#20) + ADR links |
 | 0b′ | [`docs/adr/016-git-branching-and-delivery-ladders.md`](docs/adr/016-git-branching-and-delivery-ladders.md) + [`kb/customer-reference/touchscreen-ux-devops-extract.md`](kb/customer-reference/touchscreen-ux-devops-extract.md) | Git/PR conventions + dual delivery ladders (platform AWS vs device/PWA). Do not paste full CONTRIBUTING. |
 | 0c | [`templates/`](templates/) | Formal doc templates (SAD, etc.). **If a matching template exists, use it.** |
@@ -34,7 +35,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 2. If a matching template exists, **copy it and fill sections** — do not invent a competing outline.
 3. Prefer [`templates/Solution_Architecture_Definition_template.docx`](templates/Solution_Architecture_Definition_template.docx) for SAD work.
 4. Never overwrite the template in place; write filled docs to `output_docs/` (or the path the task specifies).
-5. Still ground all content in `kb/` + `docs/adr/` — templates define structure, not invented requirements.
+5. Still ground all content in `kb/` + `customer-kb/` + `docs/adr/` — templates define structure, not invented requirements.
 
 ## Hard invariants (never violate)
 
@@ -45,26 +46,27 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 5. **Billing is suggest + human-in-the-loop.** Physician review/approve before any EHR writeback; no claim submission (EDI) by Mesmerize.
 6. **Writeback is browser-side FHIR DocumentReference** (engagement / service-delivery summary), using the EHR token — backend never calls EHR APIs; **no server-side EHR token handling**.
 7. **Prefer extending existing PWA patterns** over rewriting the live fleet app in place. Production `touchscreen-ux` is treated as read-only for Newfire; new work extends/copies.
-8. **Honor the do-not-build list** (Redox, Deepgram, Claude SOAP notes, patient CRUD, clearinghouse, DICOM push, etc.) in [ADR-011](docs/adr/011-do-not-build.md).
+8. **Honor the do-not-build list** (Redox, Deepgram, Claude SOAP notes, patient CRUD, clearinghouse, Mesmerize DICOM viewer / server imaging payloads, etc.) in [ADR-011](docs/adr/011-do-not-build.md).
 9. **Multitenancy:** Organization is the tenant; clinic is sub-scope. Support **Silo** (isolated DB) and **Bridge** (`tenantId` column + S3 `{tenantId}/{clinicId}/` folders). Pilot default Bridge. See [ADR-013](docs/adr/013-multitenancy-silo-and-bridge.md).
-10. **Honor ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/ASR_CHECKLIST.md`](output_docs/nfr/ASR_CHECKLIST.md) (security, reliability, iframe/a11y, observability, SMART launch, tenancy).
+10. **Honor ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/ASR_CHECKLIST.md`](output_docs/nfr/ASR_CHECKLIST.md) (security, reliability, iframe/a11y, observability, SMART launch, tenancy, imaging display).
+11. **Imaging display is in scope** per [ADR-019](docs/adr/019-exam-room-imaging-display-and-evidence.md) (Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC mirror). Still **no Mesmerize DICOM viewer**; still **no patient identifiers or imaging payloads on Mesmerize servers**.
 
 ## In scope vs out of scope (SOW #3)
 
-**In scope:** SMART on FHIR app; ICD-10-based content recommendation; PWA/device integration; engagement capture; billing evidence + physician approve; site-configurable rules engine; writeback capability; one athenahealth pilot org.
+**In scope:** SMART on FHIR app; ICD-10-based content recommendation; PWA/device integration; engagement capture; billing evidence + physician approve; site-configurable rules engine; writeback capability; one athenahealth pilot org; imaging **display** Tier 1+2 ([ADR-019](docs/adr/019-exam-room-imaging-display-and-evidence.md)).
 
-**Out of scope (do not build unless a new ADR/SOW says otherwise):** ML recommender if metadata insufficient; DICOM / Patient Imaging Mirror push to PWA; multi–health-system production rollout.
+**Out of scope (do not build unless a new ADR/SOW says otherwise):** ML recommender if metadata insufficient; Mesmerize DICOM viewer / WADO ingest / server imaging payloads; multi–health-system production rollout.
 
 ## Working rules
 
-- **Always check `kb/` and `docs/adr/` first** before architecture or product-behavior changes. Treat the [confirmed decision register](docs/adr/README.md) as binding.
+- **Always check `kb/`, `customer-kb/`, and `docs/adr/` first** before architecture or product-behavior changes. Treat the [confirmed decision register](docs/adr/README.md) as binding. Settled customer infra is only `INFRASTRUCTURE.md` `D-xx` — not prebuild-proposal.
 - **Git / delivery:** For branching, PRs, and deploy paths, follow [ADR-016](docs/adr/016-git-branching-and-delivery-ladders.md) and the [touchscreen-ux DevOps extract](kb/customer-reference/touchscreen-ux-devops-extract.md) — do not conflate Netlify/TTV (device) with ECS (platform).
 - **Always check NFRs / ASRs** in [`docs/ai/NFR.md`](docs/ai/NFR.md) (export: [`output_docs/nfr/`](output_docs/nfr/)). Do not introduce designs that conflict with **ASR** marked requirements.
 - **Always check `templates/`** before creating formal architecture / SAD / stakeholder docs; use the matching template if one exists.
-- **Analyze `kb/` again** when a task touches EHR, PHI, devices, recommendations, billing, or writeback — even if you already read `docs/ai/*`.
-- **Do not invent requirements.** If kb marks something `[PROPOSED]`, `Unknown`, or “Needs Further Discussion”, treat it as open — ask or document the assumption.
+- **Analyze `kb/` and `customer-kb/` again** when a task touches EHR, PHI, devices, recommendations, billing, writeback, AWS, CI/CD, or tenancy — even if you already read `docs/ai/*`.
+- **Do not invent requirements.** If kb or customer-kb marks something `[PROPOSED]`, `Unknown`, “Needs Further Discussion”, or (customer repo) *not listed in `INFRASTRUCTURE.md`*, treat it as open — ask or document the assumption.
 - **Avoid unnecessary refactoring.** Prefer the smallest change that satisfies the task.
-- **Cite sources** in ADRs and significant design notes (`kb/...`, SOW #3, Mesmerize Q&A, decision #).
+- **Cite sources** in ADRs and significant design notes (`kb/...`, `customer-kb/INFRASTRUCTURE.md` `D-xx`, SOW #3, Mesmerize Q&A, decision #).
 - **Match existing stack and monorepo layout** documented in Architecture / Engineering Rules.
 - **Before declaring work complete**, confirm alignment with relevant ADRs + run the checklist in [`docs/ai/TESTING.md`](docs/ai/TESTING.md).
 
@@ -76,5 +78,6 @@ End-to-end athenahealth pilot by **end of Q1 2027**: SMART launch → Condition 
 
 1. Re-check [`docs/adr/README.md`](docs/adr/README.md) (decisions #1–#20) and the linked ADR.
 2. Search `kb/` (Architecture v2.0, Implementation Context, Mesmerize Responses, SOW #3).
-3. Prefer the **Content Evidence** plan over older Redox / ambient-scribe plans.
-4. If still ambiguous, stop and ask — do not silently expand scope.
+3. Search `customer-kb/` — `INFRASTRUCTURE.md` first; do not treat `docs/prebuild-proposal/` as settled.
+4. Prefer the **Content Evidence** plan over older Redox / ambient-scribe plans.
+5. If still ambiguous or sources conflict, stop and ask — do not silently expand scope.

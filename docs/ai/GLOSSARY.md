@@ -32,7 +32,8 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **VAST** | Video Ad Serving Template — baseline for video ad telemetry (meeting alignment) |
 | **Human-in-the-loop** | Physician must review/approve before writeback |
 | **Zero-PHI-on-servers** | Design goal: no patient identifiers stored or processed on Mesmerize backend |
-| **Patient Imaging Mirror** | WebRTC imaging display concept — **out of SOW #3** delivery |
+| **Patient Imaging Mirror** | In-scope exam-room imaging **display**: Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC P2P ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)) |
+| **DICOM viewer** | Mesmerize-built DICOM parser/viewer (e.g. Cornerstone/OHIF as a Mesmerize component) — **do not build** (DNB-9) |
 | **EHR-agnostic core** | Decoupled models/APIs/auth so Epic/Cerner can be modular later |
 | **SOW #3** | Newfire Statement of Work governing current delivery scope |
 | **Phase 1–4** | SOW execution phases (design → build → harden → pilot) |

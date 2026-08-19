@@ -7,7 +7,7 @@
 
 Before claiming a task is complete:
 
-1. **Scope check** — Change matches the task / SOW phase; no out-of-scope DICOM, ML recommender, ambient AI, or multi-org prod rollout.
+1. **Scope check** — Change matches the task / SOW phase; no Mesmerize **DICOM viewer**, WADO ingest, server imaging payloads, ML recommender, ambient AI, or multi-org prod rollout. Imaging **display** (Tier 1+2) is in scope. **No real PHI fixtures**; synthetic PDFs/JPEGs are OK.
 2. **ADR / kb check** — Relevant [`docs/adr/`](../adr/README.md) decisions and `kb/` sources reviewed; no Confirmed decision violated (including multitenancy MT-1–MT-5).
 3. **NFR / ASR check** — Changes do not conflict with [`NFR.md`](NFR.md) ASR list / [`output_docs/nfr/ASR_CHECKLIST.md`](../../output_docs/nfr/ASR_CHECKLIST.md).
 4. **Tenant check** — If data/API/S3 touched: `tenantId` scoping correct for Bridge, or org DB/S3 routing correct for Silo; no cross-tenant leakage.

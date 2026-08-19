@@ -3,16 +3,17 @@
 > **Sources:** Architecture v2.0, Implementation Context, Mesmerize Responses (Technical Constraints), SOW #3, Jul 14 functional/non-functional notes.  
 > **Mark open items** rather than inventing standards.
 
-## Mandatory: check kb + ADR before changes
+## Mandatory: check kb + customer-kb + ADR before changes
 
 **Always** do this before implementing or proposing architecture/product behavior:
 
 1. Search/analyze relevant materials under [`kb/`](../../kb/).
-2. Read [`docs/adr/README.md`](../adr/README.md) — confirmed decisions **#1–#20** are binding.
-3. Open the linked ADR(s) for the area you are touching (auth, PHI, devices, content match, billing, writeback, imaging).
-4. If a Confirmed decision conflicts with a request, **stop** and escalate — do not silently override.
+2. Search/analyze the **second knowledge base** [`customer-kb/`](../../customer-kb/) (see [`docs/customer-kb/README.md`](../customer-kb/README.md); default clone `/Users/sasaaleksandrov/myProjects/newfire/mesmerize-monorepo`). Start with `INFRASTRUCTURE.md` (`D-xx` only). Treat `docs/prebuild-proposal/` as non-binding.
+3. Read [`docs/adr/README.md`](../adr/README.md) — confirmed decisions **#1–#20** (and ADR-017/018) are binding in *this* repo.
+4. Open the linked ADR(s) for the area you are touching (auth, PHI, devices, content match, billing, writeback, imaging, infra).
+5. If a Confirmed ADR conflicts with a request **or** with customer `D-xx`, **stop** and escalate — do not silently override ([ADR-018](../adr/018-customer-decision-repo-second-kb.md)).
 
-Do not invent requirements beyond `kb/` + accepted ADRs.
+Do not invent requirements beyond `kb/` + `customer-kb/` settled `D-xx` + accepted ADRs.
 
 ## Templates (mandatory when present)
 
@@ -22,13 +23,13 @@ Canonical folder: [`templates/`](../../templates/) — see [`templates/README.md
 2. If a matching template exists, **copy and fill it** (preserve section structure). Current SAD template: `templates/Solution_Architecture_Definition_template.docx`.
 3. Do **not** overwrite template files; write outputs to `output_docs/` (or the task-specified path).
 4. If no template matches, proceed with `docs/ai/*` + ADRs and note that no template was found.
-5. Template structure does not authorize inventing product requirements — content still comes from `kb/` + ADRs.
+5. Template structure does not authorize inventing product requirements — content still comes from `kb/` + `customer-kb/` + ADRs.
 
 ## Non-functional requirements (binding ASRs)
 
 Full catalog: [`docs/ai/NFR.md`](NFR.md) and [`output_docs/nfr/NFR_CATALOG.md`](../../output_docs/nfr/NFR_CATALOG.md).
 
-**Architecturally significant (must not conflict):** zero-PHI servers; browser-held FHIR token; no ambient notes path; tenant isolation; exponential backoff retries; durable engagement proof; WCAG 2.1 AA; white-label; ambulatory-only; engagement vs diagnostic log split; diagnostic retention ≤ 90 days; SMART 3-legged EHR launch; server-mediated devices; tenant-isolated S3; separate audit telemetry; HIPAA-aligned AWS / OWASP+pen-test path.
+**Architecturally significant (must not conflict):** zero-PHI servers; browser-held FHIR token; no ambient notes path; tenant isolation; exponential backoff retries; durable engagement proof; WCAG 2.1 AA; white-label; ambulatory-only; engagement vs diagnostic log split; diagnostic retention ≤ 90 days; SMART 3-legged EHR launch; server-mediated devices; server-mediated imaging display (no DICOM viewer; no imaging payloads on servers); tenant-isolated S3; separate audit telemetry; HIPAA-aligned AWS / OWASP+pen-test path.
 
 Do **not** invent numeric availability/latency SLOs — none are fixed in kb (see Open items in NFR catalog).
 
@@ -123,7 +124,7 @@ See [ADR-014](../adr/014-sqs-messaging-patterns.md).
 3. **Always check `templates/`** before formal architecture / SAD documents; use matching templates when present.
 4. Read `AGENTS.md` invariants before coding.
 5. Prefer smallest diff; no drive-by refactors.
-6. Do not “complete” ambient/audio/DICOM features under SOW #3 ([ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md)).
+6. Do not “complete” ambient/audio features or a Mesmerize **DICOM viewer** / WADO ingest / server imaging payloads ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)); exam-room imaging **display** (Tier 1+2) is in scope.
 7. When kb says `[PROPOSED]` or Unknown, surface it in PR/notes.
 8. Update or add an ADR when changing a hard boundary; update the decision register if a Confirmed decision changes; update NFR catalog if an ASR changes.
 9. Sync meaningful doc changes to `output_docs/` when exporting for stakeholders.
@@ -136,5 +137,5 @@ Binding deny-list: [`docs/adr/011-do-not-build.md`](../adr/011-do-not-build.md) 
 - Don’t add patient CRUD / longitudinal patient records on Mesmerize servers.
 - Don’t build clearinghouse / EDI claim submission.
 - Don’t handle EHR FHIR tokens server-side; don’t send patient/encounter identifiers to the Platform API.
-- Don’t implement DICOM push / imaging mirror under current SOW.
+- Don’t implement a Mesmerize DICOM viewer / WADO ingest / server imaging payloads.
 - Don’t edit live production PWA in place when the rule is extend-via-copy.

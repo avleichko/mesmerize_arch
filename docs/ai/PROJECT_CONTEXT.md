@@ -36,7 +36,7 @@ Earlier plans (Redox end-to-end PHI pipeline; SMART + ambient scribe with Deepgr
 ## Key objectives (SOW #3 + Mesmerize Q&A)
 
 1. **EHR-integrated content platform** via SMART on FHIR (provider pushes relevant education).
-2. **Foundation for future** advanced features (e.g. imaging to screens / mirroring) — foundation only under SOW #3; DICOM push is **out of scope**.
+2. **Imaging to exam-room screens** is in-scope delivery (Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC mirror per [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)). A Mesmerize **DICOM viewer** remains out of scope.
 3. **Pilot by end of Q1 2027** to support **1,000+ screens** proof points for **July 2027** pharma planning.
 4. **Minimal PHI footprint** — avoid handling PHI wherever possible.
 
@@ -101,7 +101,8 @@ Physician approval is required before writeback (human-in-the-loop); Nurse/MA ma
 - Does not capture audio, transcribe, or generate clinical notes.
 - Does not store longitudinal patient records on Mesmerize servers.
 - Does not submit insurance claims (PM system does).
-- SOW #3 does not include DICOM push or ML recommender (if metadata insufficient).
+- Does not include a Mesmerize **DICOM viewer**, WADO ingest, or server-side imaging payloads ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)).
+- ML recommender is out of scope if metadata is insufficient.
 
 ## Related diagrams
 

@@ -56,7 +56,7 @@ Envelope must include `tenantId` (+ `clinicId` when relevant); never EHR tokens 
 
 ## Non-functional / ASR summary
 
-Full catalog: [`NFR.md`](NFR.md) and [`output_docs/nfr/`](../../output_docs/nfr/). Architecturally significant NFRs (zero-PHI, browser FHIR token, tenancy, retries, WCAG, white-label, log split/retention, SMART 3-legged launch, server-mediated devices, tenant S3) **must not be violated** by container or technology choices.
+Full catalog: [`NFR.md`](NFR.md) and [`output_docs/nfr/`](../../output_docs/nfr/). Architecturally significant NFRs (zero-PHI, browser FHIR token, tenancy, retries, WCAG, white-label, log split/retention, SMART 3-legged launch, server-mediated devices, server-mediated imaging display, tenant S3) **must not be violated** by container or technology choices.
 
 ## Architectural principles
 
@@ -83,7 +83,7 @@ Lightweight React app in EHR iframe:
 **MVP FHIR scopes (Q&A):**  
 `launch/encounter patient/Patient.read patient/Condition.read patient/Encounter.read patient/DocumentReference.write`
 
-Architecture doc also lists imaging read scopes for **Patient Imaging Mirror** — **out of scope under SOW #3**; do not treat as MVP.
+Architecture doc also lists imaging read scopes for **Patient Imaging Mirror** — **in scope** as Tier 1+2 display per [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md). **No** `ImagingStudy` / WADO / Mesmerize DICOM viewer.
 
 Registered client (architecture): `mesmerize-content-evidence`, `private_key_jwt`, authorization_code.
 
@@ -138,7 +138,7 @@ Session (Mesmerize UUID, clinicId, deviceGroupId, ICD-10 conditions[], times, st
 
 ### Patient Imaging Mirror (architecture Tier 1 / WebRTC)
 
-Documented as WebRTC P2P imaging display with signaling-only on Mesmerize servers. **SOW #3 explicitly excludes DICOM push / screen mirroring** — treat as future foundation, not current delivery scope. Tech meeting notes also mark imaging strategy as needing further discussion.
+**In scope** for athena pilot delivery ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)): **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC P2P mirror. Mesmerize servers do **signaling only** for Tier 2; media is P2P. **No** Mesmerize DICOM viewer; **no** imaging payloads on servers. `packages/webrtc` is a **signaling/P2P client** — not a DICOM stack.
 
 ## Monorepo structure (target — polyglot, ADR-017)
 
@@ -154,7 +154,7 @@ mesmerize-monorepo/   # or mesmerize-platform/
   infrastructure/     # docker, terraform, esper
 ```
 
-**Remove / avoid vs older plans:** NestJS as API target, Prisma as ORM, `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models, `packages/webrtc` imaging mirror in MVP (ADR-009).
+**Remove / avoid vs older plans:** NestJS as API target, Prisma as ORM, `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models. `packages/webrtc` is a signaling/P2P client (not DICOM); do not implement a Mesmerize DICOM viewer or server imaging payloads ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)).
 
 ## Cloud / infra (confirmed direction in Q&A)
 
@@ -197,7 +197,7 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-006](../adr/006-icd10-content-match-cpt-billing-output.md) (#9–#10)
 - [ADR-007](../adr/007-extend-pwa-server-mediated-devices.md) (#11–#15)
 - [ADR-008](../adr/008-engagement-telemetry-billing-hitl-writeback.md) (#16–#19)
-- [ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md) (#20)
+- [ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md) (**superseded** by [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md); historical SOW-exclusion record)
 - [ADR-010](../adr/010-technology-stack.md) (S1–S15)
 - [ADR-011](../adr/011-do-not-build.md) (DNB-1–DNB-9)
 - [ADR-012](../adr/012-c4-persons-vs-stakeholders.md)
@@ -205,3 +205,4 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-014](../adr/014-sqs-messaging-patterns.md)
 - [ADR-015](../adr/015-aws-deployment-reference.md)
 - [ADR-016](../adr/016-git-branching-and-delivery-ladders.md)
+- [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md) (#20 — imaging display in scope)

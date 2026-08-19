@@ -45,7 +45,7 @@ See `output_diagrams/02-phi-boundary.mmd`.
 
 Allowed on servers (per Q&A): session ID, device ID, clinic/M-number, content ID, ICD-10, timestamps, durations, interaction events, billing suggestions keyed to session.
 
-Not allowed on servers: Patient ID/MRN/name/DOB/address/SSN/contact, insurance, meds/allergies, problem-list history as patient-linked records, FHIR resource dumps, audio, transcripts, clinical notes, imaging payloads.
+Not allowed on servers: Patient ID/MRN/name/DOB/address/SSN/contact, insurance, meds/allergies, problem-list history as patient-linked records, FHIR resource dumps, audio, transcripts, clinical notes, imaging payloads. Exam-room imaging **display** ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)) does not change this: pixels/DICOM still must not land on servers.
 
 ## Logging and telemetry
 
