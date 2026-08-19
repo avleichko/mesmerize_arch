@@ -1,6 +1,6 @@
 # Architecture diagrams
 
-Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendered PNGs** (01–22) are checked in for Word/PDF export; regenerate with commands below.
+Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendered PNGs** (01–23) are checked in for Word/PDF export; regenerate with commands below.
 
 | PNG (SAD embed) | Source | Description |
 |-----------------|--------|-------------|
@@ -36,6 +36,7 @@ Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendere
 | [20-ladder-b-device-cicd.png](20-ladder-b-device-cicd.png) | [20-ladder-b-device-cicd.puml](20-ladder-b-device-cicd.puml) | **Ladder B** — Device/PWA CI/CD: Netlify ≠ device; human TTV; Esper (touchscreen-ux) |
 | [21-aws-network-topology.png](21-aws-network-topology.png) | [21-aws-network-topology.puml](21-aws-network-topology.puml) | **AWS network topology (Ladder A)** — VPC / AZ / subnet / edge / endpoints / egress |
 | [22-aws-security-group-tiers.png](22-aws-security-group-tiers.png) | [22-aws-security-group-tiers.puml](22-aws-security-group-tiers.puml) | **AWS security group tiers** — Logical SG tiers + Proposed allow paths |
+| [23-imaging-evidence-capture-writeback.png](23-imaging-evidence-capture-writeback.png) | [23-imaging-evidence-capture-writeback.puml](23-imaging-evidence-capture-writeback.puml) | **Imaging evidence** — capture vs HITL writeback (athena v1); no pixels on Platform |
 
 **Regenerate Mermaid PNGs (01–05):**
 
@@ -43,7 +44,7 @@ Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendere
 npx --yes @mermaid-js/mermaid-cli -i output_diagrams/NN-name.mmd -o output_diagrams/NN-name.png
 ```
 
-**Regenerate PlantUML PNGs (06, 06a–06h, 07–16, 18–22):** OpenJDK + network for C4 remote includes. PlantUML names output after `@startuml` id — rename to match source basename if needed.
+**Regenerate PlantUML PNGs (06, 06a–06h, 07–16, 18–23):** OpenJDK + network for C4 remote includes. PlantUML names output after `@startuml` id — rename to match source basename if needed.
 
 ```bash
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"

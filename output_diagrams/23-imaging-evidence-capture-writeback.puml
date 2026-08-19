@@ -1,0 +1,23 @@
+@startuml 23-imaging-evidence-capture-writeback
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+title Imaging evidence — capture vs HITL writeback (athena v1)\n[C]=Confirmed [I]=Inferred [P]=Proposed · no pixels on Platform
+LAYOUT_WITH_LEGEND()
+Person(clinician, "Clinician [C]", "SMART iframe")
+System_Ext(athena, "athenahealth FHIR [C]", "Token stays in browser")
+System_Boundary(mz, "Mesmerize") {
+  Container(smart, "SMART Web App [C]", "React + fhirclient.js", "Reads artifacts in browser; HITL UI")
+  Container(api, "Platform API [C]", "Python/FastAPI", "imaging_session metadata only")
+  ContainerDb(pg, "Postgres [C]", "RDS", "session + device + timestamps + tier/type · no PHI")
+}
+Container(device, "Exam-room PWA [C]", "Display", "Shows artifact or mirror · no EHR token from server")
+Rel(clinician, smart, "Approve evidence", "HITL [C]")
+Rel(smart, athena, "Read web-native artifacts / write DocumentReference", "EHR token [C]")
+Rel(smart, api, "Create imaging_session", "ICD-10? no · sessionId + deviceGroup + kind [C]")
+Rel(api, pg, "Store de-identified event", "no pixels [C]")
+Rel(smart, device, "Never direct", "forbidden [C]")
+Rel(api, device, "Command / signaling only", "ADR-007/019 [C]")
+note as N1
+  SoR = Platform store.
+  Missing writeback does not drop evidence [C].
+end note
+@enduml
