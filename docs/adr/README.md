@@ -2,11 +2,12 @@
 
 ## Mandatory for agents
 
-**Before any architecture, auth, FHIR, device, content-matching, billing, or writeback change:**
+**Before any architecture, auth, FHIR, device, content-matching, billing, writeback, or infra/CI change:**
 
 1. Search and read relevant files under [`kb/`](../../kb/).
-2. Read this folder — start with the **Confirmed decision register** below, then the linked ADR.
-3. Do **not** contradict a Confirmed decision without a superseding ADR + explicit human approval.
+2. Search and read the second knowledge base [`customer-kb/`](../../customer-kb/) (pointer: [`docs/customer-kb/README.md`](../customer-kb/README.md)) — settled customer infra is **`INFRASTRUCTURE.md` `D-xx` only**; `docs/prebuild-proposal/` is not Confirmed ([ADR-018](018-customer-decision-repo-second-kb.md)).
+3. Read this folder — start with the **Confirmed decision register** below, then the linked ADR.
+4. Do **not** contradict a Confirmed decision without a superseding ADR + explicit human approval. If this register conflicts with customer `D-xx`, stop and ask.
 
 See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../ai/ENGINEERING_RULES.md).
 
@@ -18,7 +19,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | 2 | The main clinician-facing app is a **SMART on FHIR app launched from inside Athena**. | Confirmed | [ADR-004](004-athena-pilot-ehr-agnostic-core.md), [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | 3 | Clinician workflow uses **3-legged OAuth / Authorization Code Grant**, not 2-legged. **Reason:** provider launches from an active Athena patient chart/encounter → needs authenticated provider + patient/encounter context; Q&A confirms EHR launch only, Athena/EHR SSO, no separate Mesmerize login for SMART app. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | 4 | SMART launch type is **EHR launch only** for MVP. Standalone launch is not required. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
-| 5 | MVP FHIR scopes are minimal: `launch/encounter`, `Patient.read`, `Condition.read`, `Encounter.read`, `DocumentReference.write`. | Confirmed | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
+| 5 | MVP FHIR scopes: `launch/encounter`, `Patient.read`, `Condition.read`, `Encounter.read`, `DocumentReference.write`; **Proposed** additive reads for exam-room imaging display (`DiagnosticReport.read`, `DocumentReference.read`, `Media.read`, `Observation.read`). No `ImagingStudy` / DICOMweb / WADO in v1. | Confirmed (additive reads Confirmed-as-intent; Proposed in SAD until athena ratification) | [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md), [ADR-019](019-exam-room-imaging-display-and-evidence.md) |
 | 6 | **Patient/encounter context and FHIR token stay in the browser**. They must not be sent to Mesmerize backend. | Confirmed | [ADR-002](002-zero-phi-on-mesmerize-servers.md) |
 | 7 | Mesmerize backend receives only **ICD-10 condition codes + device group ID + opaque session ID**. | Confirmed | [ADR-002](002-zero-phi-on-mesmerize-servers.md) |
 | 8 | Backend follows **zero-PHI-on-Mesmerize-servers**. No patient identifiers stored. | Confirmed | [ADR-002](002-zero-phi-on-mesmerize-servers.md) |
@@ -33,7 +34,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | 17 | Billing engine produces **suggestions/evidence**, not claims. Claim submission is out of scope. | Confirmed | [ADR-003](003-documentreference-engagement-writeback.md), [ADR-008](008-engagement-telemetry-billing-hitl-writeback.md) |
 | 18 | **Physician review/approval** is required before writeback / official documentation use. | Confirmed | [ADR-003](003-documentreference-engagement-writeback.md), [ADR-008](008-engagement-telemetry-billing-hitl-writeback.md) |
 | 19 | EHR writeback is **configurable / disable-able per customer**. | Confirmed | [ADR-003](003-documentreference-engagement-writeback.md), [ADR-008](008-engagement-telemetry-billing-hitl-writeback.md) |
-| 20 | **DICOM push / imaging mirror / screen mirroring** is out of current SOW scope; future-ready architecture only. | Confirmed | [ADR-009](009-dicom-imaging-out-of-sow-scope.md) |
+| 20 | Exam-room imaging **display** is in scope for athena pilot delivery: **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC mirror. No Mesmerize DICOM viewer; no server-side imaging payloads. | Confirmed | [ADR-019](019-exam-room-imaging-display-and-evidence.md) |
 
 ### Technology stack (Confirmed)
 
@@ -67,7 +68,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | DNB-6 | No patient CRUD / longitudinal patient record | Zero-PHI backend principle | [ADR-011](011-do-not-build.md) |
 | DNB-7 | No clearinghouse / EDI claim submission | PM system handles claims | [ADR-011](011-do-not-build.md) |
 | DNB-8 | No server-side EHR token handling | FHIR token stays browser-side | [ADR-011](011-do-not-build.md) |
-| DNB-9 | No DICOM push in current scope | Explicitly out of scope in SOW | [ADR-011](011-do-not-build.md), [ADR-009](009-dicom-imaging-out-of-sow-scope.md) |
+| DNB-9 | No Mesmerize DICOM viewer and no server-side DICOM or imaging payloads | PHI/FDA; imaging **display** is in scope | [ADR-011](011-do-not-build.md), [ADR-019](019-exam-room-imaging-display-and-evidence.md) |
 
 ### Multitenancy (Confirmed)
 
@@ -111,7 +112,7 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [006](006-icd10-content-match-cpt-billing-output.md) | ICD-10 content match; CPT/HCPCS/HCC on billing output |
 | [007](007-extend-pwa-server-mediated-devices.md) | Extend PWA; Device Command API; Socket.io; Esper IDs; pairing |
 | [008](008-engagement-telemetry-billing-hitl-writeback.md) | De-identified telemetry; suggestions; HITL; disable-able writeback |
-| [009](009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope |
+| [009](009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope (**superseded** by [019](019-exam-room-imaging-display-and-evidence.md)) |
 | [010](010-technology-stack.md) | Technology stack (React / Python FastAPI / AWS / …; S3–S5/S8 via ADR-017) |
 | [011](011-do-not-build.md) | Explicit “do not build” decisions |
 | [012](012-c4-persons-vs-stakeholders.md) | C4 Persons (runtime) vs SAD stakeholders |
@@ -120,3 +121,5 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [015](015-aws-deployment-reference.md) | AWS reference deployment topology |
 | [016](016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders |
 | [017](017-python-platform-backend.md) | Platform backend Python / FastAPI (supersedes ADR-010 S3/S5) |
+| [018](018-customer-decision-repo-second-kb.md) | Customer decision repo as second knowledge base (like `kb/`) |
+| [019](019-exam-room-imaging-display-and-evidence.md) | Exam-room imaging display and imaging evidence (supersedes ADR-009) |
