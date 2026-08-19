@@ -9,7 +9,7 @@
 
 ## Purpose of this chapter
 
-Describe the Content Evidence Platform’s runtime containers and monorepo boundaries: who owns what, how edge clients reach **Python / FastAPI** platform services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs.
+Describe the Content Evidence Platform’s runtime containers and monorepo boundaries: who owns what, how edge clients reach **Python / FastAPI** platform services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs. Exam-room **imaging evidence** (taxonomy, capture vs write-back) is specified in [Chapter 19](19-imaging-mirror-evidence-addendum.md); **display / transport** (Tier 1 + Tier 2) is [Chapter 20](20-exam-room-imaging-mirror.md). This chapter only places those flows on the C4 runtime.
 
 ## Narrative
 
@@ -20,12 +20,33 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> EHR FHIR access token never leaves the browser; Mesmerize APIs receive only ICD-10 codes + device group ID + opaque session ID — no patient identifiers on Mesmerize servers (ADR-002; ARCHITECTURE.md).
+  <strong>Confirmed:</strong> EHR FHIR access token never leaves the browser. Mesmerize APIs receive <strong>no patient identifiers</strong> (not Patient ID, MRN, name, encounter ID, demographics) (ADR-002). Content path: ICD-10 codes + device group ID + opaque session ID. Imaging path: the same session/device-group keys plus artifact <strong>kind / opaque id</strong> or a <code>mirror</code> flag — <strong>never</strong> pixels, DICOM, or FHIR resource dumps (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>; [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Device commands are <strong>server-mediated</strong>: SMART app → Platform Device Command API → Socket.io → device; SMART app never talks to devices directly (ADR-007). For exam-room imaging, Platform also carries WebRTC <strong>signaling only</strong>; WebRTC <strong>media is P2P</strong> (clinician browser ↔ device) and must <strong>not</strong> traverse the API as a media path (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>). Signaling is this pack’s decision — <strong>not</strong> a customer <code>INFRASTRUCTURE.md</code> <code>D-xx</code>.
+  <strong>Confirmed:</strong> Device commands are <strong>server-mediated</strong>: SMART app → Platform Device Command API → Socket.io → device; SMART app never talks to devices on a command/data channel (ADR-007). For exam-room imaging, Platform also carries WebRTC <strong>signaling only</strong>; WebRTC <strong>media is P2P</strong> (clinician browser ↔ device) and must <strong>not</strong> traverse the API as a media path (<a href="../../../docs/adr/019-exam-room-imaging-display-and-evidence.md">ADR-019</a>). Signaling is this pack’s decision — <strong>not</strong> a customer <code>INFRASTRUCTURE.md</code> <code>D-xx</code>.
 </p>
+
+### Imaging evidence vs display (Ch.19 / Ch.20)
+
+Runtime split matches [Chapter 19](19-imaging-mirror-evidence-addendum.md): **two de-identified event classes**, both session-keyed and **not Patient-linked**.
+
+| Class | Runtime owner (logical) | What Platform stores | Write-back (athena v1) |
+|-------|-------------------------|----------------------|------------------------|
+| **Content engagement** | engagement-service | Content ID, ICD-10 set, device ID, timestamps, duration, interactions | HITL → browser `DocumentReference.write` |
+| **`imaging_session`** | Platform de-identified store (SoR; **implementation service TBD** — [Chapter 09](09-data-architecture.md)) | Timestamps, device id, opaque session id, tier (`1` \| `2`), artifact type **or** `mirror` flag. Event **name** TBD; **concept** Confirmed | Same HITL → browser `DocumentReference.write` (existing write scope) |
+
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> Imaging <strong>capture is universal</strong> whenever Tier 1 or Tier 2 is shown. The Platform store is the <strong>system of record</strong>; a missing or failed EHR write-back <strong>never drops</strong> captured evidence. Physician HITL approve, then browser DocumentReference to athena, is the v1 deposit path. <strong>No pixels, DICOM, or imaging bytes</strong> on RDS, S3, or logs. No Mesmerize DICOM viewer. No <code>ImagingStudy</code> / WADO ingest (ADR-019; ADR-003; ADR-008; ADR-011 DNB-9; [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
+</p>
+
+<p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
+  <strong>Proposed:</strong> Additive FHIR <strong>read</strong> strings for Tier 1 browser fetches until <strong>Q-16</strong>: <code>patient/DiagnosticReport.read</code>, <code>patient/DocumentReference.read</code>, <code>patient/Media.read</code>, <code>patient/Observation.read</code>. Four-EHR Observation/Provenance / eCW HL7 adapters are <strong>roadmap</strong>, not v1 ([Chapter 19](19-imaging-mirror-evidence-addendum.md)).
+</p>
+
+![Imaging evidence — capture vs HITL writeback](../../output_diagrams/23-imaging-evidence-capture-writeback.png)
+
+*Figure 8-11: Same evidence path as Figure 19-1 — clinician SMART reads FHIR in the browser; Platform stores de-identified `imaging_session` metadata only; HITL then DocumentReference to athena. No pixels on Platform ([Chapter 19](19-imaging-mirror-evidence-addendum.md)).*
 
 ### Technology stack (runtime)
 
@@ -39,8 +60,8 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 
 | Component | Responsibility | Evidence |
 |-----------|----------------|----------|
-| **SMART Web App** (`apps/smart-app`) | EHR iframe UI: SMART launch, browser FHIR read/write, recommend, pair/push, engagement + billing review, DocumentReference writeback with EHR token | Confirmed |
-| **Device PWA / Web Apps** (`apps/web` + extend `touchscreen-ux`) | Exam Room, Waiting Room, Command Center, Bridge; receive Socket.io commands; emit de-identified engagement | Confirmed |
+| **SMART Web App** (`apps/smart-app`) | EHR iframe UI: SMART launch, browser FHIR read/write (content path + optional Tier 1 web-native artifact **reads**), recommend, pair/push, Device Command, WebRTC **signaling** (not media), engagement + billing + **imaging evidence** HITL, DocumentReference writeback with EHR token | Confirmed |
+| **Device PWA / Web Apps** (`apps/web` + extend `touchscreen-ux`) | Exam Room, Waiting Room, Command Center, Bridge; receive Socket.io commands (`show_content` / `show_artifact`); emit de-identified engagement; render web-native artifacts or a P2P mirror stream. **No** server-held EHR token; **no** pixels sent to Platform | Confirmed |
 | **API Gateway / Edge** | CloudFront + ALB TLS termination and routing to REST; sticky TG for Socket.io | Confirmed |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -55,10 +76,10 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 
 | Platform service | Responsibilities | Primary dependencies |
 |------------------|------------------|----------------------|
-| **session-service** | Opaque session lifecycle; store ICD-10 set, clinic/device group, status; publish `session.started` / `session.ended` | PostgreSQL; SQS |
+| **session-service** | Opaque session lifecycle; store ICD-10 set, clinic/device group, status; publish `session.started` / `session.ended`. Does **not** store imaging bytes or Patient IDs | PostgreSQL; SQS |
 | **content-service** | Catalog, ICD-10→content recommend, CMS projections / sync jobs | PostgreSQL; S3 (media refs); SQS; Sanity; BioDigital; MJH |
-| **device-realtime-service** | Device registry mirror, pairing, Device Command API, Socket.io rooms / presence, WebRTC **signaling** (SDP/ICE) for Tier 2 imaging — **no** WebRTC media on the API | PostgreSQL; Redis (Socket.io adapter); SQS; Esper identity mirror; sticky ALB |
-| **engagement-service** | De-identified engagement telemetry & session timelines; consume engagement events | PostgreSQL; SQS |
+| **device-realtime-service** | Device registry mirror, pairing, Device Command API (including imaging **display** commands), Socket.io rooms / presence, WebRTC **signaling** (SDP/ICE) for Tier 2 — **no** WebRTC media and **no** imaging payloads on the API | PostgreSQL; Redis (Socket.io adapter); SQS; Esper identity mirror; sticky ALB |
+| **engagement-service** | De-identified **content engagement** telemetry & session timelines; consume engagement events. **Not** the exclusive owner of `imaging_session` (Platform SoR; service TBD — Ch.09 / Ch.19) | PostgreSQL; SQS |
 | **billing-evidence-service** | Rules-engine CPT suggestions / evidence; approve; export; consume session/engagement facts | PostgreSQL; SQS; `packages/billing-engine` |
 | **org-identity-service** | Organizations, users, `tenancyMode`, Auth0 JWT / RBAC for admin surfaces | PostgreSQL; Auth0 |
 | **audit-telemetry-service** | Diagnostic / audit ingest worker (no PHI); consume `*.audit` / diagnostic events | SQS; diagnostic store (S3 path) |
@@ -75,7 +96,7 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 | `packages/shared` | Types, Zod, constants, Socket.io event contracts |
 | `packages/ui` | Shared React UI |
 | `packages/billing-engine` | Engagement → CPT suggestion / evidence (no claims) |
-| `packages/fhir-engagement` | Browser-side DocumentReference formatting (not server EHR adapters) |
+| `packages/fhir-engagement` | Browser-side DocumentReference formatting for content engagement **and** imaging evidence (not server EHR adapters) |
 | `packages/config` | ESLint / TS / Tailwind shared config |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -86,10 +107,10 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 
 | Store | Role |
 |-------|------|
-| **PostgreSQL 16** | De-identified domain data (Bridge `tenantId` default) |
+| **PostgreSQL 16** | De-identified domain data (Bridge `tenantId` default), including `imaging_session` **metadata** when persisted — **never** pixels/DICOM |
 | **Redis 7** | Presence, Socket.io adapter, short-lived cache |
-| **S3** | Media / ads at `{tenantId}/{clinicId}/…` |
-| **SQS + DLQs** | Internal RR / events / poison path (ADR-014) |
+| **S3** | Education / ads media at `{tenantId}/{clinicId}/…`. **Forbidden:** imaging payloads, DICOM, screen-share recordings ([Chapter 19](19-imaging-mirror-evidence-addendum.md)) |
+| **SQS + DLQs** | Internal RR / events / poison path (ADR-014), including fire-and-forget `imaging_session` metadata facts ([Chapter 12](12-messaging-and-integration.md)) |
 
 ## Component Interactions
 
@@ -104,10 +125,11 @@ Describe the Content Evidence Platform’s runtime containers and monorepo bound
 | From | To | How | Notes |
 |------|-----|-----|-------|
 | Clinician / EHR | SMART Web App | EHR launch iframe | Pilot athenahealth |
-| SMART Web App | athenahealth FHIR | Browser HTTPS + EHR token | Token never to Mesmerize |
-| SMART Web App | Gateway → Platform API | HTTPS REST + Mesmerize session token | ICD-10 + deviceGroup + sessionId only |
-| Device PWA | Gateway / device-realtime | HTTPS REST + Socket.io | Esper device token; imaging display commands + **signaling** (not media) |
+| SMART Web App | athenahealth FHIR | Browser HTTPS + EHR token | Token never to Mesmerize. Reads: Patient/Condition/Encounter; optional Tier 1 web-native artifacts (Proposed strings until **Q-16**). Write: HITL `DocumentReference` (content **and** imaging evidence) |
+| SMART Web App | Gateway → Platform API | HTTPS REST + Mesmerize session token | ICD-10 + deviceGroup + sessionId; imaging: + artifact kind / opaque id or `mirror` — **no** payload |
+| Device PWA | Gateway / device-realtime | HTTPS REST + Socket.io | Esper device token; `show_content` / `show_artifact` + **signaling** (not media) |
 | SMART Web App ↔ Device PWA | WebRTC **media** (Tier 2) | P2P | Window/tab-scoped share only; **not** via Platform API ([ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) |
+| SMART Web App | Platform (`imaging_session`) | HTTPS REST + Mesmerize session | Capture universal; SoR on Platform; HITL writeback is a **separate** browser→EHR hop ([Chapter 19](19-imaging-mirror-evidence-addendum.md)) |
 | Gateway | session / content / device / engagement / billing / org / ads | REST | ALB routing |
 | session / device / content | SQS | Publish lifecycle, commands, CMS jobs | Fire-and-forget or RR per ADR-014 |
 | engagement / billing / audit | SQS | Consume events / RR | No PHI in payloads |
@@ -180,7 +202,7 @@ Owns device registry mirror, pairing, Device Command API, Socket.io rooms/presen
 
 #### engagement-service
 
-Owns de-identified engagement telemetry and session timelines. No patient identifiers in payloads.
+Owns de-identified **content engagement** telemetry and session timelines. No patient identifiers in payloads. Imaging **metadata** (`imaging_session`) is a **separate** event class ([Chapter 19](19-imaging-mirror-evidence-addendum.md)); owning microservice is TBD (Ch.09) — do not route pixels here.
 
 | Neighbor | Direction | Mechanism | Evidence |
 |----------|-----------|-----------|----------|
@@ -195,7 +217,7 @@ Owns de-identified engagement telemetry and session timelines. No patient identi
 
 #### billing-evidence-service
 
-Owns rules-engine CPT suggestions/evidence, approve, and export. DocumentReference writeback is **browser → EHR** with the EHR token — this service never calls EHR APIs (ADR-003).
+Owns rules-engine CPT suggestions/evidence, approve, and export. DocumentReference writeback (education **and** imaging evidence) is **browser → EHR** with the EHR token — this service never calls EHR APIs (ADR-003; [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
 
 | Neighbor | Direction | Mechanism | Evidence |
 |----------|-----------|-----------|----------|
@@ -258,14 +280,17 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 *Figure 8-2: Monorepo boundaries — `apps/smart-app`, `apps/web`, `apps/api` and packages `shared`, `ui`, `billing-engine`, `fhir-engagement`, `config` (ARCHITECTURE.md § Monorepo).*
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> SMART app calls Platform API over HTTPS with a Mesmerize session token; device apps use Socket.io + device APIs; FHIR writeback formatting lives in <code>fhir-engagement</code> on the browser path — backend never calls EHR APIs (ARCHITECTURE.md; ADR-003).
+  <strong>Confirmed:</strong> SMART app calls Platform API over HTTPS with a Mesmerize session token; device apps use Socket.io + device APIs; FHIR writeback formatting lives in <code>fhir-engagement</code> on the browser path (content <strong>and</strong> imaging evidence) — backend never calls EHR APIs (ARCHITECTURE.md; ADR-003; [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
 </p>
 
 ## Evidence
 
 - [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — planes, components, monorepo, C4 building blocks
+- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — Device Command + signaling for imaging; `imaging_session` evidence; no media/pixels on API; not a customer `D-xx`
+- [Chapter 19](19-imaging-mirror-evidence-addendum.md) — capture vs HITL write-back; taxonomy; Figure 19-1 / 8-11
+- [Chapter 20](20-exam-room-imaging-mirror.md) — Tier 1 / Tier 2 display and transport
+- [ADR-003](../../../docs/adr/003-documentreference-engagement-writeback.md) / [ADR-008](../../../docs/adr/008-engagement-telemetry-billing-hitl-writeback.md) — browser DocumentReference; HITL
 - [ADR-007](../../../docs/adr/007-extend-pwa-server-mediated-devices.md) — extend PWA; server-mediated devices; Socket.io; Esper IDs
-- [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — Device Command + signaling for imaging; no media on API; not a customer `D-xx`
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — S1–S15 stack
 - [ADR-014](../../../docs/adr/014-sqs-messaging-patterns.md) — REST edge + SQS internal patterns
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — ECS co-locate / sticky ALB for device-realtime
@@ -273,11 +298,12 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 - [`output_diagrams/06-c4-containers.puml`](../../../output_diagrams/06-c4-containers.puml) / PNG — container responsibilities & relations
 - [`output_diagrams/06a-c4-focus-session-service`](../../../output_diagrams/06a-c4-focus-session-service.puml) … [`06h-c4-focus-ads-service`](../../../output_diagrams/06h-c4-focus-ads-service.puml) — per-service container-focus views
 - [`output_diagrams/04-monorepo-boundaries.mmd`](../../../output_diagrams/04-monorepo-boundaries.mmd) / PNG — app/package boundaries
+- [`output_diagrams/23-imaging-evidence-capture-writeback`](../../../output_diagrams/23-imaging-evidence-capture-writeback.puml) / PNG — Figure 8-11 / 19-1 evidence path
 
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Final process-per-service vs co-located Python service modules for pilot cutover timing; exact public REST route catalog per service beyond architecture API groups.
+  <strong>Unknown:</strong> Final process-per-service vs co-located Python service modules for pilot cutover timing; exact public REST route catalog per service beyond architecture API groups. Which platform service persists <code>imaging_session</code> (concept Confirmed; implementation name and owner TBD — [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
@@ -294,3 +320,4 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 
 - **A-05** — Platform (Python) services as separate ECS services by cutover
 - Related pilot scope / RBAC depth: **Q-10**
+- **Q-16** — Ratify additive FHIR **read** scope strings for Tier 1 (owned in [Chapter 18](18-assumptions-and-open-questions.md); cited from [Chapter 19](19-imaging-mirror-evidence-addendum.md))
