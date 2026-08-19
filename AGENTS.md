@@ -18,7 +18,7 @@ Help build and evolve Mesmerize’s **Content Evidence Platform**: EHR-launched 
 | 0b′ | [`docs/adr/016-git-branching-and-delivery-ladders.md`](docs/adr/016-git-branching-and-delivery-ladders.md) + [`kb/customer-reference/touchscreen-ux-devops-extract.md`](kb/customer-reference/touchscreen-ux-devops-extract.md) | Git/PR conventions + dual delivery ladders (platform AWS vs device/PWA). Do not paste full CONTRIBUTING. |
 | 0c | [`templates/`](templates/) | Formal doc templates (SAD, etc.). **If a matching template exists, use it.** |
 | 0d | [`docs/ai/NFR.md`](docs/ai/NFR.md) / [`output_docs/nfr/`](output_docs/nfr/) | Non-functional requirements; **ASR** rows are binding for architecture |
-| 0e | [`output_docs/sad/README.md`](output_docs/sad/README.md) | SAD pack (**21** chapters). Map: [README.md](README.md). Kickoff: [Ch.21](output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md). Questions: [Ch.18](output_docs/sad/chapters/18-assumptions-and-open-questions.md) **Q-01…Q-17** |
+| 0e | [`output_docs/sad/README.md`](output_docs/sad/README.md) | SAD pack (**21** chapters). Map: [README.md](README.md). Infra checklist: [Ch.21](output_docs/sad/chapters/21-infra-provision-checklist.md). Questions: [Ch.18](output_docs/sad/chapters/18-assumptions-and-open-questions.md) **Q-01…Q-17** |
 | 1 | [`docs/ai/PROJECT_CONTEXT.md`](docs/ai/PROJECT_CONTEXT.md) | Business purpose, stakeholders, success metrics |
 | 2 | [`docs/ai/ARCHITECTURE.md`](docs/ai/ARCHITECTURE.md) | Components, boundaries, data flow |
 | 3 | [`docs/ai/CURRENT_STATE.md`](docs/ai/CURRENT_STATE.md) | What exists vs. to-be-built |

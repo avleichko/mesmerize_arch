@@ -100,7 +100,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Engagement / business log retention (e.g. 3 years discussed) | Confirm with Brandon / MM |
 | AWS BAA necessity | Compliance owner |
 | Formal observability toolchain | AM / Mesmerize-approved pack |
-| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md) |
+| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../../output_docs/sad/chapters/21-infra-provision-checklist.md) |
 
 ---
 

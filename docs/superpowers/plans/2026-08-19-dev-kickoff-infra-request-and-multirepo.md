@@ -32,7 +32,7 @@
 | `docs/architecture/customer-monorepo-analysis.md` | Repo layout row: aligned to D-07 |
 | `AGENTS.md`, `docs/ai/{ENGINEERING_RULES,ARCHITECTURE,CURRENT_STATE}.md` | No live “platform is one monorepo” |
 | SAD Ch.02, 08, 17 | Logical modules vs physical service repos |
-| `output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md` | New chapter |
+| `output_docs/sad/chapters/21-infra-provision-checklist.md` | New chapter |
 | Ch.18, SAD README, COVERAGE, PROGRESS, Ch.03, Ch.16 | Q-17 + 21 chapters |
 | `output_docs/docs/adr/` | Mirror ADR files |
 
@@ -99,13 +99,13 @@
 ### Task 3: SAD Chapter 21
 
 **Files:**
-- Create: `output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md`
+- Create: `output_docs/sad/chapters/21-infra-provision-checklist.md`
 
 **Interfaces:**
 - Consumes: Spec Gate 1–3, conflict table, Ladder B stub
 - Produces: Q-17 citation (row added in Task 4)
 
-- [ ] **Step 1: Create chapter** with field table (Chapter ID `21-development-kickoff-infrastructure-request`, Mesmerize extension, 2026-08-19, Review-ready). Purpose: Newfire → Mesmerize infra; does not create `D-xx`. How to use: Need | Settled | Ask. HTML callouts same as Ch.18.
+- [ ] **Step 1: Create chapter** with field table (Chapter ID `21-infra-provision-checklist`, Mesmerize extension, 2026-08-19, Review-ready). Purpose: Newfire → Mesmerize infra; does not create `D-xx`. How to use: Need | Settled | Ask. HTML callouts same as Ch.18.
 
 - [ ] **Step 2: Three register tables** covering every bullet in the spec Gate 1, 2, 3. Include account IDs `301478651732` / `063293864447` as **Confirmed (D-01)** not invented. SSO: message Mackenzie Clark / groups as published in customer README (cite `customer-kb/README.md`). D-06: no AWS keys in GitHub.
 
@@ -115,7 +115,7 @@
 
 - [ ] **Step 5: Evidence + white spots + open questions** — Q-07, Q-09, Q-13, Q-03/Q-14, **Q-17**. No new diagram.
 
-- [ ] **Step 6: Verify** `test -f output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md` and chapter contains `D-06`, `Q-17`, `Ladder B`.
+- [ ] **Step 6: Verify** `test -f output_docs/sad/chapters/21-infra-provision-checklist.md` and chapter contains `D-06`, `Q-17`, `Ladder B`.
 
 - [ ] **Step 7: Commit** `docs(sad): add Chapter 21 development kickoff infra request`
 
@@ -133,7 +133,7 @@
 
 **Q-17 row (exact):**
 
-| Q-17 | Ratify exact GitHub **org + service repo slugs** for the Proposed starter set (clinician SMART app, platform API Python/FastAPI, infra/Terraform)? Until answered, names are **Proposed** in Chapter 21. | First service-repo create / OIDC trust | Eng lead + GitHub org owner | [21](21-development-kickoff-infrastructure-request.md), D-07 |
+| Q-17 | Ratify exact GitHub **org + service repo slugs** for the Proposed starter set (clinician SMART app, platform API Python/FastAPI, infra/Terraform)? Until answered, names are **Proposed** in Chapter 21. | First service-repo create / OIDC trust | Eng lead + GitHub org owner | [21](21-infra-provision-checklist.md), D-07 |
 
 - [ ] **Step 1:** Add Q-17 + theme “Service repos / OIDC”.
 
@@ -149,7 +149,7 @@
 
 - [ ] **Step 1:** `rg -n "polyglot monorepo|pnpm/Turborepo \(TS\)" docs/adr AGENTS.md docs/ai output_docs/sad` — no live one-repo platform claim (ADR-017 historical Context OK if labeled historical).
 
-- [ ] **Step 2:** `rg "Q-17" output_docs/sad/chapters/18-assumptions-and-open-questions.md output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md`
+- [ ] **Step 2:** `rg "Q-17" output_docs/sad/chapters/18-assumptions-and-open-questions.md output_docs/sad/chapters/21-infra-provision-checklist.md`
 
 - [ ] **Step 3:** `git push origin main` (this architecture repo).
 

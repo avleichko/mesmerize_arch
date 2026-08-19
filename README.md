@@ -18,7 +18,7 @@ If an ADR here and a customer `D-xx` **conflict**, stop and ask — do not merge
 | Design or review a change | ADR register → [`docs/ai/NFR.md`](docs/ai/NFR.md) (ASR rows) → SAD chapter |
 | Exam-room **imaging** | [ADR-019](docs/adr/019-exam-room-imaging-display-and-evidence.md) → [Ch.19](output_docs/sad/chapters/19-imaging-mirror-evidence-addendum.md) → [Ch.20](output_docs/sad/chapters/20-exam-room-imaging-mirror.md) · NFR **INT-05**, **PERF-02** |
 | Open questions | [SAD Ch.18](output_docs/sad/chapters/18-assumptions-and-open-questions.md) (**Q-01…Q-17**) |
-| Infra kickoff (GitHub / AWS / OIDC) | [SAD Ch.21](output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md) — does **not** create `D-xx` |
+| Infra provision checklist (Dev / Staging / Prod) | [SAD Ch.21](output_docs/sad/chapters/21-infra-provision-checklist.md) — does **not** create `D-xx` |
 | Settled customer infra | [`customer-kb/INFRASTRUCTURE.md`](docs/customer-kb/README.md) `D-01`–`D-07` only |
 | Export / handoff | [`output_docs/`](output_docs/README.md) |
 
@@ -77,7 +77,7 @@ Use this table so new chapters and ADRs stay wired. Ch.21 adds **no** diagram ca
 | [18](output_docs/sad/chapters/18-assumptions-and-open-questions.md) Assumptions | — | **Q-01…Q-17**, A-01…A-10 | — |
 | [19](output_docs/sad/chapters/19-imaging-mirror-evidence-addendum.md) Imaging evidence | **019**, 002, 003, 008 | INT-05 | **23** |
 | [20](output_docs/sad/chapters/20-exam-room-imaging-mirror.md) Imaging display | **019**, 007 | INT-05, PERF-02 | **24–25** |
-| [21](output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md) Kickoff infra | **017** S8, 010, 016, 018 · **D-01–D-07** | No new NFR; cites Q-07/09/13/03/14/**17** | **None** |
+| [21](output_docs/sad/chapters/21-infra-provision-checklist.md) Infra provision checklist | **017** S8, 010, 013–016, 018 · **D-01–D-07** | No new NFR; cites Q-07/09/13/03/14/**17** | **None** |
 
 **Q-16** = additive FHIR **read** strings (Ch.19–20). **Q-17** = GitHub org + service repo slugs (Ch.21).
 

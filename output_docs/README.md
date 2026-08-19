@@ -9,7 +9,7 @@ Mirror of the canonical agent documentation tree for handoff/export.
 | `/docs/**` | `docs/**` |
 | `/output_diagrams/**` | `output_diagrams/**` |
 | `/docs/ai/NFR.md` | [`nfr/NFR_CATALOG.md`](nfr/NFR_CATALOG.md) + [`nfr/ASR_CHECKLIST.md`](nfr/ASR_CHECKLIST.md) |
-| SAD (canonical) | [`sad/`](sad/README.md) — **21** chapters; Ch.21 kickoff; Ch.18 **Q-01…Q-17** |
+| SAD (canonical) | [`sad/`](sad/README.md) — **21** chapters; Ch.21 infra provision checklist; Ch.18 **Q-01…Q-17** |
 
 Pack map (SAD ↔ ADR ↔ NFR ↔ diagrams): [`../README.md`](../README.md).
 

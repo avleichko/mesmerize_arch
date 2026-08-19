@@ -75,7 +75,7 @@ Also: [`AGENTS.md`](../../../AGENTS.md) (invariants) · [`kb/`](../../../kb/) (s
 | [Chapter 13](13-deployment-and-infrastructure.md) | SAD deployment topology (AWS) |
 | [Chapter 17](17-ci-cd.md) | SAD CI/CD — dual delivery ladders A/B |
 | [Chapter 18](18-assumptions-and-open-questions.md) | Assumptions (Proposed) + Must-answer open questions register |
-| [Chapter 21](21-development-kickoff-infrastructure-request.md) | Newfire → Mesmerize infra kickoff (Now / Staging / Prod); does not create `D-xx` |
+| [Chapter 21](21-infra-provision-checklist.md) | Infra provision checklist (repos, ECS, RDS, SQS, VPC/SG × Dev/Staging/Prod); does not create `D-xx` |
 | Diagrams `17-*` / `18-*` | Stakeholder overview + technical production deploy |
 | Diagrams `19-*` / `20-*` | Ladder A (platform) + Ladder B (device/PWA) CI/CD *(filenames remain CI/CD; not imaging chapters)* |
 

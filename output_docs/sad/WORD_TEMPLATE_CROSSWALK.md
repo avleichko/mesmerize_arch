@@ -52,9 +52,9 @@ These chapters are **not** Heading-1 sections in the current Word template. Trea
 | 18 | Assumptions and Open Questions | [`chapters/18-assumptions-and-open-questions.md`](chapters/18-assumptions-and-open-questions.md) | Appendix G |
 | 19 | Imaging-Mirror Evidence Addendum | [`chapters/19-imaging-mirror-evidence-addendum.md`](chapters/19-imaging-mirror-evidence-addendum.md) | Appendix H |
 | 20 | Exam-Room Imaging Mirror | [`chapters/20-exam-room-imaging-mirror.md`](chapters/20-exam-room-imaging-mirror.md) | Appendix I |
-| 21 | Development Kickoff — Infrastructure Request | [`chapters/21-development-kickoff-infrastructure-request.md`](chapters/21-development-kickoff-infrastructure-request.md) | Appendix J |
+| 21 | Infra provision checklist | [`chapters/21-infra-provision-checklist.md`](chapters/21-infra-provision-checklist.md) | Appendix J |
 
-Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17) → Appendix G Assumptions (18) → Appendix H–I imaging (19–20) → Appendix J kickoff (21).
+Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17) → Appendix G Assumptions (18) → Appendix H–I imaging (19–20) → Appendix J infra provision checklist (21).
 
 ---
 

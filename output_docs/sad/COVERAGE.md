@@ -542,18 +542,18 @@
 
 ---
 
-## 21 — Development Kickoff — Infrastructure Request
+## 21 — Infra provision checklist
 
 | # | Item | Status |
 |---|------|--------|
-| 1 | Purpose stated (Newfire → Mesmerize infra; does not create `D-xx`) | [x] |
-| 2 | Actors / audience covered (GitHub / IAM IC / AWS owners) | [x] |
-| 4 | Interfaces / interactions described (Need \| Settled \| Ask gates) | [x] |
-| 6 | Security / PHI notes (OIDC only; no AWS keys in GitHub; no patient data) | [x] |
-| 7 | Evidence links (D-01–D-07, ADR-017/010/016/018, customer README) | [x] |
-| 8 | Open questions listed (**Q-17** plus Q-07/Q-09/Q-13/Q-03/Q-14) | [x] |
+| 1 | Purpose stated (DevOps create-list for Newfire; does not create `D-xx`) | [x] |
+| 2 | Actors / audience covered (senior DevOps / IAM IC / GitHub) | [x] |
+| 4 | Interfaces: repos, ECS/ECR, RDS, Redis, S3, SQS, VPC/SG × Dev/Staging/Prod | [x] |
+| 6 | Security / PHI notes (OIDC only; no AWS keys; no patient data / imaging bytes) | [x] |
+| 7 | Evidence links (Ch.08/12/13, D-01–D-07, ADR-013–017) | [x] |
+| 8 | Open questions listed (**Q-17** plus Q-07/Q-09/Q-13/Q-03/Q-14, A-05/A-06) | [x] |
 | 9 | White spots only as colored callouts | [x] |
-| * | **Chapter-specific:** three gates (Now / Staging / Prod); five-row conflict table; Ladder B stub only | [x] |
+| * | **Chapter-specific:** Proposed names from C4; 3-env checkboxes; conflict table; Ladder B stub | [x] |
 
 **N/A:** diagrams (tables-only; no new catalog IDs).
 
@@ -562,11 +562,11 @@
 **White spots (Unknown):**
 
 - Exact GitHub org + service repo slugs — **Q-17**.  
-- Region (D-01 vs **Q-07**); shared vs per-service accounts; who provisions VPC/ECS/RDS; IaC tool; observability (**Q-09**); Staging→Prod owner (**Q-13**); BAA / HIPAA pack (**Q-03**, **Q-14**); D-04 vs ADR-013; D-05 vs A-03.
+- Region (D-01 vs **Q-07**); Dev AWS account; CIDR; shared vs per-service accounts; RDS/Redis Multi-AZ; exact SQS inventory (Ch.12); bucket count; IaC tool; observability (**Q-09**); Staging→Prod owner (**Q-13**); D-04 vs ADR-013; D-05 vs A-03.
 
 **White spots (Proposed):**
 
-- Starter repos = SMART app + Python API + infra/Terraform. Terraform as IaC until customer `D-xx`.
+- `{env}-mesmerize-*` names; three starter GitHub repos; three S3 buckets per env; full ADR-014 queue set; co-located API + separate realtime ECS service. Terraform until customer `D-xx`.
 
 ---
 

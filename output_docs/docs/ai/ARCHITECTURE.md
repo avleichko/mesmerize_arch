@@ -172,7 +172,7 @@ Two delivery ladders — do not conflate ([ADR-016](../adr/016-git-branching-and
 - **Ladder A — Platform (AWS):** GitHub Actions → ECR → ECS + Terraform. Topology remains as above / ADR-015; deploy strategy Unknown.
 - **Ladder B — Device/PWA:** Netlify web preview ≠ device; human-triggered TTV filesync; `staging` = QA/canary, `main` = production fleet (Esper + TTV). Confirmed for touchscreen-ux / extend-PWA.
 
-Org branching (`feature → staging → main`, PRs to `staging`) is **Confirmed** for touchscreen-ux and **Proposed** for platform repos. Full SAD narrative: [Chapter 17 — CI/CD](../../output_docs/sad/chapters/17-ci-cd.md). Open questions: [Chapter 18](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md). Newfire → Mesmerize infra gates: [Chapter 21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md).
+Org branching (`feature → staging → main`, PRs to `staging`) is **Confirmed** for touchscreen-ux and **Proposed** for platform repos. Full SAD narrative: [Chapter 17 — CI/CD](../../output_docs/sad/chapters/17-ci-cd.md). Open questions: [Chapter 18](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md). Newfire → Mesmerize infra gates: [Chapter 21](../../output_docs/sad/chapters/21-infra-provision-checklist.md).
 
 ## Auth model
 
@@ -210,4 +210,4 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-018](../adr/018-customer-decision-repo-second-kb.md) (customer-kb / `D-xx`)
 - [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md) (#20 — imaging display in scope)
 
-SAD: [Ch.17 CI/CD](../../output_docs/sad/chapters/17-ci-cd.md) · [Ch.18 questions](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md) · [Ch.21 kickoff](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md). Pack map: [`README.md`](../../README.md).
+SAD: [Ch.17 CI/CD](../../output_docs/sad/chapters/17-ci-cd.md) · [Ch.18 questions](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md) · [Ch.21 infra checklist](../../output_docs/sad/chapters/21-infra-provision-checklist.md). Pack map: [`README.md`](../../README.md).

@@ -44,7 +44,7 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **POC ecosystem** | Demo multi-device journey used as reference behavior |
 | **mesmerize-platform** | Informal name for the Content Evidence **platform** (SMART + API + infra). Physical git is **per-service repos** (D-07 / ADR-017), not one Turborepo. |
 | **D-xx** | Settled infrastructure decision in customer `INFRASTRUCTURE.md` ([ADR-018](../adr/018-customer-decision-repo-second-kb.md)). SAD Ch.21 cites them; it does not add rows. |
-| **Q-17** | SAD open question: exact GitHub org + service-repo slugs ([Ch.21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md)) |
+| **Q-17** | SAD open question: exact GitHub org + service-repo slugs ([Ch.21](../../output_docs/sad/chapters/21-infra-provision-checklist.md)) |
 
 ## Acronyms
 

@@ -156,8 +156,8 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 | Engagement / business log retention | **A-09**, **Q-12** |
 | AWS BAA necessity | **Q-03** |
 | Observability vendor + HIPAA pack | **A-10**, **Q-09**, **Q-14** |
-| Region class (pilot) | **A-01**, **Q-07** (Ask vs D-01 in [Ch.21](21-development-kickoff-infrastructure-request.md)) |
-| GitHub service-repo slugs | **Q-17** ([Ch.21](21-development-kickoff-infrastructure-request.md)) |
+| Region class (pilot) | **A-01**, **Q-07** (Ask vs D-01 in [Ch.21](21-infra-provision-checklist.md)) |
+| GitHub service-repo slugs | **Q-17** ([Ch.21](21-infra-provision-checklist.md)) |
 
 ## Sources
 

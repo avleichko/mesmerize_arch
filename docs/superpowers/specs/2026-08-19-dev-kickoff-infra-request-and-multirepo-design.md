@@ -34,9 +34,9 @@ Give Mesmerize infrastructure stakeholders a **SAD Chapter 21** they can tick: t
 
 ## SAD Chapter 21
 
-**File:** `output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md`
+**File:** `output_docs/sad/chapters/21-infra-provision-checklist.md`
 
-**Field table:** Chapter ID `21-development-kickoff-infrastructure-request`; SAD mapping Mesmerize extension; Last updated 2026-08-19; Maturity Review-ready.
+**Field table:** Chapter ID `21-infra-provision-checklist`; SAD mapping Mesmerize extension; Last updated 2026-08-19; Maturity Review-ready.
 
 **Audience:** Mesmerize infra / GitHub / IAM Identity Center owners. **From:** Newfire delivery. Does **not** create `D-xx` rows.
 

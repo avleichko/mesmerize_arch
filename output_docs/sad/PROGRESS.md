@@ -42,7 +42,7 @@
 | 18 Assumptions & Open Questions | 8/8 | 100% | **75** | Review-ready *(capped; Q-01…Q-17 open)* |
 | 19 Imaging-Mirror Evidence | 10/10 | 100% | **75** | Review-ready *(capped; Unknown)* |
 | 20 Exam-Room Imaging Mirror | 10/10 | 100% | **75** | Review-ready *(capped; Unknown)* |
-| 21 Dev Kickoff Infra Request | 8/8 | 100% | **75** | Review-ready *(capped; Unknown)* |
+| 21 Infra provision checklist | 8/8 | 100% | **75** | Review-ready *(capped; Unknown)* |
 
 ---
 
@@ -56,7 +56,7 @@
 | Chapters at Stakeholder-ready (100) | 3 / 21 (04, 15, 16) |
 | Chapters with open Unknown callouts | 16 / 21 (02, 05–14, 17–21) |
 
-**Verdict:** Pack is **~79% overall (band 75)** across **21** chapters — solid Review-ready working SAD, **not** stakeholder-sign-off complete. Chapter 18 consolidates Must-answer questions (**Q-01…Q-17**) and Proposed assumptions (**A-01…A-10**). Imaging display is in-scope per ADR-019 (Ch.19–20). Chapter 21 is the Newfire → Mesmerize infra kickoff register (does not create `D-xx`). Unknown-cap still applies while Q-rows remain open. Do not invent higher maturity.
+**Verdict:** Pack is **~79% overall (band 75)** across **21** chapters — solid Review-ready working SAD, **not** stakeholder-sign-off complete. Chapter 18 consolidates Must-answer questions (**Q-01…Q-17**) and Proposed assumptions (**A-01…A-10**). Imaging display is in-scope per ADR-019 (Ch.19–20). Chapter 21 is the Newfire → Mesmerize **infra provision checklist** (Dev / Staging / Prod; does not create `D-xx`). Unknown-cap still applies while Q-rows remain open. Do not invent higher maturity.
 
 ---
 

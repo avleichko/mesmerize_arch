@@ -321,4 +321,4 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 - **A-05** — Platform (Python) services as separate ECS services by cutover
 - Related pilot scope / RBAC depth: **Q-10**
 - **Q-16** — Ratify additive FHIR **read** scope strings for Tier 1 (owned in [Chapter 18](18-assumptions-and-open-questions.md); cited from [Chapter 19](19-imaging-mirror-evidence-addendum.md))
-- **Q-17** — Exact GitHub org + service repo slugs ([Chapter 21](21-development-kickoff-infrastructure-request.md))
+- **Q-17** — Exact GitHub org + service repo slugs ([Chapter 21](21-infra-provision-checklist.md))

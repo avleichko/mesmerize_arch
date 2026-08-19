@@ -31,7 +31,7 @@ Full catalog: [`docs/ai/NFR.md`](NFR.md) and [`output_docs/nfr/NFR_CATALOG.md`](
 
 **Architecturally significant (must not conflict):** zero-PHI servers; browser-held FHIR token; no ambient notes path; tenant isolation; exponential backoff retries; durable engagement proof; WCAG 2.1 AA; white-label; ambulatory-only; engagement vs diagnostic log split; diagnostic retention ≤ 90 days; SMART 3-legged EHR launch; server-mediated devices; server-mediated imaging display (no DICOM viewer; no imaging payloads on servers); tenant-isolated S3; separate audit telemetry; HIPAA-aligned AWS / OWASP+pen-test path.
 
-Do **not** invent numeric availability/latency SLOs — none are fixed in kb (see Open items in NFR catalog). SAD summary: [Chapter 14](../../output_docs/sad/chapters/14-nfr-and-quality-attributes.md). Infra kickoff (no new NFR): [Chapter 21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md).
+Do **not** invent numeric availability/latency SLOs — none are fixed in kb (see Open items in NFR catalog). SAD summary: [Chapter 14](../../output_docs/sad/chapters/14-nfr-and-quality-attributes.md). Infra provision checklist (no new NFR): [Chapter 21](../../output_docs/sad/chapters/21-infra-provision-checklist.md).
 
 
 ## Stack (reference architecture — binding via [ADR-010](../adr/010-technology-stack.md))

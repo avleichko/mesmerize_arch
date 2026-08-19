@@ -57,7 +57,7 @@ Provide **fuller product/platform term definitions** for Word template §10. Sho
 | **ASR** | Architecturally Significant Requirement — NFR that drives architecture |
 | **NFR** | Non-functional requirement (see `output_docs/nfr/`) |
 | **mesmerize-platform** | Informal name for the Content Evidence platform. Physical git is **per-service repos** (D-07 / ADR-017), not one Turborepo. |
-| **D-xx** | Settled customer infra row (`INFRASTRUCTURE.md`); [Chapter 21](21-development-kickoff-infrastructure-request.md) cites, does not create |
+| **D-xx** | Settled customer infra row (`INFRASTRUCTURE.md`); [Chapter 21](21-infra-provision-checklist.md) cites, does not create |
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
   <strong>Inferred:</strong> Superseded plans (Control plan, SMART v1), ops aliases (M-number, TelemetryTV), and content sources (BioDigital, MJH) remain in GLOSSARY only to keep §10 focused on active SAD vocabulary. Patient Imaging Mirror is <strong>in-scope</strong> here (Tier 1 + Tier 2); Mesmerize DICOM viewer stays DNB.

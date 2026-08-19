@@ -84,7 +84,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 - [ADR-017](../../../docs/adr/017-python-platform-backend.md) — Python / FastAPI platform API; Python CI gates
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment (Ladder A topology)
 - [Chapter 13](13-deployment-and-infrastructure.md) — runtime AWS topology (pointer)
-- [Chapter 21](21-development-kickoff-infrastructure-request.md) — per-repo OIDC / GitHub Environments / account Ask
+- [Chapter 21](21-infra-provision-checklist.md) — per-repo OIDC / GitHub Environments / account Ask
 - [`docs/ci-templates/`](../../../docs/ci-templates/) — Ladder A CI template pack + adoption matrix (Proposed)
 
 ## White spots
@@ -107,5 +107,5 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 
 - **A-03**, **A-04** — rolling deploy; `feature → staging → main` for platform
 - **Q-13** — who promotes Staging → Prod and with what gates
-- **Q-17** — exact GitHub org + service repo slugs ([Chapter 21](21-development-kickoff-infrastructure-request.md))
+- **Q-17** — exact GitHub org + service repo slugs ([Chapter 21](21-infra-provision-checklist.md))
 - Engineering follow-up (not a Mesmerize Q-row): package-manager / Node pin TODOs in [`docs/ci-templates/workflows/ci.yml`](../../../docs/ci-templates/workflows/ci.yml)

@@ -4,7 +4,7 @@
 > **Rule:** Do not invent numeric SLOs not present in kb. Items without kb metrics are marked **Open** or **Target (qualitative)**.  
 > **ASR** = Architecturally Significant Requirement (drives structure, boundaries, or technology choices).
 
-Agent mirror: [`docs/ai/NFR.md`](../../docs/ai/NFR.md). ASR checklist: [`ASR_CHECKLIST.md`](ASR_CHECKLIST.md). SAD summary: [Chapter 14](../sad/chapters/14-nfr-and-quality-attributes.md). Kickoff (no new NFR): [Chapter 21](../sad/chapters/21-development-kickoff-infrastructure-request.md).
+Agent mirror: [`docs/ai/NFR.md`](../../docs/ai/NFR.md). ASR checklist: [`ASR_CHECKLIST.md`](ASR_CHECKLIST.md). SAD summary: [Chapter 14](../sad/chapters/14-nfr-and-quality-attributes.md). Infra provision checklist (no new NFR): [Chapter 21](../sad/chapters/21-infra-provision-checklist.md).
 
 ## Legend
 
@@ -100,7 +100,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Engagement / business log retention (e.g. 3 years discussed) | Confirm with Brandon / MM |
 | AWS BAA necessity | Compliance owner |
 | Formal observability toolchain | AM / Mesmerize-approved pack |
-| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../sad/chapters/21-development-kickoff-infrastructure-request.md) |
+| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../sad/chapters/21-infra-provision-checklist.md) |
 
 ---
 

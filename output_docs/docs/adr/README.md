@@ -102,7 +102,7 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
 ## Where this lands in the SAD
 
-Pack map: [`README.md`](../../README.md). Kickoff asks (GitHub / OIDC / AWS gates): [SAD Chapter 21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md). Questions **Q-01…Q-17**: [Chapter 18](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md). ASRs: [`docs/ai/NFR.md`](../ai/NFR.md) (imaging **INT-05** / **PERF-02**).
+Pack map: [`README.md`](../../README.md). Infra provision checklist (GitHub / ECS / RDS / SQS / VPC ×3 env): [SAD Chapter 21](../../output_docs/sad/chapters/21-infra-provision-checklist.md). Questions **Q-01…Q-17**: [Chapter 18](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md). ASRs: [`docs/ai/NFR.md`](../ai/NFR.md) (imaging **INT-05** / **PERF-02**).
 
 | ADR | SAD chapters (primary) |
 |-----|------------------------|
