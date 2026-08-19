@@ -84,6 +84,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 - [ADR-017](../../../docs/adr/017-python-platform-backend.md) — Python / FastAPI platform API; Python CI gates
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment (Ladder A topology)
 - [Chapter 13](13-deployment-and-infrastructure.md) — runtime AWS topology (pointer)
+- [Chapter 21](21-development-kickoff-infrastructure-request.md) — per-repo OIDC / GitHub Environments / account Ask
 - [`docs/ci-templates/`](../../../docs/ci-templates/) — Ladder A CI template pack + adoption matrix (Proposed)
 
 ## White spots

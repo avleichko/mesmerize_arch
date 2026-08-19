@@ -6,7 +6,7 @@ This directory holds the **working Solution Architecture Definition (SAD) pack**
 
 This pack lives under `output_docs/sad/` only. It is the authoritative working artifact for architecture review and iteration in this repo.
 
-**Overall pack maturity:** ~**79%** (band **75 — Review-ready**; 21 chapters). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md). Decision register: [Chapter 18](chapters/18-assumptions-and-open-questions.md). Imaging display: [ADR-019](../../docs/adr/019-exam-room-imaging-display-and-evidence.md) (Ch.19–20). Infra kickoff (Newfire → Mesmerize): [Chapter 21](chapters/21-development-kickoff-infrastructure-request.md).
+**Overall pack maturity:** ~**79%** (band **75 — Review-ready**; 21 chapters). See [`PROGRESS.md`](PROGRESS.md). Pack map (SAD ↔ ADR ↔ NFR ↔ diagrams): [`../../README.md`](../../README.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md). Decision register: [Chapter 18](chapters/18-assumptions-and-open-questions.md) (**Q-01…Q-17**). Imaging display: [ADR-019](../../docs/adr/019-exam-room-imaging-display-and-evidence.md) (Ch.19–20; **NFR-INT-05**). Infra kickoff (Newfire → Mesmerize): [Chapter 21](chapters/21-development-kickoff-infrastructure-request.md).
 
 ## Chapter index
 

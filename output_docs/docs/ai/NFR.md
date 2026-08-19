@@ -1,6 +1,6 @@
 # Non-Functional Requirements (NFR) Catalog
 
-> **Sources:** Jul 14 2026 functional/non-functional meeting notes; SOW #3; Architecture / Strategy / Implementation Context; Mesmerize Q&A; ADRs 001–016.  
+> **Sources:** Jul 14 2026 functional/non-functional meeting notes; SOW #3; Architecture / Strategy / Implementation Context; Mesmerize Q&A; ADRs 001–019.  
 > **Rule:** Do not invent numeric SLOs not present in kb. Items without kb metrics are marked **Open** or **Target (qualitative)**.  
 > **ASR** = Architecturally Significant Requirement (drives structure, boundaries, or technology choices).
 
@@ -35,7 +35,7 @@ Export copy: [`output_docs/nfr/NFR_CATALOG.md`](../../output_docs/nfr/NFR_CATALO
 | NFR-REL-03 | Should | Should | Reliability | Device **heartbeat** + email alerts for failures; admin correction UI **deferred**. | Jul 14 | Confirmed | SECURITY.md |
 | NFR-REL-04 | Should | Should | Availability | Design for availability/reliability of device↔cloud path (qualitative for pilot). **No numeric SLO in kb.** | Open for formal SLO | Open | Jul 14 |
 | NFR-PERF-01 | Should | Should | Performance | SMART app usable in **EHR iframe** (~400–800px sidebar); no pop-up-dependent primary flows. | Clinician time pressure | Confirmed | Implementation Context |
-| NFR-PERF-02 | Could | Could | Performance | Imaging/mirroring latency noted as concern — **out of SOW**; do not optimize as MVP NFR. | Jul 14 + ADR-009 | Confirmed OOS | ADR-009 |
+| NFR-PERF-02 | Could | Could | Performance | Qualitative device **display/mirror** latency concern for in-scope imaging display; **do not invent a numeric SLO**. | Jul 14 + ADR-019 | Confirmed | ADR-019 |
 | NFR-SCAL-01 | **Yes** | Should | Scalability | Architecture must support fleet scale (**~4,400** devices today; **1,000+ screens** proof for Jul 2027 planning). Prefer async SQS for non-interactive work. | Business + ops | Confirmed | Q&A, STRATEGY |
 | NFR-SCAL-02 | Should | Should | Scalability | Dual tenancy modes (Bridge default, Silo when needed) without rewriting domain APIs. | ADR-013 | Confirmed | ADR-013 |
 | NFR-UX-01 | **Yes** | Must | Usability / A11y | Clinical UI meets **WCAG 2.1 AA** (SOW Phase 2). | Contractual | Confirmed | SOW Phase 2 |
@@ -48,11 +48,12 @@ Export copy: [`output_docs/nfr/NFR_CATALOG.md`](../../output_docs/nfr/NFR_CATALO
 | NFR-OPS-04 | Should | Should | Observability | Video ad telemetry baseline: **VAST**. | Jul 14 | Confirmed | GLOSSARY |
 | NFR-OPS-05 | Should | Should | Operability | Environments: **Dev / Staging / Prod**; Staging PHI-free vs Athena sandbox; Prod gated to pilot. | Q&A | Confirmed | ENGINEERING_RULES |
 | NFR-OPS-06 | Should | Should | Maintainability | **Ladder A (platform):** CI/CD via **GitHub Actions**; IaC **Terraform**; Mesmerize-owned AWS (ECR → ECS). Deploy strategy (blue/green, canary, etc.) **Unknown**. | ADR-010, ADR-016 | Confirmed (CI/IaC); Unknown (deploy strategy) | ADR-010, ADR-016 |
-| NFR-OPS-07 | Should | Should | Operability | **Ladder B (device/PWA):** Netlify branch preview ≠ device path; TelemetryTV (TTV) filesync **human-triggered**; merge to `staging` = QA/canary devices; promote `staging → main` = production fleet. Do not apply Netlify/TTV to NestJS/ECS. | touchscreen-ux DEPLOYMENT; ADR-016 | Confirmed (PWA) | ADR-007, ADR-016 |
+| NFR-OPS-07 | Should | Should | Operability | **Ladder B (device/PWA):** Netlify branch preview ≠ device path; TelemetryTV (TTV) filesync **human-triggered**; merge to `staging` = QA/canary devices; promote `staging → main` = production fleet. Do not apply Netlify/TTV to Python/ECS platform services. | touchscreen-ux DEPLOYMENT; ADR-016 | Confirmed (PWA) | ADR-007, ADR-016, ADR-017 |
 | NFR-INT-01 | **Yes** | Must | Interoperability | SMART on FHIR **3-legged Authorization Code Grant**; EHR launch only; Athena pilot first. | ADR-005 | Confirmed | ADR-005 |
 | NFR-INT-02 | **Yes** | Must | Interoperability | Device commands **server-mediated** (REST + Socket.io); no direct SMART↔device app channel. | ADR-007 | Confirmed | ADR-007 |
 | NFR-INT-04 | **Yes** | Must | Interoperability | Internal messaging: SQS **Request/Reply + Correlation ID** (per-target reply queues), **Fire-and-forget** for async, **Content Enricher + DLQ** for failures; edge remains REST. | ADR-014 | Confirmed | ADR-014 |
 | NFR-INT-03 | Should | Should | Interoperability | EHR-agnostic core so Epic/Cerner can be added without core rewrite. | SOW Phase 1 / ADR-004 | Confirmed | ADR-004 |
+| NFR-INT-05 | **Yes** | Must | Interoperability | Imaging **display** is **server-mediated** (Platform Device Command API + WebRTC signaling). **No** Mesmerize DICOM viewer; **no** imaging payloads on Mesmerize servers; EHR FHIR token stays in the browser. | ADR-019; PHI/token invariants unchanged | Confirmed | ADR-019, ADR-002, ADR-007 |
 | NFR-DATA-01 | **Yes** | Must | Data integrity | UUID-based content/engagement tracking; engagement events complete (start/duration/completion). | Jul 14 + UC7 | Confirmed | ADR-008 |
 | NFR-DATA-02 | **Yes** | Must | Data isolation | S3 object paths tenant-isolated: `{tenantId}/{clinicId}/…` (Bridge) or org-isolated root/bucket (Silo). | ADR-013 | Confirmed | ADR-013 |
 | NFR-DATA-03 | Should | Should | Auditability | Separate **audit telemetry log** (not only EHR writeback). Billing export CSV/JSON. | Q&A / SOW | Confirmed | ADR-008 |
@@ -84,6 +85,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | NFR-INT-01 | SMART 3-legged EHR launch (Athena) |
 | NFR-INT-02 | Server-mediated device realtime |
 | NFR-INT-04 | SQS RR + correlation / fire-and-forget / enricher+DLQ (ADR-014) |
+| NFR-INT-05 | Server-mediated imaging display; no DICOM viewer; no imaging payloads on servers; FHIR token browser-only |
 | NFR-DATA-01 | UUID engagement integrity |
 | NFR-DATA-02 | Tenant-isolated S3 layout |
 | NFR-DATA-03 | Separate audit telemetry |
@@ -98,7 +100,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Engagement / business log retention (e.g. 3 years discussed) | Confirm with Brandon / MM |
 | AWS BAA necessity | Compliance owner |
 | Formal observability toolchain | AM / Mesmerize-approved pack |
-| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016 |
+| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md) |
 
 ---
 
@@ -106,12 +108,14 @@ These NFRs **must** shape architecture and are binding for agents:
 
 | Area | Result |
 |------|--------|
-| ADRs 001–016 | **Aligned** — NFRs formalize existing decisions |
-| AGENTS hard invariants | **Aligned** — map to NFR-SEC-01/02/03, INT-02, BUS-01/02 |
+| ADRs 001–019 | **Aligned** — NFRs formalize existing decisions |
+| AGENTS hard invariants | **Aligned** — map to NFR-SEC-01/02/03, INT-02, INT-05, BUS-01/02 |
 | ENGINEERING_RULES (iframe, WCAG, ambulatory, white-label, backoff) | **Aligned** |
 | SECURITY (90d diag logs, VAST, BAAs) | **Aligned** |
 | Multitenancy ADR-013 | **Aligned** with NFR-SEC-07, DATA-02, SCAL-02 |
 | Messaging ADR-014 | **Aligned** with NFR-REL-01/02, INT-02/04; edge REST preserved for iframe latency |
-| Imaging performance | **No conflict** — marked OOS (NFR-PERF-02) |
+| Imaging performance | **No conflict** — qualitative in-scope concern (NFR-PERF-02); no numeric SLO. Display boundaries in NFR-INT-05 (ADR-019) |
+| SAD Ch.14 / 19–21 | **Aligned** — Ch.14 summarizes ASRs; Ch.19–20 cite INT-05 / PERF-02; Ch.21 adds no NFR |
+| ADR-017 S8 / D-07 | **Aligned** — multi-repo; not an NFR change |
 
 If a future change conflicts with an **ASR** NFR, update this catalog + add/supersede an ADR before coding.

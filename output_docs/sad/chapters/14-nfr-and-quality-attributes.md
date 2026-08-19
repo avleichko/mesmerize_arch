@@ -142,7 +142,7 @@ Non-ASR NFRs still constrain delivery but do not by themselves force structural 
 | [`docs/ai/NFR.md`](../../../docs/ai/NFR.md) | Canonical agent NFR + ASR list |
 | [`output_docs/nfr/NFR_CATALOG.md`](../../nfr/NFR_CATALOG.md) | Export catalog (full table) |
 | [`output_docs/nfr/ASR_CHECKLIST.md`](../../nfr/ASR_CHECKLIST.md) | Design-review checklist |
-| ADR-002, 005, 007, 008, 011, 013, 014, 016, 019 | Decisions backing ASR statements (016 = dual delivery ladders / OPS; 019 = imaging display + INT-05 / PERF-02) |
+| ADR-002, 005, 007, 008, 011, 013, 014, 016, **017**, 019 | Decisions backing ASR statements (016 = dual ladders / OPS; 017 = Python API; 019 = imaging display + INT-05 / PERF-02) |
 | SOW #3 Phase 2 / 3 | WCAG 2.1 AA; OWASP + pen-test |
 
 ## Open items / decisions needed
@@ -156,7 +156,8 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 | Engagement / business log retention | **A-09**, **Q-12** |
 | AWS BAA necessity | **Q-03** |
 | Observability vendor + HIPAA pack | **A-10**, **Q-09**, **Q-14** |
-| Region class (pilot) | **A-01**, **Q-07** |
+| Region class (pilot) | **A-01**, **Q-07** (Ask vs D-01 in [Ch.21](21-development-kickoff-infrastructure-request.md)) |
+| GitHub service-repo slugs | **Q-17** ([Ch.21](21-development-kickoff-infrastructure-request.md)) |
 
 ## Sources
 

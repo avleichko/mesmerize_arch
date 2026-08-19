@@ -7,7 +7,7 @@ Mermaid and PlantUML sources for AI agents, SAD embeds, and reviewers. **Rendere
 | [01-system-context.png](01-system-context.png) | [01-system-context.mmd](01-system-context.mmd) | Cloud / EHR / clinic edge |
 | [02-phi-boundary.png](02-phi-boundary.png) | [02-phi-boundary.mmd](02-phi-boundary.mmd) | Token split and PHI boundary |
 | [03-encounter-flow.png](03-encounter-flow.png) | [03-encounter-flow.mmd](03-encounter-flow.mmd) | Launch → push → evidence → writeback |
-| [04-monorepo-boundaries.png](04-monorepo-boundaries.png) | [04-monorepo-boundaries.mmd](04-monorepo-boundaries.mmd) | Apps/packages boundaries |
+| [04-monorepo-boundaries.png](04-monorepo-boundaries.png) | [04-monorepo-boundaries.mmd](04-monorepo-boundaries.mmd) | **Logical** app/package modules (physical git = per-service repos, D-07 / ADR-017; Ch.08 / **Q-17**) |
 | [05-auth-model.png](05-auth-model.png) | [05-auth-model.mmd](05-auth-model.mmd) | EHR SSO / Auth0 / device / Bridge |
 | [06-c4-containers.png](06-c4-containers.png) | [06-c4-containers.puml](06-c4-containers.puml), [06-c4-containers.mmd](06-c4-containers.mmd) | C4 containers — REST + SQS (PNG from PlantUML) |
 | [06a-c4-focus-session-service.png](06a-c4-focus-session-service.png) | [06a-c4-focus-session-service.puml](06a-c4-focus-session-service.puml) | C4 container focus — session-service |
@@ -62,6 +62,7 @@ Legacy: [17-aws-deployment-reference-legacy-boxes.puml](17-aws-deployment-refere
 
 Canonical narrative: `docs/ai/ARCHITECTURE.md` and `docs/ai/SECURITY.md`.  
 Deployment narrative: `docs/architecture/deployment/aws-production-deployment.md`.  
+SAD map: [`README.md`](../README.md). Chapter **21** has **no** new diagram IDs (tables only).  
 Scratch folder: `diagrams/` (not source of truth).
 
 **Export mirror:** copy PNGs (and README) to `output_docs/output_diagrams/` after regeneration.

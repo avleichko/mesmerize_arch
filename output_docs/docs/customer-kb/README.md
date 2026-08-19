@@ -27,7 +27,7 @@ Binding practice: [ADR-018](../adr/018-customer-decision-repo-second-kb.md). Cur
 | 3 | `CONTRIBUTING.md` | PHI rule; PRs to `main`; issues for stakeholder decisions. |
 | 4 | `docs/prebuild-proposal/` | **Not settled architecture.** Goals / historical brainstorm only. Do not cite as Confirmed. |
 
-Snapshot / conflict notes: [`docs/architecture/customer-monorepo-analysis.md`](../architecture/customer-monorepo-analysis.md).
+Snapshot / conflict notes: [`docs/architecture/customer-monorepo-analysis.md`](../architecture/customer-monorepo-analysis.md). SAD **Chapter 21** cites `D-xx` for kickoff asks; it **does not** add `INFRASTRUCTURE.md` rows.
 
 ## Precedence vs `kb/` and this repo’s ADRs
 

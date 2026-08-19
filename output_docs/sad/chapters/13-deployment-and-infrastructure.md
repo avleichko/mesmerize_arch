@@ -9,7 +9,7 @@
 
 ## Purpose of this chapter
 
-Describe the Mesmerize-owned AWS production deployment topology for the Content Evidence Platform: ingress, compute, data, messaging, security controls, and HA/DR posture — with every major claim classified as Confirmed, Inferred, Proposed, or Unknown. Dual delivery ladders (CI/CD) live in [Chapter 17](17-ci-cd.md). This chapter does not invent Region, RTO/RPO, account IDs, or numeric SLOs.
+Describe the Mesmerize-owned AWS production deployment topology for the Content Evidence Platform: ingress, compute, data, messaging, security controls, and HA/DR posture — with every major claim classified as Confirmed, Inferred, Proposed, or Unknown. Dual delivery ladders (CI/CD) live in [Chapter 17](17-ci-cd.md). Kickoff account/OIDC asks live in [Chapter 21](21-development-kickoff-infrastructure-request.md). This chapter does not invent Region, RTO/RPO, CIDR, or numeric SLOs. Shared AWS **account IDs** are customer **D-01** (Confirmed there; fate of shared vs per-service accounts remains **Ask**).
 
 ## Narrative
 
@@ -115,14 +115,14 @@ Public subnets host ALB (Confirmed) and NAT (Inferred). Private app subnets run 
 
 ### Dual delivery ladders (summary)
 
-Platform (AWS) and device/PWA delivery are **separate ladders** ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md)). **Ladder A:** GitHub Actions → ECR → ECS + Terraform. **Ladder B:** Netlify (web preview only) ≠ device path; human-triggered TTV filesync + Esper. Full branching, CI checks, diagrams 19/20, and open deploy-strategy questions: **[Chapter 17 — CI/CD](17-ci-cd.md)**.
+Platform (AWS) and device/PWA delivery are **separate ladders** ([ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md)). **Ladder A:** GitHub Actions → ECR → ECS + Terraform. **Ladder B:** Netlify (web preview only) ≠ device path; human-triggered TTV filesync + Esper. Full branching, CI checks, diagrams 19/20, and open deploy-strategy questions: **[Chapter 17 — CI/CD](17-ci-cd.md)**. GitHub/OIDC/account gates for Newfire: **[Chapter 21](21-development-kickoff-infrastructure-request.md)**.
 
 ### High availability and DR
 
 Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retries, and DLQs support recoverability. Cross-Region DR is not defined.
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Production <strong>AWS Region</strong> (and optional DR Region) — not documented; do not invent. AWS account ID / org OU structure also undocumented.
+  <strong>Unknown:</strong> Production <strong>AWS Region</strong> (and optional DR Region) — this pack <strong>Q-07</strong> vs customer <strong>D-01 <code>us-east-2</code></strong>; do not pick in this chapter. See [Chapter 21](21-development-kickoff-infrastructure-request.md).
 </p>
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
@@ -176,6 +176,7 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 ## Evidence
 
 - [Chapter 17 — CI/CD](17-ci-cd.md) — dual delivery ladders (full narrative)
+- [Chapter 21](21-development-kickoff-infrastructure-request.md) — Newfire → Mesmerize infra kickoff (accounts, OIDC, Ask conflicts)
 - [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — dual delivery ladders decision
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — AWS reference deployment topology (Ladder A)
 - [ADR-010](../../../docs/adr/010-technology-stack.md) — S12–S15 infra / IaC / observability
@@ -189,7 +190,7 @@ Multi-AZ placement is inferred for ALB/ECS/data subnets. Queue buffering, retrie
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> AWS Region / DR Region (<strong>Q-07</strong>); VPC <strong>CIDR</strong>; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; AWS account ID. CI/CD unknowns (deploy strategy, platform branch promotion) — see [Chapter 17](17-ci-cd.md). Region open question: <a href="18-assumptions-and-open-questions.md">Chapter 18 — Q-07</a>.
+  <strong>Unknown:</strong> AWS Region / DR Region (<strong>Q-07</strong> vs D-01 — Ask in [Chapter 21](21-development-kickoff-infrastructure-request.md)); VPC <strong>CIDR</strong>; RTO / RPO; RDS &amp; Redis Multi-AZ flags; ECS autoscaling min/max; shared vs per-service account fate. Shared staging/prod <strong>account IDs</strong> are customer-signed D-01 (Ch.21). CI/CD unknowns — see [Chapter 17](17-ci-cd.md).
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
@@ -207,4 +208,5 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 - **A-01**, **A-02**, **A-03** — Region class, Multi-AZ, rolling deploys
 - **Q-06**, **Q-07** — RTO/RPO; primary/DR Region
 - Related: **Q-03**, **Q-09**; CI/CD promotion **Q-13** / [Chapter 17](17-ci-cd.md)
+- **Q-17** — GitHub org + service repo slugs / [Chapter 21](21-development-kickoff-infrastructure-request.md)
 

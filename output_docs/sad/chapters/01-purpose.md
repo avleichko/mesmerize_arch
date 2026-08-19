@@ -43,7 +43,7 @@ State **who** this Solution Architecture Definition (SAD) pack is for, **why** i
 | §2 Scope | [02-scope.md](02-scope.md) |
 | §3 Related Documents | [03-related-documents.md](03-related-documents.md) |
 | §4 Definitions and Acronyms | [04-definitions-and-acronyms.md](04-definitions-and-acronyms.md) |
-| §5–§11 (+ Mesmerize extensions) | Chapters 05–20 (see [pack README](../README.md)); Ch.19–20 = imaging evidence + display |
+| §5–§11 (+ Mesmerize extensions) | Chapters 05–21 (see [pack README](../README.md)); Ch.19–20 = imaging; Ch.21 = infra kickoff |
 
 - **Copy structure, do not overwrite** the template in `templates/`.
 - **Crosswalk** (when present): [`WORD_TEMPLATE_CROSSWALK.md`](../WORD_TEMPLATE_CROSSWALK.md) maps chapters → Word sections for export.
@@ -57,6 +57,8 @@ State **who** this Solution Architecture Definition (SAD) pack is for, **why** i
 
 - [`templates/README.md`](../../../templates/README.md) — SAD required sections; copy/fill rules
 - [`output_docs/sad/README.md`](../README.md) — pack purpose, chapter index, Word out of scope
+- [`README.md`](../../../README.md) — SAD ↔ ADR ↔ NFR ↔ diagram map
+- [Chapter 21](21-development-kickoff-infrastructure-request.md) — infra kickoff (Mesmerize extension)
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — product positioning and success metric
 - [`docs/adr/README.md`](../../../docs/adr/README.md) — confirmed decision register
 - [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging display + evidence in-scope (supersedes ADR-009)

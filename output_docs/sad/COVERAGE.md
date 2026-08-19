@@ -347,7 +347,7 @@
 
 **White spots (Unknown):**
 
-- Production **AWS Region** (and optional DR Region); AWS account ID / org OU.  
+- Production **AWS Region** (and optional DR Region); **Q-07** vs customer D-01 — Ask in Chapter 21.  
 - **RTO** and **RPO** — no kb values.  
 - RDS and ElastiCache **Multi-AZ flags**.  
 - ECS **autoscaling** min/max.  
@@ -355,7 +355,7 @@
 - Identical platform `staging`/`main` promotion semantics vs Ladder B.  
 - Final **observability** vendor/config (still open; see also Ch 10 / 14).
 
-**Closed (no longer a white spot):** Missing CI/CD **branching** evidence / “CI/CD pack from AM” for org branching — dual delivery ladders (Ladder A GHA→ECR→ECS+TF; Ladder B Netlify web-only + TTV filesync) are Confirmed direction via ADR-016. Do not conflate Netlify/TTV with ECS.
+**Closed (no longer a white spot):** Missing CI/CD **branching** evidence / “CI/CD pack from AM” for org branching — dual delivery ladders (Ladder A GHA→ECR→ECS+TF; Ladder B Netlify web-only + TTV filesync) are Confirmed direction via ADR-016. Do not conflate Netlify/TTV with ECS. Shared staging/prod **account IDs** are customer **D-01** (Chapter 21); Region vs D-01 remains Ask (**Q-07**).
 
 **White spots (Proposed):**
 

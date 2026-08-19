@@ -39,6 +39,8 @@ Give SAD readers a **short acronym list** for front-matter reading. Full term de
 | SMART | Substitutable Medical Applications, Reusable Technologies |
 | SOW | Statement of Work (here: Newfire SOW #3) |
 | SQS | Amazon Simple Queue Service |
+| OIDC | OpenID Connect (GitHub Actions → AWS; customer **D-06**) |
+| D-xx | Settled row in customer `INFRASTRUCTURE.md` (SAD does not create these) |
 
 ## Pointers (not duplicated here)
 

@@ -4,7 +4,7 @@
 > **Rule:** Do not invent numeric SLOs not present in kb. Items without kb metrics are marked **Open** or **Target (qualitative)**.  
 > **ASR** = Architecturally Significant Requirement (drives structure, boundaries, or technology choices).
 
-Agent mirror: [`docs/ai/NFR.md`](../../docs/ai/NFR.md). ASR checklist: [`ASR_CHECKLIST.md`](ASR_CHECKLIST.md).
+Agent mirror: [`docs/ai/NFR.md`](../../docs/ai/NFR.md). ASR checklist: [`ASR_CHECKLIST.md`](ASR_CHECKLIST.md). SAD summary: [Chapter 14](../sad/chapters/14-nfr-and-quality-attributes.md). Kickoff (no new NFR): [Chapter 21](../sad/chapters/21-development-kickoff-infrastructure-request.md).
 
 ## Legend
 
@@ -100,7 +100,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Engagement / business log retention (e.g. 3 years discussed) | Confirm with Brandon / MM |
 | AWS BAA necessity | Compliance owner |
 | Formal observability toolchain | AM / Mesmerize-approved pack |
-| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016 |
+| Platform (Ladder A) deploy strategy; Region; RTO/RPO | Open — do not invent; see ADR-016, SAD **Q-07** / [Ch.21](../sad/chapters/21-development-kickoff-infrastructure-request.md) |
 
 ---
 
@@ -115,5 +115,7 @@ These NFRs **must** shape architecture and are binding for agents:
 | Multitenancy ADR-013 | **Aligned** with NFR-SEC-07, DATA-02, SCAL-02 |
 | Messaging ADR-014 | **Aligned** with NFR-REL-01/02, INT-02/04; edge REST preserved for iframe latency |
 | Imaging performance | **No conflict** — qualitative in-scope concern (NFR-PERF-02); no numeric SLO. Display boundaries in NFR-INT-05 (ADR-019) |
+| SAD Ch.14 / 19–21 | **Aligned** — Ch.14 summarizes ASRs; Ch.19–20 cite INT-05 / PERF-02; Ch.21 adds no NFR |
+| ADR-017 S8 / D-07 | **Aligned** — multi-repo; not an NFR change |
 
 If a future change conflicts with an **ASR** NFR, update this catalog + add/supersede an ADR before coding.

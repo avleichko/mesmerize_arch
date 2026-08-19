@@ -100,6 +100,20 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 
 Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 
+## Where this lands in the SAD
+
+Pack map: [`README.md`](../../README.md). Kickoff asks (GitHub / OIDC / AWS gates): [SAD Chapter 21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md). Questions **Q-01…Q-17**: [Chapter 18](../../output_docs/sad/chapters/18-assumptions-and-open-questions.md). ASRs: [`docs/ai/NFR.md`](../ai/NFR.md) (imaging **INT-05** / **PERF-02**).
+
+| ADR | SAD chapters (primary) |
+|-----|------------------------|
+| 001–008, 011 | 01–02, 07, 10 |
+| 010, **017** (Python + S8 multi-repo) | 08, 13, 17, **21** |
+| 013 | 11 |
+| 014 | 12 |
+| 015–016 | 13, 17, 21 |
+| **018** | Always-check `customer-kb/`; Ch.21 cites `D-xx` and does not create them |
+| **019** | 19–20; ripple 07–10, 14 |
+
 ## ADR index
 
 | ADR | Title |
@@ -120,6 +134,6 @@ Related product strategy: [ADR-001](001-content-evidence-not-ambient-scribe.md).
 | [014](014-sqs-messaging-patterns.md) | SQS Request/Reply, correlation, enricher, DLQ, fire-and-forget |
 | [015](015-aws-deployment-reference.md) | AWS reference deployment topology |
 | [016](016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders |
-| [017](017-python-platform-backend.md) | Platform backend Python / FastAPI (supersedes ADR-010 S3/S5) |
+| [017](017-python-platform-backend.md) | Platform backend Python / FastAPI; **S8 per-service GitHub repos** (D-07) |
 | [018](018-customer-decision-repo-second-kb.md) | Customer decision repo as second knowledge base (like `kb/`) |
 | [019](019-exam-room-imaging-display-and-evidence.md) | Exam-room imaging display and imaging evidence (supersedes ADR-009) |

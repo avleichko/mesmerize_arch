@@ -40,10 +40,11 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **Safe Harbor** | HIPAA de-identification framing used in kb for ICD-10-without-identifiers |
 | **ASR** | Architecturally Significant Requirement — NFR that drives architecture ([NFR.md](NFR.md)) |
 | **NFR** | Non-functional requirement (see `output_docs/nfr/`) |
-
 | **RBAC** | Role-based access control (Command Center; timing per Q&A) |
 | **POC ecosystem** | Demo multi-device journey used as reference behavior |
 | **mesmerize-platform** | Informal name for the Content Evidence **platform** (SMART + API + infra). Physical git is **per-service repos** (D-07 / ADR-017), not one Turborepo. |
+| **D-xx** | Settled infrastructure decision in customer `INFRASTRUCTURE.md` ([ADR-018](../adr/018-customer-decision-repo-second-kb.md)). SAD Ch.21 cites them; it does not add rows. |
+| **Q-17** | SAD open question: exact GitHub org + service-repo slugs ([Ch.21](../../output_docs/sad/chapters/21-development-kickoff-infrastructure-request.md)) |
 
 ## Acronyms
 
