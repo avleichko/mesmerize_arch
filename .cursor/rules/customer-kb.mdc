@@ -1,0 +1,35 @@
+---
+description: Always check the customer decision repo (second knowledge base) like kb/ before architecture or product changes
+alwaysApply: true
+---
+
+# Second knowledge base — customer decision repo
+
+Treat the Mesmerize/Newfire **docs + infrastructure register** as a second evidence source, **the same way as `kb/`**: analyze it before inventing requirements or contradicting settled customer infra.
+
+## Where it lives
+
+- Workspace symlink (preferred): [`customer-kb/`](../../customer-kb) → local clone
+- Default absolute path on this machine: `/Users/sasaaleksandrov/myProjects/newfire/mesmerize-monorepo`
+- Pointer + precedence: [`docs/customer-kb/README.md`](../../docs/customer-kb/README.md)
+- [ADR-018](../../docs/adr/018-customer-decision-repo-second-kb.md)
+
+If `customer-kb/` is missing, use the absolute path. Do not skip the check because the folder is outside this git repo.
+
+## Always do this (same bar as kb)
+
+Before proposing or implementing architecture, infra, CI/CD, tenancy, devices, auth, or product-behavior changes:
+
+1. Search/analyze **`kb/`**.
+2. Search/analyze **`customer-kb/`** — start with `INFRASTRUCTURE.md` (settled `D-xx` only) and `README.md` / `CONTRIBUTING.md`.
+3. Read **`docs/adr/`** (this architecture repo’s confirmed register).
+4. Do **not** invent requirements. Do **not** treat `customer-kb/docs/prebuild-proposal/` as Confirmed (brainstorm / goals only).
+
+## Precedence (do not silently merge)
+
+- **Product / PHI / do-not-build** in this repo’s ADRs remain binding unless a superseding ADR + human approval.
+- **Mesmerize-signed infra** in `customer-kb/INFRASTRUCTURE.md` (`D-xx`) is customer-authoritative for those rows.
+- If this repo’s ADRs and `D-xx` **conflict**: **stop**, cite both, ask — do not pick silently.
+- If something is **not** in `INFRASTRUCTURE.md`, it is **not decided** in the customer register — even if it appears in prebuild-proposal or older scaffolds.
+
+Re-check `customer-kb/` when a task touches AWS accounts/Region, IAM, ECS tenancy, deploy strategy, CI/OIDC, or repo layout — even if you already read `docs/ai/*`.

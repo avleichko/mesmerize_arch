@@ -9,4 +9,4 @@ alwaysApply: true
 - Before creating architecture definitions, SAD, or other formal docs: check `templates/` first.
 - If a matching template exists, **copy and fill that template** — do not invent a different outline.
 - Do not overwrite files in `templates/`; write deliverables to `output_docs/` (or the task path).
-- Content must still follow `kb/`, `docs/adr/`, and `AGENTS.md`.
+- Content must still follow `kb/`, `customer-kb/` (second knowledge base), `docs/adr/`, and `AGENTS.md`.

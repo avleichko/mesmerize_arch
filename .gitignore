@@ -2,3 +2,5 @@
 .DS_Store
 .superpowers/
 kb/
+# Local symlink to Mesmerize decision/infra repo (second knowledge base)
+/customer-kb
