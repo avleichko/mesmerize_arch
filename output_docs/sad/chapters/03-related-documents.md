@@ -28,14 +28,14 @@ Provide a **navigation table** to the ADRs, agent docs, NFRs, deployment notes, 
 | [007](../../../docs/adr/007-extend-pwa-server-mediated-devices.md) | Extend PWA; Device Command API; Socket.io | Devices |
 | [008](../../../docs/adr/008-engagement-telemetry-billing-hitl-writeback.md) | De-identified telemetry; suggestions; HITL | Engagement / billing |
 | [009](../../../docs/adr/009-dicom-imaging-out-of-sow-scope.md) | DICOM / imaging mirror out of SOW scope (**Superseded** by [019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md)) | Historical SOW-exclusion only |
-| [010](../../../docs/adr/010-technology-stack.md) | Technology stack | System / deployment |
+| [010](../../../docs/adr/010-technology-stack.md) | Technology stack | System / deployment (S8 multi-repo per ADR-017) |
 | [011](../../../docs/adr/011-do-not-build.md) | Explicit do-not-build decisions | Scope guardrails (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads) |
 | [012](../../../docs/adr/012-c4-persons-vs-stakeholders.md) | C4 Persons vs SAD stakeholders | Business context |
 | [013](../../../docs/adr/013-multitenancy-silo-and-bridge.md) | Dual-mode multitenancy (Silo vs Bridge) | Tenancy |
 | [014](../../../docs/adr/014-sqs-messaging-patterns.md) | SQS messaging patterns | Messaging |
 | [015](../../../docs/adr/015-aws-deployment-reference.md) | AWS reference deployment topology | Deployment (Ladder A) |
 | [016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) | Git branching and dual delivery ladders | Deployment / ops; Ladder A vs B |
-| [017](../../../docs/adr/017-python-platform-backend.md) | Python / FastAPI platform backend | Stack supersession of ADR-010 S3/S5 |
+| [017](../../../docs/adr/017-python-platform-backend.md) | Python / FastAPI platform backend; **S8 per-service GitHub repos** (D-07) | Stack S3/S5 + repo layout |
 | [018](../../../docs/adr/018-customer-decision-repo-second-kb.md) | Customer decision repo as second KB | Always-check `customer-kb/` like `kb/` |
 | [019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) | Exam-room imaging display and imaging evidence (supersedes 009) | In-scope Tier 1 + Tier 2; no Mesmerize DICOM viewer |
 
@@ -75,6 +75,7 @@ Also: [`AGENTS.md`](../../../AGENTS.md) (invariants) · [`kb/`](../../../kb/) (s
 | [Chapter 13](13-deployment-and-infrastructure.md) | SAD deployment topology (AWS) |
 | [Chapter 17](17-ci-cd.md) | SAD CI/CD — dual delivery ladders A/B |
 | [Chapter 18](18-assumptions-and-open-questions.md) | Assumptions (Proposed) + Must-answer open questions register |
+| [Chapter 21](21-development-kickoff-infrastructure-request.md) | Newfire → Mesmerize infra kickoff (Now / Staging / Prod); does not create `D-xx` |
 | Diagrams `17-*` / `18-*` | Stakeholder overview + technical production deploy |
 | Diagrams `19-*` / `20-*` | Ladder A (platform) + Ladder B (device/PWA) CI/CD *(filenames remain CI/CD; not imaging chapters)* |
 

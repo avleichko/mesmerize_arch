@@ -37,7 +37,7 @@ Maps [`templates/Solution_Architecture_Definition_template.docx`](../../template
 
 ---
 
-## Future appendices (MD extensions 10–14, 17–18)
+## Future appendices (MD extensions 10–14, 17–21)
 
 These chapters are **not** Heading-1 sections in the current Word template. Treat them as **appendices** (or new Heading-1 sections) when assembling the stakeholder `.docx`.
 
@@ -50,8 +50,11 @@ These chapters are **not** Heading-1 sections in the current Word template. Trea
 | 14 | NFR and Quality Attributes | [`chapters/14-nfr-and-quality-attributes.md`](chapters/14-nfr-and-quality-attributes.md) | Appendix E |
 | 17 | CI/CD | [`chapters/17-ci-cd.md`](chapters/17-ci-cd.md) | Appendix F |
 | 18 | Assumptions and Open Questions | [`chapters/18-assumptions-and-open-questions.md`](chapters/18-assumptions-and-open-questions.md) | Appendix G |
+| 19 | Imaging-Mirror Evidence Addendum | [`chapters/19-imaging-mirror-evidence-addendum.md`](chapters/19-imaging-mirror-evidence-addendum.md) | Appendix H |
+| 20 | Exam-Room Imaging Mirror | [`chapters/20-exam-room-imaging-mirror.md`](chapters/20-exam-room-imaging-mirror.md) | Appendix I |
+| 21 | Development Kickoff — Infrastructure Request | [`chapters/21-development-kickoff-infrastructure-request.md`](chapters/21-development-kickoff-infrastructure-request.md) | Appendix J |
 
-Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17) → Appendix G Assumptions (18).
+Export order suggestion: core template 01–09 → appendices 10–14 → Key terms (15) → Revision History (16) → Appendix F CI/CD (17) → Appendix G Assumptions (18) → Appendix H–I imaging (19–20) → Appendix J kickoff (21).
 
 ---
 

@@ -62,6 +62,7 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 | Q-14 | HIPAA policy pack delivery date from Mesmerize (AM)? | Security appendix | AM / compliance | [10](10-security-and-privacy.md) |
 | Q-15 | Python version pin + package manager (uv vs Poetry) for Platform API? | Ladder A CI / images | Eng lead | [ADR-017](../../../docs/adr/017-python-platform-backend.md), [17](17-ci-cd.md) |
 | Q-16 | Ratify additive FHIR **read** scope strings with athena: `patient/DiagnosticReport.read`, `patient/DocumentReference.read`, `patient/Media.read`, `patient/Observation.read` (labs/reports)? Until answered, treat those strings as **Proposed** in this SAD (intent Confirmed in ADR-005 / ADR-019). Do **not** invent Confirmed strings. | Imaging Tier 1 artifact reads | Clinical informatics / EHR config | [07](07-functional-architecture.md), [10](10-security-and-privacy.md), [19](19-imaging-mirror-evidence-addendum.md), [20](20-exam-room-imaging-mirror.md), [ADR-005](../../../docs/adr/005-smart-oauth-ehr-launch-mvp-scopes.md), [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) |
+| Q-17 | Ratify exact GitHub **org + service repo slugs** for the Proposed starter set (clinician SMART app, platform API Python/FastAPI, infra/Terraform)? Until answered, names are **Proposed** in Chapter 21. | First service-repo create / OIDC trust | Eng lead + GitHub org owner | [21](21-development-kickoff-infrastructure-request.md), D-07 |
 
 ## Traceability (theme → IDs)
 
@@ -78,6 +79,7 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 | Compliance / BAA / classification / owners | Q-01, Q-02, Q-03, Q-04, Q-14 |
 | Writeback payload | Q-05 |
 | Imaging FHIR read scopes | Q-16 |
+| Service repos / OIDC | Q-17 |
 | Pilot scope / RBAC | Q-10 |
 | Device↔cloud SLO | Q-08 |
 
@@ -90,13 +92,14 @@ Audience: **Mesmerize internal** (not Newfire SOW language).
 
 ## Evidence
 
-- Source Unknowns across chapters 02, 05–14, 17, 19–20 (see White spots in those files)
+- Source Unknowns across chapters 02, 05–14, 17, 19–21 (see White spots in those files)
 - [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — branching Proposed for platform
+- [ADR-017](../../../docs/adr/017-python-platform-backend.md) — Python / FastAPI; S8 multi-repo (D-07); Q-17 slugs
 - [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — imaging in-scope; Q-16 additive reads Proposed until athena ratification
 - Spec: `docs/superpowers/specs/2026-07-23-sad-assumptions-and-open-questions-design.md`
 
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> All open <strong>Q-01…Q-16</strong> rows above. Assumptions A-01…A-10 remain Proposed until accepted — they do not clear source-chapter Unknowns by themselves.
+  <strong>Unknown:</strong> All open <strong>Q-01…Q-17</strong> rows above. Assumptions A-01…A-10 remain Proposed until accepted — they do not clear source-chapter Unknowns by themselves.
 </p>

@@ -61,6 +61,7 @@
 **White spots (Proposed):**
 
 - Platform repos adopt the same org branch/PR conventions (ADR-016).
+- Exact GitHub service repo slugs until **Q-17** (Chapter 21).
 
 ---
 
@@ -447,7 +448,7 @@
 
 - Platform **deployment strategy** (rolling / blue-green / canary).  
 - Identical platform `staging`/`main` promotion semantics vs Ladder B.  
-- Exact platform GitHub Actions workflow inventory for NestJS services.
+- Exact platform GitHub Actions workflow inventory for each **service repo**.
 
 **Confirmed (not white spots):** Dual delivery ladders — Ladder A GHA→ECR→ECS+TF; Ladder B Netlify web-only + human TTV filesync. Do **not** conflate Netlify/TTV with ECS.
 
@@ -464,7 +465,7 @@
 | 1 | Purpose stated | [x] |
 | 2 | Actors / audience covered (Mesmerize product/ops/compliance) | [x] |
 | 7 | Evidence links (source chapters + ADR-016 + design spec) | [x] |
-| 8 | Open questions listed (Q-01…Q-16) | [x] |
+| 8 | Open questions listed (Q-01…Q-17) | [x] |
 | 9 | White spots only as colored callouts | [x] |
 | * | **Chapter-specific:** Assumptions A-01…A-10 (Proposed only); Must-answer Q register; no invented Confirmed Region/RTO/BAA/owners | [x] |
 | * | **Chapter-specific:** Traceability + how-to-close | [x] |
@@ -472,9 +473,9 @@
 
 **N/A:** diagrams; data ownership; Security/PHI narrative body (owned by Ch.10 — this chapter is the decision register).
 
-**Score:** 8 / 8 = **100%** → band **75** (capped while Q-01…Q-16 Unknown remains — not Stakeholder-ready)
+**Score:** 8 / 8 = **100%** → band **75** (capped while Q-01…Q-17 Unknown remains — not Stakeholder-ready)
 
-**White spots (Unknown):** All open **Q-01…Q-16** (see chapter register).
+**White spots (Unknown):** All open **Q-01…Q-17** (see chapter register).
 
 **White spots (Proposed):** Assumptions **A-01…A-10** (engineering defaults; do not clear source Unknowns until Mesmerize accepts).
 
@@ -538,6 +539,34 @@
 - Exact additive FHIR **read** scope strings until **Q-16**.
 
 **Note:** Diagrams **19** / **20** PNGs remain Ladder A/B **CI/CD** (Chapter 17). Imaging figures are catalog **23** / **24** / **25**.
+
+---
+
+## 21 — Development Kickoff — Infrastructure Request
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Purpose stated (Newfire → Mesmerize infra; does not create `D-xx`) | [x] |
+| 2 | Actors / audience covered (GitHub / IAM IC / AWS owners) | [x] |
+| 4 | Interfaces / interactions described (Need \| Settled \| Ask gates) | [x] |
+| 6 | Security / PHI notes (OIDC only; no AWS keys in GitHub; no patient data) | [x] |
+| 7 | Evidence links (D-01–D-07, ADR-017/010/016/018, customer README) | [x] |
+| 8 | Open questions listed (**Q-17** plus Q-07/Q-09/Q-13/Q-03/Q-14) | [x] |
+| 9 | White spots only as colored callouts | [x] |
+| * | **Chapter-specific:** three gates (Now / Staging / Prod); five-row conflict table; Ladder B stub only | [x] |
+
+**N/A:** diagrams (tables-only; no new catalog IDs).
+
+**Score:** 8 / 8 = **100%** → band **75** (capped while Unknown remains — not Stakeholder-ready)
+
+**White spots (Unknown):**
+
+- Exact GitHub org + service repo slugs — **Q-17**.  
+- Region (D-01 vs **Q-07**); shared vs per-service accounts; who provisions VPC/ECS/RDS; IaC tool; observability (**Q-09**); Staging→Prod owner (**Q-13**); BAA / HIPAA pack (**Q-03**, **Q-14**); D-04 vs ADR-013; D-05 vs A-03.
+
+**White spots (Proposed):**
+
+- Starter repos = SMART app + Python API + infra/Terraform. Terraform as IaC until customer `D-xx`.
 
 ---
 

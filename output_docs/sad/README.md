@@ -6,7 +6,7 @@ This directory holds the **working Solution Architecture Definition (SAD) pack**
 
 This pack lives under `output_docs/sad/` only. It is the authoritative working artifact for architecture review and iteration in this repo.
 
-**Overall pack maturity:** ~**79%** (band **75 — Review-ready**; 20 chapters). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md). Decision register: [Chapter 18](chapters/18-assumptions-and-open-questions.md). Imaging display: [ADR-019](../../docs/adr/019-exam-room-imaging-display-and-evidence.md) (Ch.19–20).
+**Overall pack maturity:** ~**79%** (band **75 — Review-ready**; 21 chapters). See [`PROGRESS.md`](PROGRESS.md). Not stakeholder-sign-off complete while open Unknowns remain. Git / dual delivery ladders: [ADR-016](../../docs/adr/016-git-branching-and-delivery-ladders.md); SAD [Chapter 17](chapters/17-ci-cd.md). Decision register: [Chapter 18](chapters/18-assumptions-and-open-questions.md). Imaging display: [ADR-019](../../docs/adr/019-exam-room-imaging-display-and-evidence.md) (Ch.19–20). Infra kickoff (Newfire → Mesmerize): [Chapter 21](chapters/21-development-kickoff-infrastructure-request.md).
 
 ## Chapter index
 
@@ -32,8 +32,9 @@ This pack lives under `output_docs/sad/` only. It is the authoritative working a
 | 18 | Assumptions and Open Questions *(extension)* | [chapters/18-assumptions-and-open-questions.md](chapters/18-assumptions-and-open-questions.md) |
 | 19 | Imaging-Mirror Evidence Addendum *(extension)* | [chapters/19-imaging-mirror-evidence-addendum.md](chapters/19-imaging-mirror-evidence-addendum.md) |
 | 20 | Exam-Room Imaging Mirror *(extension)* | [chapters/20-exam-room-imaging-mirror.md](chapters/20-exam-room-imaging-mirror.md) |
+| 21 | Development Kickoff — Infrastructure Request *(extension)* | [chapters/21-development-kickoff-infrastructure-request.md](chapters/21-development-kickoff-infrastructure-request.md) |
 
-All 20 chapter files are present. Word Heading-1/2 ↔ MD map: [`WORD_TEMPLATE_CROSSWALK.md`](WORD_TEMPLATE_CROSSWALK.md).
+All 21 chapter files are present. Word Heading-1/2 ↔ MD map: [`WORD_TEMPLATE_CROSSWALK.md`](WORD_TEMPLATE_CROSSWALK.md).
 
 ## Color legend
 
