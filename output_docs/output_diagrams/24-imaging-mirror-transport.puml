@@ -2,6 +2,7 @@
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 title Imaging mirror transport — Tier 1 command vs Tier 2 P2P media\n[C]=Confirmed [I]=Inferred [P]=Proposed · no pixels/PHI on Platform
 LAYOUT_WITH_LEGEND()
+AddRelTag("p2p", $lineStyle = DashedLine())
 Person(clinician, "Clinician [C]", "SMART iframe")
 System_Ext(athena, "athenahealth FHIR [C]", "Browser-only Rel from SMART · token stays in browser")
 System_Boundary(mz, "Mesmerize") {
@@ -13,7 +14,7 @@ Rel(clinician, smart, "Select artifact / share window", "[C]")
 Rel(smart, athena, "Read PDF/JPEG/HTML (browser)", "EHR token [C]")
 Rel(smart, api, "show_artifact metadata / SDP-ICE signaling", "sessionId + deviceGroup + kind [C]")
 Rel(api, device, "Device Command + signaling", "ADR-007/019 [C]")
-Rel_D(smart, device, "WebRTC P2P media [C] · no Platform media")
+Rel_D(smart, device, "WebRTC P2P media [C] · no Platform media", $tags="p2p")
 note as N1
   Cornerstone/OHIF = rejected [C]
   No Mesmerize DICOM viewer · no ImagingStudy/WADO
