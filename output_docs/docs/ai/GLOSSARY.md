@@ -9,7 +9,7 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **SMART v1 plan** | Earlier SMART plan that included ambient audio / Deepgram / Claude notes — superseded |
 | **SMART on FHIR app** | Provider-facing web app launched from EHR iframe via SMART/OAuth2 |
 | **fhirclient.js** | Open-source SMART client library (`fhirclient` npm) used in browser |
-| **Platform API** | NestJS backend for sessions, content, devices, billing evidence — no EHR calls |
+| **Platform API** | Python / FastAPI backend for sessions, content, devices, billing evidence — no EHR calls ([ADR-017](../adr/017-python-platform-backend.md)) |
 | **Session ID** | Opaque Mesmerize UUID for an encounter-scoped work session — **not** patient ID |
 | **Device group** | Clinic/site grouping of devices used for targeting |
 | **M-number** | Operator device alias prefix used with serial/location in fleet ops |
@@ -32,7 +32,8 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 | **VAST** | Video Ad Serving Template — baseline for video ad telemetry (meeting alignment) |
 | **Human-in-the-loop** | Physician must review/approve before writeback |
 | **Zero-PHI-on-servers** | Design goal: no patient identifiers stored or processed on Mesmerize backend |
-| **Patient Imaging Mirror** | WebRTC imaging display concept — **out of SOW #3** delivery |
+| **Patient Imaging Mirror** | In-scope exam-room imaging **display**: Tier 1 web-native artifact push + Tier 2 window/tab-scoped WebRTC P2P ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)) |
+| **DICOM viewer** | Mesmerize-built DICOM parser/viewer (e.g. Cornerstone/OHIF as a Mesmerize component) — **do not build** (DNB-9) |
 | **EHR-agnostic core** | Decoupled models/APIs/auth so Epic/Cerner can be modular later |
 | **SOW #3** | Newfire Statement of Work governing current delivery scope |
 | **Phase 1–4** | SOW execution phases (design → build → harden → pilot) |
@@ -42,7 +43,7 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 
 | **RBAC** | Role-based access control (Command Center; timing per Q&A) |
 | **POC ecosystem** | Demo multi-device journey used as reference behavior |
-| **mesmerize-platform** | Target Turborepo monorepo for the new platform |
+| **mesmerize-platform** | Informal name for the Content Evidence **platform** (SMART + API + infra). Physical git is **per-service repos** (D-07 / ADR-017), not one Turborepo. |
 
 ## Acronyms
 

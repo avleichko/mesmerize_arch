@@ -37,11 +37,11 @@ Read **`INFRASTRUCTURE.md`** first. Mesmerize-approved rows as of 2026-08-11:
 | Product / PHI / no ambient | Prebuild goals + CONTRIBUTING PHI rule | ADR-001, ADR-002, ADR-011 | Aligned in spirit; still enforce this pack’s PHI invariants |
 | Region / accounts | D-01 **us-east-2** + account IDs | SAD **Q-07** Unknown | **Escalate** — do not keep inventing Region as Unknown without closing via ADR |
 | Deploy strategy | D-05 Prod **blue-green** | A-03 rolling Phase 1 | **Escalate** — customer signed Prod blue-green |
-| Repo layout | D-07 **multi-repo** | ADR-017 polyglot monorepo | **Escalate** — customer signed multi-repo |
+| Repo layout | D-07 **multi-repo** | ADR-017 S8 **multi-repo** | **Aligned** (2026-08-19) |
 | Tenancy compute | D-04 **one container per tenant** | ADR-013 Bridge shared DB default | **Escalate** — different isolation axis (container vs DB) |
 | Device transport | Explicitly **re-opened** | ADR-007 Socket.io Confirmed | **Escalate** — do not assume Socket.io is customer-settled |
 | Backend language | Not in `D-xx` | ADR-017 Python/FastAPI | Architecture-repo decision until customer `D-xx` or superseding ADR |
-| Imaging | Prebuild 08/09 present | ADR-009 / DNB-9 out of SOW | Do not build; prebuild is not a mandate |
+| Imaging | Prebuild 08/09 present | ADR-019 in-scope display; DNB-9 no DICOM viewer | Prebuild is not Confirmed; follow ADR-019 |
 
 ## Implications for delivery
 

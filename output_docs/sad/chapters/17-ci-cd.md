@@ -60,7 +60,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 | Product | Checks | Evidence |
 |---------|--------|----------|
 | **Platform API (Ladder A)** | GitHub Actions: **ruff** (lint) · **mypy** (typecheck) · **pytest** · container **build** → ECR → ECS | Confirmed direction (ADR-010, ADR-015, ADR-016, ADR-017) |
-| **Platform frontends (if in same repo)** | Node: lint · `tsc` · vitest/jest · production build (parallel job) | Proposed (polyglot monorepo) |
+| **Platform frontends (SMART / device TS repos)** | Node: lint · `tsc` · vitest/jest · production build **in that service repo** | Proposed (per-repo CI; D-07) |
 | **touchscreen-ux (Ladder B)** | `ci.yml` — lint, `tsc -b`, vitest, production build | Confirmed (extract / DEPLOYMENT.md) |
 | **touchscreen-ux** | `check-content-links.yml` — nav links / orphan JSON under `src/data/**` | Confirmed |
 | **touchscreen-ux** | `contrast-audit.yml` — WCAG contrast (Playwright + axe) | Confirmed |
@@ -68,7 +68,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 | **touchscreen-ux** | `check-ingest-endpoint.yml` — analytics ingest probe | Confirmed |
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
-  <strong>Proposed:</strong> Platform monorepo CI adopts the gate shape in <a href="../../../docs/ci-templates/">docs/ci-templates/</a>: Python API jobs (ruff · mypy · pytest · image build) plus optional Node frontend jobs; PR template; CODEOWNERS. Customer scaffold today has PR template only — no live workflows yet (<a href="../../../docs/architecture/customer-monorepo-analysis.md">customer-monorepo-analysis</a>).
+  <strong>Proposed:</strong> Each <strong>service repo</strong> adopts the gate shape in <a href="../../../docs/ci-templates/">docs/ci-templates/</a> as applicable: Python API jobs (ruff · mypy · pytest · image build) in the API repo; Node jobs in frontend repos; PR template; CODEOWNERS. The customer <em>docs</em> repo has no pipelines (D-06).
 </p>
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -89,7 +89,7 @@ Runtime AWS topology remains in [Chapter 13](13-deployment-and-infrastructure.md
 ## White spots
 
 <p style="background:#fde8e8;border-left:4px solid #c62828;padding:8px 12px;margin:12px 0;">
-  <strong>Unknown:</strong> Platform deployment strategy (rolling / blue-green / canary); identical platform <code>staging</code>/<code>main</code> promotion semantics vs Ladder B; exact live platform GitHub Actions inventory in a platform monorepo (Proposed gate shape documented in docs/ci-templates/).
+  <strong>Unknown:</strong> Platform deployment strategy (rolling / blue-green / canary); identical platform <code>staging</code>/<code>main</code> promotion semantics vs Ladder B; exact live GitHub Actions inventory in each <strong>service repo</strong> (Proposed gate shape in docs/ci-templates/).
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
@@ -106,4 +106,5 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 
 - **A-03**, **A-04** — rolling deploy; `feature → staging → main` for platform
 - **Q-13** — who promotes Staging → Prod and with what gates
+- **Q-17** — exact GitHub org + service repo slugs ([Chapter 21](21-development-kickoff-infrastructure-request.md))
 - Engineering follow-up (not a Mesmerize Q-row): package-manager / Node pin TODOs in [`docs/ci-templates/workflows/ci.yml`](../../../docs/ci-templates/workflows/ci.yml)

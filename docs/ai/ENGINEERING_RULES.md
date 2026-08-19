@@ -45,7 +45,7 @@ Do **not** invent numeric availability/latency SLOs — none are fixed in kb (se
 | ORM | **SQLAlchemy 2 + Alembic** (was Prisma) |
 | Cache / realtime support | Redis 7 |
 | Realtime | Socket.io (server: python-socketio) |
-| Monorepo | Polyglot: pnpm (+ Turborepo optional) for TS apps; uv or Poetry for Python API |
+| Repo layout | **Multi-repo (per service)** — customer D-07 / ADR-017; pnpm in each TS repo; uv/Poetry in the Python API repo |
 | Auth | EHR OAuth (SMART app); Auth0 + RBAC (admin / Command Center) |
 | Device management | Esper MDM + TelemetryTV / existing PWA fleet |
 | Content | Sanity CMS + BioDigital + MJH / Pharmacy Times + current PWA JSON |
@@ -53,14 +53,14 @@ Do **not** invent numeric availability/latency SLOs — none are fixed in kb (se
 | IaC / CI/CD | Terraform + GitHub Actions |
 | Observability | Mesmerize-approved monitoring; Datadog in reference architecture |
 
-## Monorepo conventions
+## Service-repo conventions
 
-- Prefer shared **TypeScript** packages in `packages/*` for frontends (types used by SMART/device UIs).
-- Prefer shared **Python** packages for Platform API domain logic (billing rules, engagement models) — no EHR HTTP clients on the server.
-- `apps/smart-app` / `smart-launcher` owns browser-side FHIR I/O only.
-- Platform API (`apps/api` or `services/`) owns session/content/device/billing APIs in **Python** — **no EHR HTTP clients**.
+- Prefer shared **TypeScript** libraries for frontends (types used by SMART/device UIs), published or vendored **across service repos** as Mesmerize decides (not a required monorepo).
+- Prefer shared **Python** packages **inside the API repo** for domain logic (billing rules, engagement models) — no EHR HTTP clients on the server.
+- SMART app repo owns browser-side FHIR I/O only.
+- Platform API repo owns session/content/device/billing APIs in **Python** — **no EHR HTTP clients**.
 - Do not reintroduce NestJS as the Platform API target ([ADR-017](../adr/017-python-platform-backend.md)). Do not reintroduce `packages/ai-services` or server-side FHIR EHR adapters.
-- Customer scaffold may still show NestJS stubs — treat as legacy relative to ADR-017 ([customer-monorepo-analysis](../architecture/customer-monorepo-analysis.md)).
+- Customer `mesmerize-monorepo` is docs-only ([customer-monorepo-analysis](../architecture/customer-monorepo-analysis.md)).
 
 ## Schema and API rules
 

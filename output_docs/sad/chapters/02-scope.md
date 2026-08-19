@@ -65,6 +65,12 @@ This pack covers the **architecture** of the Mesmerize Content Evidence Platform
   <strong>Inferred:</strong> “Pilot-gated Prod” means production topology may exist, but live clinic traffic and PHI-adjacent EHR integration are limited to the approved single athenahealth pilot org until Phase 4 acceptance — not a multi-tenant commercial rollout.
 </p>
 
+### Git / service repos (Ladder A)
+
+<p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
+  <strong>Confirmed:</strong> Ladder A implementation lives in <strong>per-service GitHub repositories</strong> (customer <code>INFRASTRUCTURE.md</code> <strong>D-07</strong>; <a href="../../../docs/adr/017-python-platform-backend.md">ADR-017</a> S8). The customer repo named <code>mesmerize-monorepo</code> is docs + infra register only — not the platform code home. Logical names such as <code>smart-app</code> / <code>platform-api</code> are modules, not “clone one Turborepo.” Exact org + slugs: <strong>Q-17</strong>. Kickoff asks: <a href="21-development-kickoff-infrastructure-request.md">Chapter 21</a>.
+</p>
+
 ### Release ladder note
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
@@ -86,6 +92,7 @@ Deployment detail: [13-deployment-and-infrastructure.md](13-deployment-and-infra
 Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Open Questions](18-assumptions-and-open-questions.md).
 
 - **A-04** — platform `feature → staging → main` (identical Staging/Prod semantics still open until accepted)
+- **Q-17** — exact GitHub org + service repo slugs (Chapter 21)
 
 ## Evidence
 
@@ -94,6 +101,8 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 - [ADR-011](../../../docs/adr/011-do-not-build.md) — do-not-build list (DNB-9: no Mesmerize DICOM viewer / no server-side imaging payloads)
 - [ADR-015](../../../docs/adr/015-aws-deployment-reference.md) — Dev/Staging/Prod; Prod pilot-gated
 - [ADR-016](../../../docs/adr/016-git-branching-and-delivery-ladders.md) — dual ladders; PWA Confirmed / platform Proposed
+- [ADR-017](../../../docs/adr/017-python-platform-backend.md) — Python / FastAPI; S8 per-service repos (D-07)
+- [Chapter 21](21-development-kickoff-infrastructure-request.md) — Newfire → Mesmerize infra kickoff register
 - [`docs/ai/PROJECT_CONTEXT.md`](../../../docs/ai/PROJECT_CONTEXT.md) — in/out goals
 - [`docs/ai/ENGINEERING_RULES.md`](../../../docs/ai/ENGINEERING_RULES.md) — environment notes
 - [`docs/ai/NFR.md`](../../../docs/ai/NFR.md) — NFR-OPS-05

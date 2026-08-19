@@ -67,7 +67,7 @@ Diagrams: [`output_diagrams/`](output_diagrams/). Export copy of docs: [`output_
 - **Do not invent requirements.** If kb or customer-kb marks something `[PROPOSED]`, `Unknown`, “Needs Further Discussion”, or (customer repo) *not listed in `INFRASTRUCTURE.md`*, treat it as open — ask or document the assumption.
 - **Avoid unnecessary refactoring.** Prefer the smallest change that satisfies the task.
 - **Cite sources** in ADRs and significant design notes (`kb/...`, `customer-kb/INFRASTRUCTURE.md` `D-xx`, SOW #3, Mesmerize Q&A, decision #).
-- **Match existing stack and monorepo layout** documented in Architecture / Engineering Rules.
+- **Match existing stack and per-service GitHub repo layout** (D-07 / ADR-017) documented in Architecture / Engineering Rules.
 - **Before declaring work complete**, confirm alignment with relevant ADRs + run the checklist in [`docs/ai/TESTING.md`](docs/ai/TESTING.md).
 
 ## Primary success metric (business)

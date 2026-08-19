@@ -43,7 +43,7 @@ Terms as used in Mesmerize Content Evidence materials. Prefer these meanings in 
 
 | **RBAC** | Role-based access control (Command Center; timing per Q&A) |
 | **POC ecosystem** | Demo multi-device journey used as reference behavior |
-| **mesmerize-platform** | Target Turborepo monorepo for the new platform |
+| **mesmerize-platform** | Informal name for the Content Evidence **platform** (SMART + API + infra). Physical git is **per-service repos** (D-07 / ADR-017), not one Turborepo. |
 
 ## Acronyms
 

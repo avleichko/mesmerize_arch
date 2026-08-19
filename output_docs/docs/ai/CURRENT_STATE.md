@@ -12,10 +12,10 @@
 | Pilot EHR | **athenahealth** first; Epic/Cerner roadmap analysis in Phase 1 |
 | Live devices | ~**4,400** exam-room/touchscreen devices (~3,480 active) on Esper + TelemetryTV |
 | Live PWA | `MesmerizeTeam/touchscreen-ux` — specialty/slug content, **no ICD-10 tags** |
-| New platform monorepo | Initialized (`mesmerize-platform/`): Turborepo, NestJS skeleton, React 19/Vite placeholders, Prisma v1, Docker Compose, package stubs |
+| Customer decision repo | `/Users/sasaaleksandrov/myProjects/newfire/mesmerize-monorepo` (**docs + infra register**, no platform code; multi-repo). Treat as second KB like `kb/` ([ADR-018](../adr/018-customer-decision-repo-second-kb.md)). Settled infra = `INFRASTRUCTURE.md` `D-xx`. See [`customer-monorepo-analysis.md`](../architecture/customer-monorepo-analysis.md). |
 | POC reference | `poc-ecosystem/` feature-complete demo (multi-device Socket.io, BioDigital, ICD-10 mapping demo, billing logic demo) |
 | ICD-10 content tagging | **Low/partial** for new corpus; **0** on current PWA topics — Phase 1 mapping deliverable |
-| Imaging mirror / DICOM | Documented in architecture; **out of SOW #3**; needs further discussion per Jul 14 |
+| Imaging mirror / DICOM | **In scope** (Tier 1+2 display + evidence per [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)); **not yet implemented**. No Mesmerize DICOM viewer; no server imaging payloads |
 | Admin error-correction UI | Deferred |
 | Compliance owner / billing rules owner | **Open** in Q&A |
 
@@ -23,7 +23,7 @@
 
 From **POC** (Implementation Context): multi-device journey demo, Socket.io sync, BioDigital embeds, ICD-10→content mapping engine (demo), billing logic samples, shared TS types, brand tokens.
 
-From **mesmerize-platform**: monorepo, NestJS modules + health, Prisma + seed, React placeholder pages, Tailwind brand preset, stubs including billing-engine / ui / (legacy) ai-services & fhir-client to be removed or replaced.
+From **customer decision repo** (`customer-kb/`): docs-only + `INFRASTRUCTURE.md` `D-xx` (AWS accounts, us-east-2, IAM IDC, RDS Postgres, ECS per-tenant container, Prod blue/green, GHA OIDC, multi-repo). Prebuild-proposal is **not** settled. No platform implementation in that repo. NestJS/pnpm scaffold previously seen there is **obsolete**.
 
 From **operations**: Esper MDM, TelemetryTV, proof-of-play telemetry, condition-targeted **ad** campaigns (useful head start, not the same as clinical ICD-10 content tags), athena Marketplace Developer Console account (sandbox details to confirm).
 
@@ -31,12 +31,14 @@ From **operations**: Esper MDM, TelemetryTV, proof-of-play telemetry, condition-
 
 | Asset | Action |
 |-------|--------|
-| `packages/ai-services` | Remove |
-| `packages/fhir-client` EHR adapters | Replace with `packages/fhir-engagement` |
-| Patient / med / allergy / coverage / transcript / note Prisma models | Remove |
+| Older NestJS / Prisma / single-repo assumptions | Treat as historical; customer signed **multi-repo** (D-07) + this pack **Python/FastAPI** (ADR-017) until a joint ADR closes remaining conflicts |
+| Prisma schemas / Nest modules | Replace with **SQLAlchemy 2 + Alembic**; no patient/note/transcript tables |
+| `packages/ai-services` | Remove if present |
+| `packages/fhir-client` EHR adapters | Replace with browser `fhir-engagement` formatting only |
+| `packages/webrtc` / imaging mirror | Signaling/P2P **client** for Tier 2 mirror — not a DICOM stack; do not treat as “do not build” wholesale. **Not yet implemented.** |
 | Redox config | Remove |
 | Session APIs | Ensure no patient identifiers |
-| `apps/smart-app` | Add |
+| `apps/smart-app` / `smart-launcher` | Keep TS SMART path; wire ICD-10 session create |
 | ICD-10 metadata on content | Build (Phase 1) |
 | Device room mapping | Close gap for pilot targeting |
 | Socket.io push + pairing on extended PWA | Net-new vs live slug PWA |
@@ -64,7 +66,7 @@ Exact calendar: SOW text is authoritative; architecture Sprint Plan also targets
 - Content metadata incompleteness blocking recommendation quality.
 - Device↔room mapping incomplete.
 - Writeback depends on customer/EHR configuration.
-- Imaging scope confusion (architecture vs SOW) — keep out of delivery until ADR/SOW update.
+- Imaging is in-scope for **display** ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)) but **not yet implemented**; still no DICOM viewer / server payloads.
 - Open ownership for billing rule definition and compliance sign-off.
 - Multitenancy dual-mode (Silo vs Bridge) per [ADR-013](../adr/013-multitenancy-silo-and-bridge.md); pilot default Bridge.
 
@@ -72,6 +74,6 @@ Exact calendar: SOW text is authoritative; architecture Sprint Plan also targets
 
 - Prefer **Content Evidence** docs over any ambient/Redox materials in `kb/`.
 - Treat production PWA as **extend, don’t overwrite in place**.
-- Treat Patient Imaging Mirror as **non-goals for SOW #3 coding tasks**.
+- Treat Patient Imaging Mirror **display** (Tier 1+2) as in-scope coding work; do not implement a Mesmerize DICOM viewer or put imaging payloads on servers.
 - Enforce tenant isolation: Organization = tenant; clinic = sub-scope; Silo or Bridge per ADR-013.
 - Re-check live GitHub repos for drift; this file describes kb-reported state, not a live `git status`.

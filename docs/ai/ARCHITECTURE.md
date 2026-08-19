@@ -140,19 +140,20 @@ Session (Mesmerize UUID, clinicId, deviceGroupId, ICD-10 conditions[], times, st
 
 **In scope** for athena pilot delivery ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)): **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC P2P mirror. Mesmerize servers do **signaling only** for Tier 2; media is P2P. **No** Mesmerize DICOM viewer; **no** imaging payloads on servers. `packages/webrtc` is a **signaling/P2P client** — not a DICOM stack.
 
-## Monorepo structure (target — polyglot, ADR-017)
+## Logical modules vs physical repos (ADR-017 / D-07)
+
+Physical git is **per-service repositories** (customer **D-07**). The tree below is **logical** layout, not one clone:
 
 ```
-mesmerize-monorepo/   # or mesmerize-platform/
-  apps/
-    api/              # Python / FastAPI (Platform API) — not NestJS
-    web/              # Device views (TS) and/or extend touchscreen-ux (Ladder B)
-    smart-app/        # SMART on FHIR (React/TS)
-  packages/           # TS shared for frontends (types, UI)
-  # Python packages for API domain (billing rules, models) via uv/Poetry
-  docs/
-  infrastructure/     # docker, terraform, esper
+# Logical modules (exact GitHub slugs = Q-17)
+smart-app/          # SMART on FHIR (React/TS) — own repo
+platform-api/       # Python / FastAPI — own repo
+infra/              # Terraform / shared infra — own repo (Proposed)
+# TS shared libraries may live in the SMART repo, a libraries repo, or copies — Ask
+# Device/PWA: extend touchscreen-ux (Ladder B) — separate from Ladder A
 ```
+
+Customer `mesmerize-monorepo` = **docs + INFRASTRUCTURE.md only**, not platform code.
 
 **Remove / avoid vs older plans:** NestJS as API target, Prisma as ORM, `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models. `packages/webrtc` is a signaling/P2P client (not DICOM); do not implement a Mesmerize DICOM viewer or server imaging payloads ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)).
 

@@ -9,7 +9,7 @@
 
 Three planes:
 
-1. **Cloud (AWS)** — SMART app hosting, NestJS Platform API, application services, PostgreSQL (engagement only) + Redis, S3 media/ads.
+1. **Cloud (AWS)** — SMART app hosting, **Python / FastAPI** Platform API, application services, PostgreSQL (engagement only) + Redis, S3 media/ads.
 2. **EHR SMART launch** — Epic / Cerner / Athena launch SMART app in iframe (pilot: **athenahealth**).
 3. **Clinic edge** — Microtouch exam-room devices, waiting-room TVs, Command Center; Esper MDM.
 
@@ -56,7 +56,7 @@ Envelope must include `tenantId` (+ `clinicId` when relevant); never EHR tokens 
 
 ## Non-functional / ASR summary
 
-Full catalog: [`NFR.md`](NFR.md) and [`output_docs/nfr/`](../../output_docs/nfr/). Architecturally significant NFRs (zero-PHI, browser FHIR token, tenancy, retries, WCAG, white-label, log split/retention, SMART 3-legged launch, server-mediated devices, tenant S3) **must not be violated** by container or technology choices.
+Full catalog: [`NFR.md`](NFR.md) and [`output_docs/nfr/`](../../output_docs/nfr/). Architecturally significant NFRs (zero-PHI, browser FHIR token, tenancy, retries, WCAG, white-label, log split/retention, SMART 3-legged launch, server-mediated devices, server-mediated imaging display, tenant S3) **must not be violated** by container or technology choices.
 
 ## Architectural principles
 
@@ -83,13 +83,13 @@ Lightweight React app in EHR iframe:
 **MVP FHIR scopes (Q&A):**  
 `launch/encounter patient/Patient.read patient/Condition.read patient/Encounter.read patient/DocumentReference.write`
 
-Architecture doc also lists imaging read scopes for **Patient Imaging Mirror** — **out of scope under SOW #3**; do not treat as MVP.
+Architecture doc also lists imaging read scopes for **Patient Imaging Mirror** — **in scope** as Tier 1+2 display per [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md). **No** `ImagingStudy` / WADO / Mesmerize DICOM viewer.
 
 Registered client (architecture): `mesmerize-content-evidence`, `private_key_jwt`, authorization_code.
 
-### Platform API (`apps/api`, NestJS)
+### Platform API (`apps/api` or `services/`, Python / FastAPI)
 
-Serves SMART app and devices. **Never** talks to EHR; **never** processes audio/notes.
+Serves SMART app and devices. **Never** talks to EHR; **never** processes audio/notes. Language/framework: [ADR-017](../adr/017-python-platform-backend.md).
 
 Documented API groups:
 
@@ -112,15 +112,15 @@ Application services (architecture diagram): Session, Content, Billing Evidence 
 
 Fleet scale (Q&A): ~4,400 exam-room/touchscreen devices (~3,480 active); Esper UUID + serial + M-number alias; room/provider mapping is a known gap for pilot targeting.
 
-### Billing evidence engine (`packages/billing-engine`)
+### Billing evidence engine (`packages/billing-engine` or Python package)
 
 **Input:** content engagement events only (no transcript).  
 **Output:** CPT suggestions + structured evidence (time thresholds, conditions addressed, categories such as counseling/CCM/ACP/etc. per strategy docs).  
 **Does not:** primary E/M MDM determination, claim generation, PA, coverage checks.
 
-### FHIR engagement package (`packages/fhir-engagement`)
+### FHIR engagement package (browser / shared formatting)
 
-Formats engagement / service-delivery summary as FHIR **DocumentReference** (architecture cites LOINC 69730-0 Instructions category). Replaces heavier clinical-note writeback designs.
+Formats engagement / service-delivery summary as FHIR **DocumentReference** (architecture cites LOINC 69730-0 Instructions category). Used from the **SMART browser** with the EHR token — not a server-side EHR adapter. Replaces heavier clinical-note writeback designs.
 
 ### Content sources
 
@@ -138,27 +138,24 @@ Session (Mesmerize UUID, clinicId, deviceGroupId, ICD-10 conditions[], times, st
 
 ### Patient Imaging Mirror (architecture Tier 1 / WebRTC)
 
-Documented as WebRTC P2P imaging display with signaling-only on Mesmerize servers. **SOW #3 explicitly excludes DICOM push / screen mirroring** — treat as future foundation, not current delivery scope. Tech meeting notes also mark imaging strategy as needing further discussion.
+**In scope** for athena pilot delivery ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)): **Tier 1** web-native artifact push + **Tier 2** window/tab-scoped WebRTC P2P mirror. Mesmerize servers do **signaling only** for Tier 2; media is P2P. **No** Mesmerize DICOM viewer; **no** imaging payloads on servers. `packages/webrtc` is a **signaling/P2P client** — not a DICOM stack.
 
-## Monorepo structure (target)
+## Logical modules vs physical repos (ADR-017 / D-07)
+
+Physical git is **per-service repositories** (customer **D-07**). The tree below is **logical** layout, not one clone:
 
 ```
-mesmerize-platform/
-  apps/
-    api/          # NestJS
-    web/          # Device views
-    smart-app/    # SMART on FHIR
-  packages/
-    shared/           # Types, Zod, constants, Socket.io events
-    ui/
-    billing-engine/
-    fhir-engagement/  # not server-side EHR adapters
-    config/
-  docs/
-  infrastructure/   # docker, terraform, esper
+# Logical modules (exact GitHub slugs = Q-17)
+smart-app/          # SMART on FHIR (React/TS) — own repo
+platform-api/       # Python / FastAPI — own repo
+infra/              # Terraform / shared infra — own repo (Proposed)
+# TS shared libraries may live in the SMART repo, a libraries repo, or copies — Ask
+# Device/PWA: extend touchscreen-ux (Ladder B) — separate from Ladder A
 ```
 
-**Remove / avoid vs older plans:** `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models.
+Customer `mesmerize-monorepo` = **docs + INFRASTRUCTURE.md only**, not platform code.
+
+**Remove / avoid vs older plans:** NestJS as API target, Prisma as ORM, `packages/ai-services`, patient CRUD / Redox adapters, transcript & clinical note models. `packages/webrtc` is a signaling/P2P client (not DICOM); do not implement a Mesmerize DICOM viewer or server imaging payloads ([ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md)).
 
 ## Cloud / infra (confirmed direction in Q&A)
 
@@ -201,7 +198,7 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-006](../adr/006-icd10-content-match-cpt-billing-output.md) (#9–#10)
 - [ADR-007](../adr/007-extend-pwa-server-mediated-devices.md) (#11–#15)
 - [ADR-008](../adr/008-engagement-telemetry-billing-hitl-writeback.md) (#16–#19)
-- [ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md) (#20)
+- [ADR-009](../adr/009-dicom-imaging-out-of-sow-scope.md) (**superseded** by [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md); historical SOW-exclusion record)
 - [ADR-010](../adr/010-technology-stack.md) (S1–S15)
 - [ADR-011](../adr/011-do-not-build.md) (DNB-1–DNB-9)
 - [ADR-012](../adr/012-c4-persons-vs-stakeholders.md)
@@ -209,3 +206,4 @@ Full register (decisions #1–#20): [`docs/adr/README.md`](../adr/README.md)
 - [ADR-014](../adr/014-sqs-messaging-patterns.md)
 - [ADR-015](../adr/015-aws-deployment-reference.md)
 - [ADR-016](../adr/016-git-branching-and-delivery-ladders.md)
+- [ADR-019](../adr/019-exam-room-imaging-display-and-evidence.md) (#20 — imaging display in scope)

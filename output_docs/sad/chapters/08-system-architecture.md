@@ -9,7 +9,7 @@
 
 ## Purpose of this chapter
 
-Describe the Content Evidence Platform’s runtime containers and monorepo boundaries: who owns what, how edge clients reach **Python / FastAPI** platform services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs. Exam-room **imaging evidence** (taxonomy, capture vs write-back) is specified in [Chapter 19](19-imaging-mirror-evidence-addendum.md); **display / transport** (Tier 1 + Tier 2) is [Chapter 20](20-exam-room-imaging-mirror.md). This chapter only places those flows on the C4 runtime.
+Describe the Content Evidence Platform’s runtime containers and **logical module** boundaries: who owns what, how edge clients reach **Python / FastAPI** platform services, and how services depend on Postgres, Redis, S3, SQS, and externals — without inventing undeclared APIs or SLOs. **Physical git** is per-service repositories ([ADR-017](../../../docs/adr/017-python-platform-backend.md); customer **D-07**). Exam-room **imaging evidence** (taxonomy, capture vs write-back) is specified in [Chapter 19](19-imaging-mirror-evidence-addendum.md); **display / transport** (Tier 1 + Tier 2) is [Chapter 20](20-exam-room-imaging-mirror.md). This chapter only places those flows on the C4 runtime.
 
 ## Narrative
 
@@ -51,7 +51,7 @@ Runtime split matches [Chapter 19](19-imaging-mirror-evidence-addendum.md): **tw
 ### Technology stack (runtime)
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> React 19 / Vite / Tailwind frontends; <code>fhirclient.js</code> for SMART; <strong>Python / FastAPI</strong> backend; PostgreSQL 16 + <strong>SQLAlchemy 2 / Alembic</strong>; Redis 7; Socket.io (<code>python-socketio</code> on server); polyglot monorepo (pnpm for TS apps; uv/Poetry for API); Auth0 for admin / Command Center; Esper MDM; Sanity + BioDigital + MJH content; Mesmerize-owned AWS (ECS/Fargate, RDS, ElastiCache, S3, CloudFront) (ADR-010 S1–S13 as amended by ADR-017).
+  <strong>Confirmed:</strong> React 19 / Vite / Tailwind frontends; <code>fhirclient.js</code> for SMART; <strong>Python / FastAPI</strong> backend; PostgreSQL 16 + <strong>SQLAlchemy 2 / Alembic</strong>; Redis 7; Socket.io (<code>python-socketio</code> on server); <strong>per-service GitHub repos</strong> (D-07 / ADR-017; pnpm in TS repos; uv/Poetry in the API repo); Auth0 for admin / Command Center; Esper MDM; Sanity + BioDigital + MJH content; Mesmerize-owned AWS (ECS/Fargate, RDS, ElastiCache, S3, CloudFront) (ADR-010 S1–S13 as amended by ADR-017).
 </p>
 
 ## Component Responsibilities
@@ -89,7 +89,7 @@ Runtime split matches [Chapter 19](19-imaging-mirror-evidence-addendum.md): **tw
   <strong>Inferred:</strong> Monorepo <code>apps/api</code> (Python / FastAPI) is the entry that hosts or fronts these logical services; process-per-service vs co-located modules is a deploy choice (ADR-015 co-locate OK early), not a different product boundary.
 </p>
 
-### Shared packages (monorepo)
+### Shared packages (logical; may live across service repos)
 
 | Package | Responsibility |
 |---------|----------------|
@@ -100,7 +100,7 @@ Runtime split matches [Chapter 19](19-imaging-mirror-evidence-addendum.md): **tw
 | `packages/config` | ESLint / TS / Tailwind shared config |
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
-  <strong>Confirmed:</strong> Do <strong>not</strong> resurrect <code>packages/ai-services</code>, server-side EHR adapters, or patient/transcript/clinical-note models (ADR-011; ARCHITECTURE.md monorepo).
+  <strong>Confirmed:</strong> Do <strong>not</strong> resurrect <code>packages/ai-services</code>, server-side EHR adapters, or patient/transcript/clinical-note models (ADR-011; ARCHITECTURE.md).
 </p>
 
 ### Data and messaging stores
@@ -277,7 +277,7 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 
 ![Monorepo boundaries](../../output_diagrams/04-monorepo-boundaries.png)
 
-*Figure 8-2: Monorepo boundaries — `apps/smart-app`, `apps/web`, `apps/api` and packages `shared`, `ui`, `billing-engine`, `fhir-engagement`, `config` (ARCHITECTURE.md § Monorepo).*
+*Figure 8-2: Logical app/package boundaries — `smart-app`, device PWAs, `platform-api`, and libraries `shared`, `ui`, `billing-engine`, `fhir-engagement`, `config`. Physical git is **per-service repos** (D-07 / ADR-017); exact slugs **Q-17**.*
 
 <p style="background:#e8f5e9;border-left:4px solid #2e7d32;padding:8px 12px;margin:12px 0;">
   <strong>Confirmed:</strong> SMART app calls Platform API over HTTPS with a Mesmerize session token; device apps use Socket.io + device APIs; FHIR writeback formatting lives in <code>fhir-engagement</code> on the browser path (content <strong>and</strong> imaging evidence) — backend never calls EHR APIs (ARCHITECTURE.md; ADR-003; [Chapter 19](19-imaging-mirror-evidence-addendum.md)).
@@ -285,7 +285,7 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 
 ## Evidence
 
-- [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — planes, components, monorepo, C4 building blocks
+- [`docs/ai/ARCHITECTURE.md`](../../../docs/ai/ARCHITECTURE.md) — planes, components, logical modules vs service repos, C4 building blocks
 - [ADR-019](../../../docs/adr/019-exam-room-imaging-display-and-evidence.md) — Device Command + signaling for imaging; `imaging_session` evidence; no media/pixels on API; not a customer `D-xx`
 - [Chapter 19](19-imaging-mirror-evidence-addendum.md) — capture vs HITL write-back; taxonomy; Figure 19-1 / 8-11
 - [Chapter 20](20-exam-room-imaging-mirror.md) — Tier 1 / Tier 2 display and transport
@@ -307,7 +307,7 @@ Optional ad delivery / proof-of-play. **Not** on the core clinical path.
 </p>
 
 <p style="background:#fff8e1;border-left:4px solid #f9a825;padding:8px 12px;margin:12px 0;">
-  <strong>Inferred:</strong> <code>apps/api</code> as the deployable FastAPI surface that maps to the logical C4 services until split.
+  <strong>Inferred:</strong> A <strong>platform-api</strong> service repo (exact slug <strong>Q-17</strong>) is the deployable FastAPI surface that maps to the logical C4 services until split.
 </p>
 
 <p style="background:#e3f2fd;border-left:4px solid #1565c0;padding:8px 12px;margin:12px 0;">
@@ -321,3 +321,4 @@ Consolidated for Mesmerize decision-making in [Chapter 18 — Assumptions and Op
 - **A-05** — Platform (Python) services as separate ECS services by cutover
 - Related pilot scope / RBAC depth: **Q-10**
 - **Q-16** — Ratify additive FHIR **read** scope strings for Tier 1 (owned in [Chapter 18](18-assumptions-and-open-questions.md); cited from [Chapter 19](19-imaging-mirror-evidence-addendum.md))
+- **Q-17** — Exact GitHub org + service repo slugs ([Chapter 21](21-development-kickoff-infrastructure-request.md))
