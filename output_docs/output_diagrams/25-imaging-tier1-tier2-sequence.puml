@@ -1,0 +1,45 @@
+@startuml 25-imaging-tier1-tier2-sequence
+title Tier 1 web-native push vs Tier 2 scoped mirror\n[C]=Confirmed · getDisplayMedia window/tab only · no frames on Platform
+skinparam backgroundColor #FEFEFE
+skinparam shadowing false
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam NoteBackgroundColor #FFF8E7
+skinparam NoteBorderColor #C4A35A
+
+actor Clinician
+participant "SMART Web App\n(React + fhirclient.js)" as SMART
+participant "athenahealth FHIR\n(browser-only)" as AthenaFHIR
+participant "Platform API\n(Python/FastAPI)" as Platform
+participant "Exam-room PWA" as Device
+
+== Tier 1 [C] ==
+Clinician -> SMART: Select web-native result
+SMART -> AthenaFHIR: Read PDF/JPEG/HTML/PNG\n(EHR token stays in browser)
+AthenaFHIR --> SMART: Artifact bytes (browser only)
+SMART -> Platform: show_artifact metadata\nsessionId + deviceGroup + artifactKind\n(no payload, no Patient ID)
+Platform -> Device: Device Command show_content / show_artifact
+Device -> Device: Render in device browser
+note over Platform
+  Metadata only [C]
+  No pixels stored
+end note
+
+== Tier 2 [C] ==
+Clinician -> SMART: Share PACS/EHR window only
+SMART -> SMART: getDisplayMedia (window/tab)\nfull desktop forbidden
+SMART -> Platform: signaling (SDP/ICE)
+Platform -> Device: signaling
+SMART <-> Device: WebRTC media P2P
+Device -> Device: Display remote stream
+note over Platform
+  Signaling only [C]
+  No frames stored
+end note
+
+note over Clinician, Device
+  **Failures — never S3 pixel retry:**
+  unpaired device · signaling drop ·
+  wrong-window capture · HITL reject
+end note
+@enduml

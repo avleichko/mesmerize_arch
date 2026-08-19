@@ -1,0 +1,22 @@
+@startuml 24-imaging-mirror-transport
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+title Imaging mirror transport — Tier 1 command vs Tier 2 P2P media\n[C]=Confirmed [I]=Inferred [P]=Proposed · no pixels/PHI on Platform
+LAYOUT_WITH_LEGEND()
+Person(clinician, "Clinician [C]", "SMART iframe")
+System_Ext(athena, "athenahealth FHIR [C]", "Browser-only Rel from SMART · token stays in browser")
+System_Boundary(mz, "Mesmerize") {
+  Container(smart, "SMART Web App [C]", "React + fhirclient.js", "Reads artifacts in browser; getDisplayMedia window/tab only")
+  Container(api, "Platform API [C]", "Python/FastAPI", "Device Command + WebRTC signaling · no media · no pixels")
+}
+Container(device, "Exam-room PWA [C]", "Display", "Renders artifact or remote stream · no server EHR token")
+Rel(clinician, smart, "Select artifact / share window", "[C]")
+Rel(smart, athena, "Read PDF/JPEG/HTML (browser)", "EHR token [C]")
+Rel(smart, api, "show_artifact metadata / SDP-ICE signaling", "sessionId + deviceGroup + kind [C]")
+Rel(api, device, "Device Command + signaling", "ADR-007/019 [C]")
+Rel_D(smart, device, "WebRTC P2P media [C] · no Platform media")
+note as N1
+  Cornerstone/OHIF = rejected [C]
+  No Mesmerize DICOM viewer · no ImagingStudy/WADO
+  Commands never SMART→device; media is P2P only
+end note
+@enduml
