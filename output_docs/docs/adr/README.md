@@ -47,7 +47,7 @@ See also [`AGENTS.md`](../../AGENTS.md) and [`docs/ai/ENGINEERING_RULES.md`](../
 | S5 | ORM | **SQLAlchemy 2 + Alembic** (was Prisma) | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
 | S6 | Cache / realtime support | Redis 7 | [ADR-010](010-technology-stack.md) |
 | S7 | Realtime communication | Socket.io (python-socketio on server) | [ADR-010](010-technology-stack.md), [ADR-007](007-extend-pwa-server-mediated-devices.md), [ADR-017](017-python-platform-backend.md) |
-| S8 | Monorepo | Polyglot: pnpm/Turborepo (TS) + uv/Poetry (Python API) | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
+| S8 | Repo layout | **Multi-repo:** one GitHub repo per deployable service (customer D-07); pnpm in TS repos; uv/Poetry in Python API repo | [ADR-010](010-technology-stack.md), [ADR-017](017-python-platform-backend.md) |
 | S9 | Auth | EHR OAuth for SMART app; Auth0 + RBAC for admin/Command Center | [ADR-010](010-technology-stack.md), [ADR-005](005-smart-oauth-ehr-launch-mvp-scopes.md) |
 | S10 | Device management | Esper MDM + existing TelemetryTV/PWA fleet | [ADR-010](010-technology-stack.md), [ADR-007](007-extend-pwa-server-mediated-devices.md) |
 | S11 | Content | Sanity CMS + BioDigital + MJH / Pharmacy Times + current PWA JSON content | [ADR-010](010-technology-stack.md) |

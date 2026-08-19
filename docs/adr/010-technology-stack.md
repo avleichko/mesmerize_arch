@@ -1,7 +1,7 @@
 # ADR-010: Technology stack (platform reference architecture)
 
 - **Status:** Accepted (reference architecture; CTO ratification noted as ongoing in kb where applicable). **Partial supersession:** **S3** and **S5** updated by [ADR-017](017-python-platform-backend.md) (2026-08-06) — Platform backend is **Python / FastAPI**; ORM is **SQLAlchemy 2 + Alembic**. NestJS / Prisma rows below are **historical**.
-- **Decisions:** Stack register #S1–#S15 (see table; S3/S5 per ADR-017)
+- **Decisions:** Stack register #S1–#S15 (see table; S3/S5/S8 per ADR-017)
 - **Sources:** Architecture v2.0 monorepo/infra, Implementation Context, Mesmerize Responses Q&A (Technical Constraints), cost/observability notes citing Datadog; ADR-017
 
 ## Context
@@ -19,7 +19,7 @@ Delivery needs a single, agent-visible stack so Newfire and Mesmerize implemente
 | S5 | ORM | **SQLAlchemy 2** + **Alembic** ([ADR-017](017-python-platform-backend.md); was Prisma) |
 | S6 | Cache / realtime support | **Redis 7** |
 | S7 | Realtime communication | **Socket.io** (Python server: **python-socketio** — ADR-017) |
-| S8 | Monorepo | **Polyglot:** pnpm (+ Turborepo optional) for TS apps; **uv** or **Poetry** for Python API ([ADR-017](017-python-platform-backend.md)) |
+| S8 | Repo layout | **Multi-repo (per service)** per customer **D-07** / [ADR-017](017-python-platform-backend.md); **pnpm** inside each TS service repo; **uv** or **Poetry** inside the Python API repo. Not a single polyglot git monorepo. |
 | S9 | Auth | **EHR OAuth (SMART)** for clinician SMART app; **Auth0 + RBAC** for admin / Command Center |
 | S10 | Device management | **Esper MDM** + existing **TelemetryTV / PWA** fleet (integrate; do not build a new MDM) |
 | S11 | Content | **Sanity CMS** + **BioDigital** + **MJH / Pharmacy Times** + current **PWA JSON** content |
